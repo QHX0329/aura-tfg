@@ -1,0 +1,89 @@
+.PHONY: help setup dev stop test lint migrate seed scrape docs build clean
+
+help: ## Mostrar esta ayuda
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+# ── Entorno ──────────────────────────────────────────
+
+setup: ## Instalar dependencias y configurar entorno completo
+	@echo "📦 Instalando dependencias backend..."
+	cd backend && pip install -r requirements/dev.txt
+	@echo "📦 Instalando dependencias frontend..."
+	cd frontend && npm install
+	@echo "🐳 Levantando servicios Docker..."
+	docker-compose -f docker-compose.dev.yml up -d postgres redis
+	@echo "🗄️ Aplicando migraciones..."
+	cd backend && python manage.py migrate
+	@echo "✅ Entorno listo. Ejecuta 'make dev' para iniciar."
+
+dev: ## Levantar entorno de desarrollo completo
+	docker-compose -f docker-compose.dev.yml up -d
+	@echo "🚀 Backend: http://localhost:8000"
+	@echo "📱 Frontend: ejecutar 'cd frontend && npx expo start'"
+
+stop: ## Detener todos los servicios
+	docker-compose -f docker-compose.dev.yml down
+
+# ── Testing ──────────────────────────────────────────
+
+test: test-backend test-frontend ## Ejecutar todos los tests
+
+test-backend: ## Ejecutar tests del backend
+	cd backend && pytest -v --tb=short
+
+test-backend-cov: ## Tests backend con cobertura
+	cd backend && pytest --cov=apps --cov-report=html --cov-report=term -v
+
+test-frontend: ## Ejecutar tests del frontend
+	cd frontend && npx jest --coverage
+
+# ── Calidad de código ────────────────────────────────
+
+lint: lint-backend lint-frontend ## Lint completo
+
+lint-backend: ## Lint del backend (Ruff)
+	cd backend && ruff check . && ruff format --check .
+
+lint-backend-fix: ## Autofix lint backend
+	cd backend && ruff check --fix . && ruff format .
+
+lint-frontend: ## Lint del frontend (ESLint + Prettier)
+	cd frontend && npx eslint src/ --ext .ts,.tsx && npx prettier --check "src/**/*.{ts,tsx}"
+
+# ── Base de datos ────────────────────────────────────
+
+migrate: ## Aplicar migraciones de Django
+	cd backend && python manage.py migrate
+
+makemigrations: ## Crear nuevas migraciones
+	cd backend && python manage.py makemigrations
+
+seed: ## Poblar BD con datos de prueba
+	cd backend && python manage.py seed_data
+
+createsuperuser: ## Crear superusuario de Django
+	cd backend && python manage.py createsuperuser
+
+# ── Scraping ─────────────────────────────────────────
+
+scrape: ## Ejecutar todos los spiders de scraping
+	cd scraping && scrapy crawl mercadona && scrapy crawl carrefour
+
+scrape-mercadona: ## Ejecutar spider de Mercadona
+	cd scraping && scrapy crawl mercadona
+
+# ── Documentación ────────────────────────────────────
+
+docs: ## Generar documentación de la API
+	cd backend && python manage.py spectacular --file ../docs/api/openapi.yml
+
+# ── Build ────────────────────────────────────────────
+
+build: ## Build de producción
+	docker-compose build
+
+clean: ## Limpiar archivos temporales y caché
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
+	find . -name "*.pyc" -delete 2>/dev/null || true
+	cd frontend && rm -rf node_modules/.cache 2>/dev/null || true

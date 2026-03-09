@@ -1,0 +1,40 @@
+# ── Framework ────────────────────────────
+Django>=5.1,<5.2
+djangorestframework>=3.15,<4.0
+django-cors-headers>=4.4,<5.0
+django-filter>=24.0,<25.0
+
+# ── Auth ─────────────────────────────────
+djangorestframework-simplejwt>=5.3,<6.0
+
+# ── Database ─────────────────────────────
+psycopg[binary]>=3.2,<4.0
+dj-database-url>=2.2,<3.0
+
+# ── Geospatial ───────────────────────────
+# PostGIS support is built into Django (django.contrib.gis)
+
+# ── Async Tasks ──────────────────────────
+celery[redis]>=5.4,<6.0
+django-celery-beat>=2.6,<3.0
+
+# ── API Documentation ────────────────────
+drf-spectacular>=0.27,<1.0
+
+# ── Scraping ─────────────────────────────
+scrapy>=2.11,<3.0
+playwright>=1.44,<2.0
+
+# ── AI / ML ──────────────────────────────
+anthropic>=0.30,<1.0
+pytesseract>=0.3.13,<1.0
+ortools>=9.10,<10.0
+thefuzz[speedup]>=0.22,<1.0
+
+# ── Utilities ────────────────────────────
+python-decouple>=3.8,<4.0
+structlog>=24.0,<25.0
+sentry-sdk[django]>=2.8,<3.0
+Pillow>=10.4,<11.0
+requests>=2.32,<3.0
+redis>=5.0,<6.0
