@@ -250,26 +250,60 @@ npx prettier --check "src/**/*.{ts,tsx}"
 
 ---
 
+## 📋 Seguimiento de Tareas
+
+### Archivos de referencia (LEER SIEMPRE AL INICIO)
+
+| Archivo | Propósito | Cuándo actualizar |
+|---------|-----------|-------------------|
+| [`TASKS.md`](TASKS.md) | Estado de todas las tareas, sincronizado con GitHub y Notion | Al empezar (🔄) y terminar (✅) cada tarea |
+| [`docs/ai-mistakes-log.md`](docs/ai-mistakes-log.md) | Errores cometidos por agentes IA y sus soluciones | Cuando se cometa un error, antes de corregirlo |
+
+**Notion Backlog:** https://www.notion.so/234f4ce235f74bf388c3892e44bd5667
+**GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
+
+### Protocolo obligatorio para todos los agentes IA
+
+**ANTES de empezar cualquier tarea:**
+1. Leer `TASKS.md` para conocer el estado actual del proyecto
+2. Leer `docs/ai-mistakes-log.md` y aplicar las REGLAS derivadas
+3. Leer `CLAUDE.md` completo
+4. Marcar la tarea como 🔄 en `TASKS.md`
+
+**DURANTE el desarrollo:**
+- Seguir la convención de IDs de tarea en commits: `feat(users): descripción (F3-01)`
+- Si encuentras algo inesperado en un archivo, documéntalo antes de modificarlo
+
+**AL FINALIZAR cada tarea:**
+1. Marcar ✅ en `TASKS.md` y rellenar horas reales
+2. Si cometiste un error, añadir entrada a `docs/ai-mistakes-log.md`
+3. Si la tarea corresponde a una sección de la memoria, verificar que está actualizada
+4. Actualizar la entrada en el Notion Backlog si tienes acceso MCP
+
+---
+
 ## 🔄 Flujo de Desarrollo con Claude Code
 
 ### Antes de cada tarea
-1. Lee este archivo `CLAUDE.md` completo
-2. Revisa el issue o historia de usuario asignada
-3. Identifica la app/módulo afectado
-4. Revisa tests existentes del módulo
+1. Lee `TASKS.md` y `docs/ai-mistakes-log.md` (ver sección anterior)
+2. Lee este archivo `CLAUDE.md` completo
+3. Revisa el issue o historia de usuario asignada
+4. Identifica la app/módulo afectado
+5. Revisa tests existentes del módulo
 
 ### Durante el desarrollo
 1. Crea rama `feature/XX-descripcion` desde `develop`
 2. Implementa con TDD cuando sea posible: test → código → refactor
 3. Escribe docstrings y type hints
 4. Ejecuta tests y lint antes de hacer commit
-5. Haz commits atómicos con mensajes descriptivos
+5. Haz commits atómicos con mensajes descriptivos (incluye ID de tarea: `F3-01`)
 
 ### Al finalizar
 1. Ejecuta suite completa de tests
 2. Actualiza documentación si la API cambió
 3. Actualiza la memoria del TFG si es relevante
-4. Crea PR con descripción detallada
+4. Actualiza `TASKS.md` (estado ✅, horas reales)
+5. Crea PR con descripción detallada
 
 ---
 
