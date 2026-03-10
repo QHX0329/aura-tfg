@@ -1,0 +1,215 @@
+@startuml modelo-er
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 10
+skinparam shadowing false
+skinparam linetype ortho
+skinparam entityBackgroundColor #FFFFFF
+
+title **AURA — Modelo Entidad-Relación (PostgreSQL + PostGIS)**\n
+
+entity "**users_user**" as user {
+    * id : BIGSERIAL <<PK>>
+    --
+    * username : VARCHAR(150) <<UNIQUE>>
+    * email : VARCHAR(254) <<UNIQUE>>
+    * password : VARCHAR(128)
+    first_name : VARCHAR(150)
+    last_name : VARCHAR(150)
+    * role : VARCHAR(20) <<CHECK>>
+    phone : VARCHAR(20)
+    avatar : VARCHAR(255)
+    default_location : GEOMETRY(Point, 4326) <<GiST>>
+    * max_search_radius_km : FLOAT = 10.0
+    * max_stops : SMALLINT = 3
+    * optimization_preference : VARCHAR(20)
+    * push_notifications_enabled : BOOLEAN
+    * email_notifications_enabled : BOOLEAN
+    * date_joined : TIMESTAMPTZ
+    * is_active : BOOLEAN
+}
+
+entity "**products_category**" as category {
+    * id : BIGSERIAL <<PK>>
+    --
+    * name : VARCHAR(200)
+    description : TEXT
+    parent_id : BIGINT <<FK>>
+    icon : VARCHAR(255)
+    * order : INTEGER
+}
+
+entity "**products_brand**" as brand {
+    * id : BIGSERIAL <<PK>>
+    --
+    * name : VARCHAR(200)
+    logo : VARCHAR(255)
+    * is_private_label : BOOLEAN
+    chain_id : BIGINT <<FK>>
+}
+
+entity "**products_product**" as product {
+    * id : BIGSERIAL <<PK>>
+    --
+    * name : VARCHAR(300)
+    * normalized_name : VARCHAR(300) <<INDEX>>
+    barcode : VARCHAR(13) <<INDEX>>
+    * category_id : BIGINT <<FK>>
+    brand_id : BIGINT <<FK>>
+    * unit : VARCHAR(20)
+    * unit_quantity : DECIMAL(10,3)
+    image_url : VARCHAR(500)
+    * is_active : BOOLEAN
+    * created_at : TIMESTAMPTZ
+    * updated_at : TIMESTAMPTZ
+}
+
+entity "**stores_chain**" as chain {
+    * id : BIGSERIAL <<PK>>
+    --
+    * name : VARCHAR(200)
+    logo : VARCHAR(255)
+    website_url : VARCHAR(500)
+    * has_official_api : BOOLEAN
+    brand_color : VARCHAR(7)
+    * is_active : BOOLEAN
+}
+
+entity "**stores_store**" as store {
+    * id : BIGSERIAL <<PK>>
+    --
+    * name : VARCHAR(300)
+    chain_id : BIGINT <<FK>>
+    * address : VARCHAR(500)
+    * location : GEOMETRY(Point, 4326) <<GiST>>
+    * opening_hours : JSONB
+    phone : VARCHAR(20)
+    * is_local_business : BOOLEAN
+    * subscription_tier : VARCHAR(20)
+    * is_active : BOOLEAN
+}
+
+entity "**prices_price**" as price {
+    * id : BIGSERIAL <<PK>>
+    --
+    * product_id : BIGINT <<FK>>
+    * store_id : BIGINT <<FK>>
+    * price : DECIMAL(10,2)
+    * unit_price : DECIMAL(10,2)
+    offer_price : DECIMAL(10,2)
+    offer_end_date : DATE
+    * source : VARCHAR(20) <<CHECK>>
+    * verified_at : TIMESTAMPTZ
+    * created_at : TIMESTAMPTZ
+    * is_verified : BOOLEAN
+    ..
+    <<UNIQUE(product_id, store_id, source)>>
+}
+
+entity "**prices_pricehistory**" as price_history {
+    * id : BIGSERIAL <<PK>>
+    --
+    * product_id : BIGINT <<FK>>
+    * store_id : BIGINT <<FK>>
+    * price : DECIMAL(10,2)
+    * source : VARCHAR(20)
+    * recorded_at : TIMESTAMPTZ <<INDEX>>
+}
+
+entity "**shopping_lists_shoppinglist**" as list {
+    * id : BIGSERIAL <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    * name : VARCHAR(200)
+    * status : VARCHAR(20) <<CHECK>>
+    * is_template : BOOLEAN
+    * created_at : TIMESTAMPTZ
+    * updated_at : TIMESTAMPTZ
+}
+
+entity "**shopping_lists_shoppinglistitem**" as list_item {
+    * id : BIGSERIAL <<PK>>
+    --
+    * shopping_list_id : BIGINT <<FK>>
+    * product_id : BIGINT <<FK>>
+    * quantity : DECIMAL(10,3)
+    * is_checked : BOOLEAN
+    notes : TEXT
+}
+
+entity "**optimizer_optimizationresult**" as opt_result {
+    * id : BIGSERIAL <<PK>>
+    --
+    * shopping_list_id : BIGINT <<FK>>
+    * user_id : BIGINT <<FK>>
+    * user_location : GEOMETRY(Point, 4326)
+    * optimization_mode : VARCHAR(20)
+    * total_price : DECIMAL(10,2)
+    * total_distance_km : FLOAT
+    * estimated_time_min : INTEGER
+    * savings_amount : DECIMAL(10,2)
+    * route_data : JSONB
+    * created_at : TIMESTAMPTZ
+}
+
+entity "**optimizer_routestop**" as route_stop {
+    * id : BIGSERIAL <<PK>>
+    --
+    * optimization_result_id : BIGINT <<FK>>
+    * store_id : BIGINT <<FK>>
+    * order : INTEGER
+    * subtotal : DECIMAL(10,2)
+    * distance_from_previous : FLOAT
+}
+
+entity "**business_businessprofile**" as biz_profile {
+    * id : BIGSERIAL <<PK>>
+    --
+    * user_id : BIGINT <<FK, UNIQUE>>
+    * business_name : VARCHAR(300)
+    * nif_cif : VARCHAR(20)
+    * store_id : BIGINT <<FK>>
+    * subscription_tier : VARCHAR(20)
+    * status : VARCHAR(20) <<CHECK>>
+    * created_at : TIMESTAMPTZ
+}
+
+entity "**business_promotion**" as promotion {
+    * id : BIGSERIAL <<PK>>
+    --
+    * business_profile_id : BIGINT <<FK>>
+    * product_id : BIGINT <<FK>>
+    discount_percent : DECIMAL(5,2)
+    discount_amount : DECIMAL(10,2)
+    * start_date : DATE
+    * end_date : DATE
+    * is_active : BOOLEAN
+}
+
+' === RELACIONES ===
+category |o--o{ category : parent
+product }o--|| category
+product }o--o| brand
+brand }o--o| chain
+store }o--o| chain
+
+price }o--|| product
+price }o--|| store
+price_history }o--|| product
+price_history }o--|| store
+
+list }o--|| user
+list_item }o--|| list
+list_item }o--|| product
+
+opt_result }o--|| list
+opt_result }o--|| user
+route_stop }o--|| opt_result
+route_stop }o--|| store
+
+biz_profile ||--|| user
+biz_profile }o--|| store
+promotion }o--|| biz_profile
+promotion }o--|| product
+
+@enduml

@@ -1,0 +1,86 @@
+@startuml secuencia-optimizacion
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceParticipantBorderColor #333
+skinparam sequenceLifeLineBorderColor #999
+
+title **AURA — Diagrama de Secuencia: Optimización de Ruta de Compra**\n
+
+actor "Consumidor" as user
+participant "App Móvil\n(React Native)" as app
+participant "API REST\n(DRF)" as api
+participant "OptimizerService" as optimizer
+database "PostgreSQL\n+ PostGIS" as db
+participant "OSRM /\nGoogle Maps" as maps
+
+user -> app : Selecciona lista\ny pulsa "Optimizar"
+activate app
+
+app -> api : POST /api/v1/optimize/\n{list_id, location, weights}
+activate api
+
+api -> api : Validar JWT\ny parámetros
+
+api -> optimizer : optimize_route(\nlist, location, weights)
+activate optimizer
+
+optimizer -> db : SELECT products\nFROM shopping_list_items\nWHERE list_id = ?
+activate db
+db --> optimizer : Lista de productos (N)
+deactivate db
+
+optimizer -> db : SELECT stores\nFROM stores\nWHERE ST_DWithin(\nlocation, user_point,\nradius_km * 1000)
+activate db
+db --> optimizer : Tiendas candidatas (M)
+deactivate db
+
+optimizer -> db : SELECT prices\nFROM prices\nWHERE product_id IN (?)\nAND store_id IN (?)\nAND verified_at > NOW() - 48h
+activate db
+db --> optimizer : Matriz precios\n(N productos × M tiendas)
+deactivate db
+
+optimizer -> optimizer : Generar combinaciones\nde tiendas\n(max_stops C M)
+
+optimizer -> optimizer : Pre-filtrar:\ndescartar combos sin\ncobertura completa
+
+loop Para cada combinación candidata (top-K)
+    optimizer -> maps : GET /route?\ncoordinates=[user→tienda1→...→tiendaN]
+    activate maps
+    maps --> optimizer : {distance_km, duration_min}
+    deactivate maps
+
+    optimizer -> optimizer : Calcular Score =\nw_precio × ahorro_norm\n- w_distancia × dist_norm\n- w_tiempo × tiempo_norm
+end
+
+optimizer -> optimizer : Ordenar por Score\ny seleccionar top-3
+
+optimizer -> db : INSERT optimization_result\n+ route_stops\n+ route_stop_items
+activate db
+db --> optimizer : result_id
+deactivate db
+
+optimizer --> api : Top-3 rutas con\ndesglose completo
+deactivate optimizer
+
+api --> app : 200 OK\n{routes: [...],\nsavings, map_data}
+deactivate api
+
+app -> app : Renderizar mapa\ncon polylines\ny marcadores
+
+app --> user : Muestra top-3 rutas\ncon desglose de ahorro
+deactivate app
+
+user -> app : Ajusta sliders\nde pesos
+activate app
+app -> api : POST /api/v1/optimize/\n{..., new_weights}
+note right: Recálculo\nen < 5 seg
+api -> optimizer : optimize_route(...)
+optimizer --> api : Nuevas top-3 rutas
+api --> app : 200 OK
+app --> user : Ruta actualizada
+deactivate app
+
+@enduml
