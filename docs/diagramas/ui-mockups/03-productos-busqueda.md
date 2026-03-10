@@ -1,0 +1,267 @@
+# Wireframes — Productos y Búsqueda
+
+> **Pantallas:** Buscador con autocompletado · Resultados · Detalle de producto · Comparativa de precios
+> **Requisitos:** RF-006, RF-007, RF-008, RF-009, RF-010
+> **Historias de usuario:** HU-005, HU-006
+
+---
+
+## WF-03-01 · Pantalla de Búsqueda (estado inicial)
+
+```
+┌─────────────────────────┐
+│ 09:41         ●●● ▶ 🔋 │
+│─────────────────────────│
+│  Buscar productos       │
+│─────────────────────────│
+│                         │
+│  [🔍 ¿Qué buscas?    ] │
+│                         │
+│  ── Categorías ──       │
+│                         │
+│  ┌──────┐  ┌──────┐     │
+│  │  🥛  │  │  🍖  │     │
+│  │Lácteos│ │Carnes│     │
+│  └──────┘  └──────┘     │
+│  ┌──────┐  ┌──────┐     │
+│  │  🥦  │  │  🍞  │     │
+│  │Frutas│  │Panad.│     │
+│  │/Verd.│  │      │     │
+│  └──────┘  └──────┘     │
+│  ┌──────┐  ┌──────┐     │
+│  │  🧴  │  │  🧹  │     │
+│  │Higie.│  │Limpi.│     │
+│  └──────┘  └──────┘     │
+│                         │
+│  ── Búsquedas recientes─│
+│  🕐 Leche entera        │
+│  🕐 Pan de molde        │
+│  🕐 Aceite oliva virgen │
+│                         │
+│─────────────────────────│
+│  🏠    📋    🗺️    👤   │
+└─────────────────────────┘
+```
+
+---
+
+## WF-03-02 · Búsqueda con Autocompletado (texto introducido)
+
+```
+┌─────────────────────────┐
+│ 09:41         ●●● ▶ 🔋 │
+│─────────────────────────│
+│  [🔍 yogur___________ ×]│
+│─────────────────────────│
+│                         │
+│  ── Sugerencias ──      │
+│                         │
+│  🔍 yogur natural       │
+│  🔍 yogur griego        │
+│  🔍 yogur de fresa      │
+│  🔍 yogur sin lactosa   │
+│                         │
+│  ── Productos ──        │
+│                         │
+│  ░░  Yogur Natural Pack │
+│  ░░  4 ud. Danone       │
+│      Desde 1,29 €       │
+│                         │
+│  ░░  Yogur Griego 0%    │
+│  ░░  Chobani 150 g      │
+│      Desde 1,50 €       │
+│                         │
+│  ░░  Yogur MG Natural   │
+│  ░░  Mercadona 4 ud.    │
+│      Desde 0,99 €       │
+│                         │
+│                         │
+└─────────────────────────┘
+```
+
+**Notas:**
+- Las sugerencias se actualizan con un debounce de 300 ms.
+- El matching fuzzy tolera errores tipográficos ("iogur" → "yogur").
+- Tap en sugerencia de texto → filtra directamente.
+- Tap en producto → navega a WF-03-04 (Detalle de producto).
+
+---
+
+## WF-03-03 · Resultados de Búsqueda
+
+```
+┌─────────────────────────┐
+│ 09:41         ●●● ▶ 🔋 │
+│─────────────────────────│
+│ ← [🔍 yogur natural  ×]│
+│─────────────────────────│
+│  24 resultados   [⚙ Filtros]│
+│  Ordenar: [Relevancia ▼]│
+│─────────────────────────│
+│                         │
+│  ┌───────────────────┐  │
+│  │ ░░░│ Yogur Natural │  │
+│  │ ░░░│ Pack 4 ud.    │  │
+│  │    │ Danone · 500g │  │
+│  │    │ 🏪 5 tiendas  │  │
+│  │    │ Desde 1,29 €  │  │
+│  │    │          [+]  │  │
+│  └───────────────────┘  │
+│                         │
+│  ┌───────────────────┐  │
+│  │ ░░░│ Yogur Natural │  │
+│  │ ░░░│ Mercadona MG  │  │
+│  │    │ MG · 4 ud.    │  │
+│  │    │ 🏪 1 tienda   │  │
+│  │    │ Desde 0,99 €  │  │
+│  │    │          [+]  │  │
+│  └───────────────────┘  │
+│                         │
+│  ┌───────────────────┐  │
+│  │ ░░░│ Yogur Griego  │  │
+│  │ ░░░│ Fage 0% 170g  │  │
+│  │    │ 🏪 3 tiendas  │  │
+│  │    │ Desde 1,80 €  │  │
+│  │    │          [+]  │  │
+│  └───────────────────┘  │
+│                         │
+│─────────────────────────│
+│  🏠    📋    🗺️    👤   │
+└─────────────────────────┘
+```
+
+**Notas:**
+- El botón `[+]` añade directamente a la lista activa del usuario.
+- Si el usuario no tiene lista activa → modal para crear/seleccionar lista.
+- Los filtros incluyen: categoría, marca, rango de precios, disponibilidad en radio.
+
+---
+
+## WF-03-04 · Detalle de Producto
+
+```
+┌─────────────────────────┐
+│ 09:41         ●●● ▶ 🔋 │
+│─────────────────────────│
+│ ←                  [···]│
+│─────────────────────────│
+│                         │
+│   ░░░░░░░░░░░░░░░░░░░   │
+│   ░                  ░  │
+│   ░   Foto producto  ░  │
+│   ░                  ░  │
+│   ░░░░░░░░░░░░░░░░░░░   │
+│                         │
+│  Yogur Natural Pack 4 ud│
+│  Danone · Lácteos       │
+│  EAN: 7622300489052     │
+│                         │
+│  Contenido: 4 × 125 g   │
+│  Unidad: 500 g          │
+│                         │
+│  ── Precios en tu zona ─│
+│                         │
+│  🏪 Mercadona  1,29 €   │  ← Más barato
+│  🏪 Carrefour  1,45 €   │
+│  🏪 Lidl       1,19 € ★ │  ← Oferta
+│  🏪 DIA        1,55 €   │
+│                         │
+│  ── Histórico de precio─│
+│  ┌─────────────────────┐│
+│  │     ╱╲    ╱         ││  ← Mini gráfico
+│  │  ╱──  ╲──           ││
+│  └─────────────────────┘│
+│  Mar          Ahora      │
+│                         │
+│  ┌─────────────────┐    │
+│  │  + Añadir a     │    │
+│  │    mi lista     │    │
+│  └─────────────────┘    │
+└─────────────────────────┘
+```
+
+**Notas:**
+- El precio `★` indica oferta vigente con fecha de caducidad.
+- Tap en una fila de tienda → navega al detalle de tienda (WF-05-02).
+- El mini-gráfico histórico cubre los últimos 30 días.
+- El botón `[···]` incluye: Compartir producto / Reportar precio incorrecto.
+
+---
+
+## WF-03-05 · Comparativa de Precios (multi-tienda)
+
+```
+┌─────────────────────────┐
+│ 09:41         ●●● ▶ 🔋 │
+│─────────────────────────│
+│ ← Comparar precios      │
+│─────────────────────────│
+│  Radio: [5 km ▼]        │
+│─────────────────────────│
+│                         │
+│  Yogur Natural Danone   │
+│  Pack 4 ud. · 500 g     │
+│                         │
+│  Tienda        Precio  Δ│
+│  ─────────────────────  │
+│  Lidl          1,19 € ▼ │  ← más barato
+│  Mercadona     1,29 €   │
+│  Carrefour     1,45 € ▲ │
+│  DIA           1,55 € ▲ │
+│  Alcampo       1,60 € ▲ │
+│                         │
+│  ── Precio por unidad ──│
+│  Lidl:       0,238 €/ud │
+│  Mercadona:  0,258 €/ud │
+│  Carrefour:  0,290 €/ud │
+│                         │
+│  ── Última actualización│
+│  Lidl:       hace 2 h   │
+│  Mercadona:  hace 5 h   │
+│  Carrefour:  hace 1 día │
+│                         │
+│  ┌─────────────────┐    │
+│  │  Ver en el mapa │    │
+│  └─────────────────┘    │
+└─────────────────────────┘
+```
+
+---
+
+## WF-03-06 · Panel de Filtros
+
+```
+┌─────────────────────────┐
+│ 09:41         ●●● ▶ 🔋 │
+│─────────────────────────│
+│ Filtros             [×] │
+│─────────────────────────│
+│                         │
+│  ── Categoría ──        │
+│  [□] Todos              │
+│  [✓] Lácteos            │
+│  [□] Frutas y Verduras  │
+│  [□] Carnes             │
+│  [□] Panadería          │
+│  [□] Ver más...         │
+│                         │
+│  ── Rango de precio ──  │
+│  Min: [0,50] Max: [5,00]│
+│  |────────●─────────|   │
+│                         │
+│  ── Marca ──            │
+│  [□] Todas las marcas   │
+│  [□] Danone             │
+│  [□] Mercadona (MG)     │
+│  [□] Hacendado          │
+│  [□] Chobani            │
+│                         │
+│  ── Disponibilidad ──   │
+│  [●] Solo en mi radio   │
+│  [○] Todas las tiendas  │
+│                         │
+│  ┌──────────┐ ┌───────┐ │
+│  │  Limpiar │ │Aplicar│ │
+│  └──────────┘ └───────┘ │
+└─────────────────────────┘
+```
