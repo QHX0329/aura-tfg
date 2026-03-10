@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-10
+> Última sincronización: 2026-03-10 (Issues F3-F6 creados en GitHub #25-#93)
 
 ---
 
@@ -35,10 +35,10 @@
 
 ## Estado actual del proyecto
 
-**Fase activa:** F1 — Análisis y Diseño
+**Fase activa:** F1/F2 — Análisis y Diseño / Infraestructura
 **Semana estimada:** S3
-**Horas consumidas:** ~38 h / 300 h totales
-**Progreso global:** ████░░░░░░░░░░░░░░░░ 13%
+**Horas consumidas:** ~52 h / 300 h totales
+**Progreso global:** ████░░░░░░░░░░░░░░░░ 17%
 
 ---
 
@@ -57,13 +57,13 @@
 | F1-07 | Historias de usuario (HU-001–HU-030) | Historia de Usuario | Documentación | 🟠 Alta | ✅ | 5 | 5 | `docs/memoria/07-requisitos.md` §7.5 |
 | F1-08 | Reglas de negocio (RN-001–RN-010) | Documentación | Documentación | 🟠 Alta | ✅ | 2 | 2 | `docs/memoria/07-requisitos.md` §7.6 |
 | F1-09 | Sección 8: Diseño e Implementación | Documentación | Documentación | 🔴 Crítica | ✅ | 5 | 5 | `docs/memoria/08-diseno-implementacion.md` |
-| F1-10 | Diagrama de arquitectura (capas) | Tarea técnica | Infraestructura | 🟠 Alta | ⬜ | 3 | — | `docs/diagramas/arquitectura/` |
-| F1-11 | Modelo de clases (UML) | Tarea técnica | Documentación | 🟠 Alta | ⬜ | 3 | — | `docs/diagramas/clases/` |
-| F1-12 | Diagramas de casos de uso | Tarea técnica | Documentación | 🟡 Media | ⬜ | 2 | — | `docs/diagramas/casos-uso/` |
-| F1-13 | Diseño de modelo E-R de base de datos | Tarea técnica | Documentación | 🔴 Crítica | ⬜ | 3 | — | `docs/diagramas/er/` |
+| F1-10 | Diagrama de arquitectura (capas) | Tarea técnica | Infraestructura | 🟠 Alta | ✅ | 3 | 3 | `docs/diagramas/arquitectura/` |
+| F1-11 | Modelo de clases (UML) | Tarea técnica | Documentación | 🟠 Alta | ✅ | 3 | 3 | `docs/diagramas/clases/` |
+| F1-12 | Diagramas de casos de uso | Tarea técnica | Documentación | 🟡 Media | ✅ | 2 | 2 | `docs/diagramas/casos-uso/` |
+| F1-13 | Diseño de modelo E-R de base de datos | Tarea técnica | Documentación | 🔴 Crítica | ✅ | 3 | 3 | `docs/diagramas/er/` |
 | F1-14 | Wireframes / Mockups de UI | Tarea técnica | Documentación | 🟡 Media | ⬜ | 5 | — | `docs/diagramas/ui-mockups/` |
 
-**Subtotal F1:** 38 h completadas / 45 h estimadas
+**Subtotal F1:** 49 h completadas / 45 h estimadas (F1-10, F1-11, F1-12, F1-13 añadidas el 2026-03-10)
 
 ---
 
@@ -73,7 +73,7 @@
 
 | ID | Tarea | Tipo | Módulo | Prioridad | Estado | Horas est. | Entregable |
 |----|-------|------|--------|-----------|--------|:---:|------------|
-| F2-01 | Inicialización repositorio GitHub + CI/CD | Infraestructura | Infraestructura | 🔴 Crítica | ⬜ | 3 | `.github/workflows/`, `Makefile` |
+| F2-01 | Inicialización repositorio GitHub + CI/CD | Infraestructura | Infraestructura | 🔴 Crítica | ✅ | 3 | `.github/workflows/`, `Makefile` |
 | F2-02 | Configuración Docker + Docker Compose | Infraestructura | Infraestructura | 🔴 Crítica | ⬜ | 4 | `Dockerfile`, `docker-compose.*.yml` |
 | F2-03 | Setup proyecto Django + settings multi-entorno | Tarea técnica | Infraestructura | 🔴 Crítica | ⬜ | 4 | `backend/config/` |
 | F2-04 | Configuración PostgreSQL + PostGIS | Tarea técnica | Infraestructura | 🔴 Crítica | ⬜ | 3 | Migraciones iniciales |
