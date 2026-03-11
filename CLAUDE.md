@@ -35,6 +35,7 @@
 
 ### Infraestructura
 - **Contenedores:** Docker + Docker Compose
+- **Entorno dev:** Modelo híbrido (ADR-002) — Backend en Docker, Frontend nativo en host
 - **CI/CD:** GitHub Actions
 - **Hosting:** Render (staging) / AWS (producción futura)
 - **Monitorización:** Sentry (errores) + Prometheus + Grafana (métricas)
@@ -419,6 +420,16 @@ en `docs/memoria/`. La memoria sigue la estructura de TFG de la ETSII-US:
 10. **Pruebas** — Estrategia, resultados, cobertura
 11. **Conclusiones** — Logros, limitaciones, trabajo futuro
 12. **Bibliografía** — IEEE format
+
+---
+
+## ⚠️ Entorno de Desarrollo Local
+
+**Modelo híbrido (ADR-002):** Backend corre en Docker; Frontend corre **nativo en el host**.
+- **NO dockerizar el frontend** — Docker volúmenes en Windows rompen el HMR de Metro/Expo
+- **Node.js >=24.10.0** requerido en el host para el frontend
+- Frontend conecta al backend en `http://localhost:8000` (expuesto por Docker)
+- Ver `docs/decisiones/002-modelo-hibrido.md` para contexto completo
 
 ---
 

@@ -2,7 +2,7 @@
   "name": "bargain-frontend",
   "version": "1.0.0",
   "private": true,
-  "main": "App.tsx",
+  "main": "expo/AppEntry.js",
   "engines": {
     "node": ">=24.0.0"
   },
