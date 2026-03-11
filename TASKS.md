@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-10 (Issues F3-F6 creados en GitHub #25-#93)
+> Última sincronización: 2026-03-10 (Issues F3-F6 creados en GitHub #25-#93; F2-02, F2-03, F2-04 completadas)
 
 ---
 
@@ -37,8 +37,8 @@
 
 **Fase activa:** F1/F2 — Análisis y Diseño / Infraestructura
 **Semana estimada:** S3
-**Horas consumidas:** ~52 h / 300 h totales
-**Progreso global:** ████░░░░░░░░░░░░░░░░ 17%
+**Horas consumidas:** ~63 h / 300 h totales
+**Progreso global:** █████░░░░░░░░░░░░░░░ 21%
 
 ---
 
@@ -74,9 +74,9 @@
 | ID | Tarea | Tipo | Módulo | Prioridad | Estado | Horas est. | Entregable |
 |----|-------|------|--------|-----------|--------|:---:|------------|
 | F2-01 | Inicialización repositorio GitHub + CI/CD | Infraestructura | Infraestructura | 🔴 Crítica | ✅ | 3 | `.github/workflows/`, `Makefile` |
-| F2-02 | Configuración Docker + Docker Compose | Infraestructura | Infraestructura | 🔴 Crítica | ⬜ | 4 | `Dockerfile`, `docker-compose.*.yml` |
-| F2-03 | Setup proyecto Django + settings multi-entorno | Tarea técnica | Infraestructura | 🔴 Crítica | ⬜ | 4 | `backend/config/` |
-| F2-04 | Configuración PostgreSQL + PostGIS | Tarea técnica | Infraestructura | 🔴 Crítica | ⬜ | 3 | Migraciones iniciales |
+| F2-02 | Configuración Docker + Docker Compose | Infraestructura | Infraestructura | 🔴 Crítica | ✅ | 4 | `Dockerfile`, `docker-compose.*.yml` |
+| F2-03 | Setup proyecto Django + settings multi-entorno | Tarea técnica | Infraestructura | 🔴 Crítica | ✅ | 4 | `backend/config/` |
+| F2-04 | Configuración PostgreSQL + PostGIS | Tarea técnica | Infraestructura | 🔴 Crítica | ✅ | 3 | Migraciones iniciales |
 | F2-05 | Setup React Native + Expo + navegación base | Tarea técnica | Infraestructura | 🔴 Crítica | ⬜ | 5 | `frontend/` scaffolding |
 | F2-06 | Configuración Celery + Redis | Tarea técnica | Infraestructura | 🟠 Alta | ⬜ | 2 | `backend/config/celery.py` |
 | F2-07 | Setup linters (Ruff, ESLint, Prettier) | Infraestructura | Infraestructura | 🟡 Media | ⬜ | 2 | Config files |
