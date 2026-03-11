@@ -42,6 +42,27 @@
 
 ---
 
+### [2026-03-11] — ERR-002 — Claude (claude-sonnet-4-6)
+
+**Contexto:** Ejecución de la tarea F1-14 (Wireframes / Mockups de UI). El agente generó diseños de pantallas para la app BargAIn en una sesión previa.
+
+**Error cometido:** Se entregaron wireframes de las pantallas principales de la app usando arte ASCII (caracteres `+`, `-`, `|`, `[`, `]`, `#`) en lugar de un formato visual renderizable.
+
+**Causa raíz:** El agente no recibió instrucción explícita sobre el formato de salida y eligió por defecto texto plano, que es el formato más portable pero carece totalmente de utilidad visual para diseño de interfaz de usuario.
+
+**Solución aplicada:** Se regeneraron los 10 mockups completos en un único archivo `docs/diagramas/ui-mockups/index.html` autocontenido (HTML + CSS + JS), con marco de móvil realista, sistema de diseño real (colores, tipografías, componentes), galería navegable por pestañas y panel informativo con los requisitos RF vinculados a cada pantalla.
+
+**Prevención:** Antes de generar cualquier wireframe, mockup o diagrama de interfaz de usuario, verificar que el formato de salida sea uno de los siguientes:
+- `HTML + CSS + JS` autocontenido, renderizable directamente en GitHub Pages o como fichero `.html`
+- `PNG` o `SVG` generado programáticamente
+- `PlantUML @startsalt` únicamente para wireframes de baja fidelidad muy simples y como borrador temporal, nunca como entregable final
+
+**Nunca** usar arte ASCII para representar pantallas, componentes o flujos de UI, independientemente de si el usuario lo pide de forma ambigua ("diseña las pantallas", "haz un esquema de la UI", etc.). Si hay ambigüedad, preguntar el formato antes de implementar.
+
+**Archivos afectados:** Ninguno (el error se detectó antes de que el fichero ASCII fuera comprometido al repositorio). Entregable correcto creado en `docs/diagramas/ui-mockups/index.html`.
+
+---
+
 ## Patrones de error recurrentes
 
 > Esta sección se actualiza automáticamente cuando un mismo tipo de error ocurre más de una vez.
@@ -55,6 +76,8 @@
 > Reglas que todos los agentes deben seguir, extraídas de los errores anteriores.
 
 **REGLA-01 (de ERR-001):** Antes de escribir en cualquier archivo de documentación, leerlo completamente. Si contiene contenido sustancial (>10 líneas útiles), no sobreescribir sin confirmación explícita del usuario.
+
+**REGLA-02 (de ERR-002):** Los wireframes, mockups y diagramas de interfaz de usuario **nunca** se entregan en formato ASCII. El formato obligatorio es HTML+CSS+JS autocontenido (renderizable en GitHub), PNG/SVG generado programáticamente, o PlantUML `@startsalt` solo para borradores de muy baja fidelidad. Ante ambigüedad en el formato pedido, preguntar antes de implementar.
 
 ---
 
