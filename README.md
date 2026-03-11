@@ -12,6 +12,10 @@ BargAIn es una aplicación móvil y web que elimina la ineficiencia en la compra
 
 Este proyecto es un **Trabajo Fin de Grado** del Grado en Ingeniería Informática — Ingeniería del Software, Universidad de Sevilla (ETSII).
 
+[![Ver Dashboard](https://img.shields.io/badge/Ver_Dashboard_Interactivo-2EA043?style=for-the-badge&logo=github)](https://qhx0329.github.io/bargain-tfg/dashboard.html)
+
+[![Ver MockUps](https://img.shields.io/badge/Ver_MockUps-2EA043?style=for-the-badge&logo=github)](https://qhx0329.github.io/bargain-tfg/docs/diagramas/ui-mockups/index.html)
+
 ## 🎯 El Problema
 
 El consumidor se enfrenta a tres barreras:
