@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-11 (Notion: F1-14, F2-02, F2-03, F2-04 → Completada; GitHub: issues #19, #21 cerrados; F2-05 migrado a modelo híbrido)
+> Última sincronización: 2026-03-11 (Notion: F1-14, F2-02, F2-03, F2-04 → Completada; GitHub: issues #19, #21 cerrados; F2-05 migrado a modelo híbrido; F1-01 ampliado con análisis competitivo completo)
 
 ---
 
@@ -48,7 +48,7 @@
 
 | ID | Tarea | Tipo | Módulo | Prioridad | Estado | Horas est. | Horas reales | Entregable |
 |----|-------|------|--------|-----------|--------|:---:|:---:|------------|
-| F1-01 | Estudio de mercado y competidores | Documentación | Documentación | 🟠 Alta | ✅ | 6 | 6 | `docs/memoria/03-antecedentes.md`, `04-comparativa.md` |
+| F1-01 | Estudio de mercado y competidores | Documentación | Documentación | 🟠 Alta | ✅ | 6 | 7 | `docs/memoria/03-antecedentes.md`, `04-comparativa.md` |
 | F1-02 | Definición de objetivos del TFG | Documentación | Documentación | 🔴 Crítica | ✅ | 3 | 3 | `docs/memoria/02-objetivos.md` |
 | F1-03 | Especificación de actores del sistema | Documentación | Users | 🟠 Alta | ✅ | 3 | 3 | `docs/memoria/07-requisitos.md` §7.1 |
 | F1-04 | Requisitos de información (RI-001–RI-012) | Documentación | Documentación | 🔴 Crítica | ✅ | 6 | 6 | `docs/memoria/07-requisitos.md` §7.2 |
@@ -63,7 +63,7 @@
 | F1-13 | Diseño de modelo E-R de base de datos | Tarea técnica | Documentación | 🔴 Crítica | ✅ | 3 | 3 | `docs/diagramas/er/` |
 | F1-14 | Wireframes / Mockups de UI | Tarea técnica | Documentación | 🟡 Media | ✅ | 5 | 5 | `docs/diagramas/ui-mockups/` |
 
-**Subtotal F1:** 54 h completadas / 45 h estimadas (F1-14 completada el 2026-03-10)
+**Subtotal F1:** 55 h completadas / 45 h estimadas (F1-14 completada el 2026-03-10; F1-01 ampliado con análisis competitivo completo el 2026-03-11)
 
 ---
 
