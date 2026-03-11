@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "devDependencies": {
     "eslint": "^10.0.3"
   }

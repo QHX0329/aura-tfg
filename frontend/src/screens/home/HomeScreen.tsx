@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, spacing, typography } from '@/theme';
@@ -70,11 +70,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.surface,
     borderRadius: 12,
     padding: spacing.xl,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.08)',
   },
   cardTitle: {
     ...typography.styles.label,

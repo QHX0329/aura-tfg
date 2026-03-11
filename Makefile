@@ -18,8 +18,8 @@ setup: ## Instalar dependencias y configurar entorno completo
 
 dev: ## Levantar entorno de desarrollo completo
 	docker-compose -f docker-compose.dev.yml up -d
-	@echo "🚀 Backend: http://localhost:8000"
-	@echo "📱 Frontend: ejecutar 'cd frontend && npx expo start'"
+	@echo "🚀 Backend:  http://localhost:8000"
+	@echo "🌐 Frontend: http://localhost:8081"
 
 stop: ## Detener todos los servicios
 	docker-compose -f docker-compose.dev.yml down
@@ -90,6 +90,9 @@ logs: ## Ver logs de todos los servicios (desarrollo)
 
 logs-backend: ## Ver logs del backend (desarrollo)
 	docker-compose -f docker-compose.dev.yml logs -f backend
+
+logs-frontend: ## Ver logs del frontend (desarrollo)
+	docker-compose -f docker-compose.dev.yml logs -f frontend
 
 deploy-staging: ## Deploy a staging (Render)
 	@echo "🚀 Desplegando a staging..."
