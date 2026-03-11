@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-10 (Issues F3-F6 creados en GitHub #25-#93; F2-02, F2-03, F2-04 completadas)
+> Última sincronización: 2026-03-10 (F1-14 completada — wireframes UI)
 
 ---
 
@@ -61,9 +61,9 @@
 | F1-11 | Modelo de clases (UML) | Tarea técnica | Documentación | 🟠 Alta | ✅ | 3 | 3 | `docs/diagramas/clases/` |
 | F1-12 | Diagramas de casos de uso | Tarea técnica | Documentación | 🟡 Media | ✅ | 2 | 2 | `docs/diagramas/casos-uso/` |
 | F1-13 | Diseño de modelo E-R de base de datos | Tarea técnica | Documentación | 🔴 Crítica | ✅ | 3 | 3 | `docs/diagramas/er/` |
-| F1-14 | Wireframes / Mockups de UI | Tarea técnica | Documentación | 🟡 Media | ⬜ | 5 | — | `docs/diagramas/ui-mockups/` |
+| F1-14 | Wireframes / Mockups de UI | Tarea técnica | Documentación | 🟡 Media | ✅ | 5 | 5 | `docs/diagramas/ui-mockups/` |
 
-**Subtotal F1:** 49 h completadas / 45 h estimadas (F1-10, F1-11, F1-12, F1-13 añadidas el 2026-03-10)
+**Subtotal F1:** 54 h completadas / 45 h estimadas (F1-14 completada el 2026-03-10)
 
 ---
 

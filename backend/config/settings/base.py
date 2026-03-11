@@ -100,6 +100,8 @@ DATABASES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal311.dll'
+GEOS_LIBRARY_PATH = r'C:\OSGeo4W\bin\geos_c.dll'
 
 GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal311.dll'
 GEOS_LIBRARY_PATH = r'C:\OSGeo4W\bin\geos_c.dll'
