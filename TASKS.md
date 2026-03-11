@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-10 (F1-14 completada — wireframes UI)
+> Última sincronización: 2026-03-11 (Notion: F1-14, F2-02, F2-03, F2-04 → Completada; GitHub: issues #19, #21 cerrados)
 
 ---
 
