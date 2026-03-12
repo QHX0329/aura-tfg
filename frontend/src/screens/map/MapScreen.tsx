@@ -5,11 +5,11 @@
  * usando React Native Maps + Google Maps API.
  */
 
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { colors, spacing, typography } from '@/theme';
+import { colors, spacing, typography } from "@/theme";
 
 export const MapScreen: React.FC = () => {
   return (
@@ -22,7 +22,8 @@ export const MapScreen: React.FC = () => {
         <Text style={styles.placeholderIcon}>🗺️</Text>
         <Text style={styles.placeholderTitle}>Mapa de tiendas</Text>
         <Text style={styles.placeholderSubtitle}>
-          Aquí se mostrarán los supermercados{'\n'}y comercios cercanos a tu ubicación
+          Aquí se mostrarán los supermercados{"\n"}y comercios cercanos a tu
+          ubicación
         </Text>
       </View>
     </SafeAreaView>
@@ -45,8 +46,8 @@ const styles = StyleSheet.create({
   },
   mapPlaceholder: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.light.surfaceVariant,
     margin: spacing.xl,
     borderRadius: 16,
@@ -63,6 +64,6 @@ const styles = StyleSheet.create({
   placeholderSubtitle: {
     ...typography.styles.body,
     color: colors.light.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

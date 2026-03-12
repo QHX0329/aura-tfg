@@ -2,8 +2,8 @@
  * Barrel export del sistema de navegación.
  */
 
-export { RootNavigator } from './RootNavigator';
-export { MainTabs } from './MainTabs';
+export { RootNavigator } from "./RootNavigator";
+export { MainTabs } from "./MainTabs";
 export type {
   RootStackParamList,
   AuthStackParamList,
@@ -12,4 +12,4 @@ export type {
   ListsStackParamList,
   MapStackParamList,
   ProfileStackParamList,
-} from './types';
+} from "./types";

@@ -2,7 +2,7 @@
  * Pantalla de registro de usuario.
  */
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -12,43 +12,48 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-import { colors, spacing, typography } from '@/theme';
-import { useAuthStore } from '@/store/authStore';
-import type { AuthStackParamList } from '@/navigation/types';
+import { colors, spacing, typography } from "@/theme";
+import { useAuthStore } from "@/store/authStore";
+import type { AuthStackParamList } from "@/navigation/types";
 
-type RegisterNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
+type RegisterNavigationProp = NativeStackNavigationProp<
+  AuthStackParamList,
+  "Register"
+>;
 
 export const RegisterScreen: React.FC = () => {
   const navigation = useNavigation<RegisterNavigationProp>();
   const login = useAuthStore((state) => state.login);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleRegister = () => {
     // TODO: implementar lógica real de registro con API (F3-02)
-    login('fake-token', { id: '1', email, name });
+    login("fake-token", { id: "1", email, name });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
         <View style={styles.header}>
           <Image
-            source={require('@/assets/logo.png')}
+            source={require("@/assets/logo.png")}
             style={styles.logoImage}
             resizeMode="contain"
           />
           <Text style={styles.title}>Crea tu cuenta</Text>
-          <Text style={styles.subtitle}>Únete a BargAIn y empieza a ahorrar</Text>
+          <Text style={styles.subtitle}>
+            Únete a BargAIn y empieza a ahorrar
+          </Text>
         </View>
 
         <View style={styles.form}>
@@ -90,16 +95,19 @@ export const RegisterScreen: React.FC = () => {
             />
           </View>
 
-          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+          <TouchableOpacity
+            style={styles.registerButton}
+            onPress={handleRegister}
+          >
             <Text style={styles.registerButtonText}>Crear cuenta</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.loginLink}
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate("Login")}
           >
             <Text style={styles.loginText}>
-              ¿Ya tienes cuenta?{' '}
+              ¿Ya tienes cuenta?{" "}
               <Text style={styles.loginTextBold}>Inicia sesión</Text>
             </Text>
           </TouchableOpacity>
@@ -116,12 +124,12 @@ const styles = StyleSheet.create({
   },
   keyboardView: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   header: {
-    paddingHorizontal: spacing['2xl'],
-    marginBottom: spacing['xl'],
-    alignItems: 'center',
+    paddingHorizontal: spacing["2xl"],
+    marginBottom: spacing["xl"],
+    alignItems: "center",
   },
   logoImage: {
     width: 200,
@@ -137,7 +145,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   form: {
-    paddingHorizontal: spacing['2xl'],
+    paddingHorizontal: spacing["2xl"],
   },
   inputGroup: {
     marginBottom: spacing.lg,
@@ -161,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary[500],
     paddingVertical: spacing.lg,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: spacing.md,
   },
   registerButtonText: {
@@ -170,7 +178,7 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     marginTop: spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   loginText: {
     ...typography.styles.body,
@@ -178,6 +186,6 @@ const styles = StyleSheet.create({
   },
   loginTextBold: {
     color: colors.primary[600],
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

@@ -4,14 +4,14 @@
  * Muestra los productos de una lista con sus precios.
  */
 
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { colors, spacing, typography } from '@/theme';
-import type { ListsStackParamList } from '@/navigation/types';
+import { colors, spacing, typography } from "@/theme";
+import type { ListsStackParamList } from "@/navigation/types";
 
-type Props = NativeStackScreenProps<ListsStackParamList, 'ListDetail'>;
+type Props = NativeStackScreenProps<ListsStackParamList, "ListDetail">;
 
 export const ListDetailScreen: React.FC<Props> = ({ route }) => {
   const { listName } = route.params;
@@ -57,9 +57,9 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing['3xl'],
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: spacing["3xl"],
   },
   emptyIcon: {
     fontSize: 64,
@@ -73,6 +73,6 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     ...typography.styles.body,
     color: colors.light.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

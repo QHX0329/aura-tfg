@@ -6,16 +6,16 @@
  * - Main Tabs (Home/Lists/Map/Profile) → si hay token
  */
 
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { useAuthStore } from '@/store/authStore';
-import type { RootStackParamList, AuthStackParamList } from './types';
-import { MainTabs } from './MainTabs';
+import { useAuthStore } from "@/store/authStore";
+import type { RootStackParamList, AuthStackParamList } from "./types";
+import { MainTabs } from "./MainTabs";
 
 // Auth Screens
-import { LoginScreen } from '@/screens/auth/LoginScreen';
-import { RegisterScreen } from '@/screens/auth/RegisterScreen';
+import { LoginScreen } from "@/screens/auth/LoginScreen";
+import { RegisterScreen } from "@/screens/auth/RegisterScreen";
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();

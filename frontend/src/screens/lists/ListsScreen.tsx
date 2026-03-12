@@ -4,16 +4,19 @@
  * Muestra todas las listas del usuario con opción de crear nuevas.
  */
 
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-import { colors, spacing, typography } from '@/theme';
-import type { ListsStackParamList } from '@/navigation/types';
+import { colors, spacing, typography } from "@/theme";
+import type { ListsStackParamList } from "@/navigation/types";
 
-type ListsScreenNavigationProp = NativeStackNavigationProp<ListsStackParamList, 'Lists'>;
+type ListsScreenNavigationProp = NativeStackNavigationProp<
+  ListsStackParamList,
+  "Lists"
+>;
 
 export const ListsScreen: React.FC = () => {
   const navigation = useNavigation<ListsScreenNavigationProp>();
@@ -31,7 +34,7 @@ export const ListsScreen: React.FC = () => {
         <Text style={styles.emptyIcon}>📋</Text>
         <Text style={styles.emptyTitle}>Sin listas todavía</Text>
         <Text style={styles.emptySubtitle}>
-          Crea tu primera lista de la compra{'\n'}y empieza a ahorrar
+          Crea tu primera lista de la compra{"\n"}y empieza a ahorrar
         </Text>
         <TouchableOpacity style={styles.createButton}>
           <Text style={styles.createButtonText}>Crear lista</Text>
@@ -47,9 +50,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
@@ -71,9 +74,9 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing['3xl'],
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: spacing["3xl"],
   },
   emptyIcon: {
     fontSize: 64,
@@ -87,12 +90,12 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     ...typography.styles.body,
     color: colors.light.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing['2xl'],
+    textAlign: "center",
+    marginBottom: spacing["2xl"],
   },
   createButton: {
     backgroundColor: colors.primary[500],
-    paddingHorizontal: spacing['2xl'],
+    paddingHorizontal: spacing["2xl"],
     paddingVertical: spacing.md,
     borderRadius: 12,
   },

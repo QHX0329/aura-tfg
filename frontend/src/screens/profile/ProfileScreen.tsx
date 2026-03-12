@@ -2,12 +2,12 @@
  * Pantalla de perfil de usuario.
  */
 
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { colors, spacing, typography } from '@/theme';
-import { useAuthStore } from '@/store/authStore';
+import { colors, spacing, typography } from "@/theme";
+import { useAuthStore } from "@/store/authStore";
 
 export const ProfileScreen: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
@@ -76,16 +76,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   avatarContainer: {
-    alignItems: 'center',
-    paddingVertical: spacing['2xl'],
+    alignItems: "center",
+    paddingVertical: spacing["2xl"],
   },
   avatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
     backgroundColor: colors.primary[100],
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: spacing.md,
   },
   avatarText: {
@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     backgroundColor: colors.light.surface,
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
     borderBottomWidth: 1,
@@ -123,9 +123,9 @@ const styles = StyleSheet.create({
     color: colors.light.text,
   },
   logoutButton: {
-    marginTop: spacing['2xl'],
+    marginTop: spacing["2xl"],
     paddingVertical: spacing.lg,
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.light.surface,
     borderRadius: 12,
     borderWidth: 1,

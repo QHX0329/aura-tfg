@@ -2,7 +2,7 @@
  * Pantalla de inicio de sesión.
  */
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -12,37 +12,40 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-import { colors, spacing, typography } from '@/theme';
-import { useAuthStore } from '@/store/authStore';
-import type { AuthStackParamList } from '@/navigation/types';
+import { colors, spacing, typography } from "@/theme";
+import { useAuthStore } from "@/store/authStore";
+import type { AuthStackParamList } from "@/navigation/types";
 
-type LoginNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
+type LoginNavigationProp = NativeStackNavigationProp<
+  AuthStackParamList,
+  "Login"
+>;
 
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginNavigationProp>();
   const login = useAuthStore((state) => state.login);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = () => {
     // TODO: implementar lógica real de login con API (F3-02)
-    login('fake-token', { id: '1', email, name: 'Usuario' });
+    login("fake-token", { id: "1", email, name: "Usuario" });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
         <View style={styles.header}>
           <Image
-            source={require('@/assets/logo.png')}
+            source={require("@/assets/logo.png")}
             style={styles.logoImage}
             resizeMode="contain"
           />
@@ -82,10 +85,10 @@ export const LoginScreen: React.FC = () => {
 
           <TouchableOpacity
             style={styles.registerLink}
-            onPress={() => navigation.navigate('Register')}
+            onPress={() => navigation.navigate("Register")}
           >
             <Text style={styles.registerText}>
-              ¿No tienes cuenta?{' '}
+              ¿No tienes cuenta?{" "}
               <Text style={styles.registerTextBold}>Regístrate</Text>
             </Text>
           </TouchableOpacity>
@@ -102,11 +105,11 @@ const styles = StyleSheet.create({
   },
   keyboardView: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   header: {
-    alignItems: 'center',
-    marginBottom: spacing['3xl'],
+    alignItems: "center",
+    marginBottom: spacing["3xl"],
   },
   logoImage: {
     width: 300,
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   form: {
-    paddingHorizontal: spacing['2xl'],
+    paddingHorizontal: spacing["2xl"],
   },
   inputGroup: {
     marginBottom: spacing.lg,
@@ -147,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary[500],
     paddingVertical: spacing.lg,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: spacing.md,
   },
   loginButtonText: {
@@ -156,7 +159,7 @@ const styles = StyleSheet.create({
   },
   registerLink: {
     marginTop: spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   registerText: {
     ...typography.styles.body,
@@ -164,6 +167,6 @@ const styles = StyleSheet.create({
   },
   registerTextBold: {
     color: colors.primary[600],
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

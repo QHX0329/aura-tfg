@@ -7,21 +7,22 @@
  * - Interceptor de response para manejar 401 y refresh automático
  */
 
-import axios from 'axios';
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios from "axios";
+import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from "@/store/authStore";
 
 /** URL base de la API — en desarrollo apunta al backend local */
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 /** Instancia de Axios con configuración base */
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
   headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
+    "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
 
