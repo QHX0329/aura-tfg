@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-11 (Notion: F1-14, F2-02, F2-03, F2-04 → Completada; GitHub: issues #19, #21 cerrados; F2-05 migrado a modelo híbrido; F1-01 ampliado con análisis competitivo completo)
+> Última sincronización: 2026-03-12 (F2-07 completada; Sincronización con GitHub F1/F2; Notion pendiente por auth)
 
 ---
 
@@ -35,14 +35,14 @@
 
 ## Estado actual del proyecto
 
-**Fase activa:** F1/F2 — Análisis y Diseño / Infraestructura
-**Semana estimada:** S3
-**Horas consumidas:** ~63 h / 300 h totales
-**Progreso global:** █████░░░░░░░░░░░░░░░ 21%
+**Fase activa:** F2 — Infraestructura
+**Semana estimada:** S4
+**Horas consumidas:** ~78 h / 300 h totales
+**Progreso global:** █████▒░░░░░░░░░░░░░░ 26%
 
 ---
 
-## F1 — Análisis y Diseño (45 h) · 🟡 En progreso
+## F1 — Análisis y Diseño (45 h) · ✅ Completada
 
 > Semanas S1–S3
 
@@ -67,7 +67,7 @@
 
 ---
 
-## F2 — Infraestructura Base (30 h) · ⬜ Pendiente
+## F2 — Infraestructura Base (30 h) · 🔄 En progreso
 
 > Semanas S3–S5
 
@@ -78,11 +78,13 @@
 | F2-03 | Setup proyecto Django + settings multi-entorno | Tarea técnica | Infraestructura | 🔴 Crítica | ✅ | 4 | `backend/config/` |
 | F2-04 | Configuración PostgreSQL + PostGIS | Tarea técnica | Infraestructura | 🔴 Crítica | ✅ | 3 | Migraciones iniciales |
 | F2-05 | Setup React Native + Expo + navegación base (Híbrido) | Tarea técnica | Infraestructura | 🔴 Crítica | ✅ | 5 | Nativo en host |
-| F2-06 | Configuración Celery + Redis | Tarea técnica | Infraestructura | 🟠 Alta | ⬜ | 2 | `backend/config/celery.py` |
-| F2-07 | Setup linters (Ruff, ESLint, Prettier) | Infraestructura | Infraestructura | 🟡 Media | ⬜ | 2 | Config files |
+| F2-06 | Configuración Celery + Redis | Tarea técnica | Infraestructura | 🟠 Alta | ✅ | 2 | `backend/config/celery.py`, `backend/config/__init__.py`, `backend/config/settings/base.py`, `backend/apps/prices/tasks.py`, `backend/apps/scraping/tasks.py` |
+| F2-07 | Setup linters (Ruff, ESLint, Prettier) | Infraestructura | Infraestructura | 🟡 Media | ✅ | 2 | 2 | Config files |
 | F2-08 | Configuración Sentry + logging estructurado | Infraestructura | Infraestructura | 🟡 Media | ⬜ | 2 | `backend/config/settings/` |
 | F2-09 | Seed de datos de prueba (fixtures) | Tarea técnica | Infraestructura | 🟡 Media | ⬜ | 3 | `backend/scripts/seed.py` |
 | F2-10 | Documentación de herramientas usadas | Documentación | Documentación | 🟡 Media | ⬜ | 2 | `docs/memoria/05-herramientas.md` |
+
+**Subtotal F2:** 23 h completadas / 30 h estimadas (F2-07 completada el 2026-03-12)
 
 ---
 

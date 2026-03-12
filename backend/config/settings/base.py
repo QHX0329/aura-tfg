@@ -3,13 +3,13 @@ Configuración base de Django para el proyecto BargAIn.
 Configuraciones comunes a todos los entornos.
 """
 
+import contextlib
 import os
 from datetime import timedelta
 from pathlib import Path
 
-from celery.schedules import crontab
-
 import dj_database_url
+from celery.schedules import crontab
 
 # ── Paths ────────────────────────────────────────────
 
@@ -105,17 +105,15 @@ DATABASES = {
     )
 }
 
-if os.name == 'nt':
+if os.name == "nt":
     OSGEO4W_ROOT = r"C:\OSGeo4W"
-    os.environ['PATH'] = OSGEO4W_ROOT + r'\bin;' + os.environ['PATH']
-    
+    os.environ["PATH"] = OSGEO4W_ROOT + r"\bin;" + os.environ["PATH"]
+
     # Python 3.8+ in Windows requires explicit dll_directory addition
-    if hasattr(os, 'add_dll_directory'):
-        try:
+    if hasattr(os, "add_dll_directory"):
+        with contextlib.suppress(OSError, FileNotFoundError):
             os.add_dll_directory(os.path.join(OSGEO4W_ROOT, "bin"))
-        except (OSError, FileNotFoundError):
-            pass
-    
+
     GDAL_LIBRARY_PATH = os.path.join(OSGEO4W_ROOT, "bin", "gdal312.dll")
     GEOS_LIBRARY_PATH = os.path.join(OSGEO4W_ROOT, "bin", "geos_c.dll")
 
