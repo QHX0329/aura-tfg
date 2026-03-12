@@ -1,4 +1,4 @@
-﻿"""Tareas Celery relacionadas con precios."""
+"""Tareas Celery relacionadas con precios."""
 
 import logging
 
@@ -13,7 +13,5 @@ def expire_stale_prices(self) -> dict[str, int]:
 
     Placeholder mientras no exista el modelo/servicio definitivo.
     """
-    logger.info(
-        "expire_stale_prices placeholder: no hay modelo de precios todavia."
-    )
+    logger.info("expire_stale_prices placeholder: no hay modelo de precios todavia.")
     return {"scraping": 0, "crowdsourcing": 0}

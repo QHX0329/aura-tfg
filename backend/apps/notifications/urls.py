@@ -1,4 +1,3 @@
 """URLs del módulo."""
 
-
 urlpatterns = []

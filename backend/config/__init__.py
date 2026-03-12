@@ -1,4 +1,4 @@
-﻿"""
+"""
 Paquete de configuracion de BargAIn.
 
 Importa la app de Celery para que las tareas se autodescubran

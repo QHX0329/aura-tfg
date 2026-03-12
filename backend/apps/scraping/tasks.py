@@ -1,4 +1,4 @@
-﻿"""Tareas Celery relacionadas con scraping."""
+"""Tareas Celery relacionadas con scraping."""
 
 import logging
 
