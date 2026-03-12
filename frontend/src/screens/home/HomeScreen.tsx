@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, spacing, typography } from '@/theme';
@@ -15,8 +15,11 @@ export const HomeScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>¡Hola! 👋</Text>
-        <Text style={styles.title}>BargAIn</Text>
+        <Image
+          source={require('@/assets/logo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
       </View>
 
       <View style={styles.content}>
@@ -49,17 +52,18 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+    alignItems: 'center',
   },
-  greeting: {
-    ...typography.styles.body,
+  logoImage: {
+    width: 300,
+    height: 120,
+  },
+  subtitle: {
+    ...typography.styles.bodySmall,
     color: colors.light.textSecondary,
-  },
-  title: {
-    ...typography.styles.h1,
-    color: colors.primary[700],
-    marginTop: spacing.xs,
+    marginTop: -spacing.xs,
   },
   content: {
     flex: 1,

@@ -4,6 +4,7 @@
 
 import React, { useState } from 'react';
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -40,8 +41,11 @@ export const LoginScreen: React.FC = () => {
         style={styles.keyboardView}
       >
         <View style={styles.header}>
-          <Text style={styles.logo}>🛒</Text>
-          <Text style={styles.title}>BargAIn</Text>
+          <Image
+            source={require('@/assets/logo.png')}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
           <Text style={styles.subtitle}>Tu compra inteligente</Text>
         </View>
 
@@ -104,9 +108,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing['3xl'],
   },
-  logo: {
-    fontSize: 64,
-    marginBottom: spacing.md,
+  logoImage: {
+    width: 300,
+    height: 200,
+    marginBottom: spacing.xl,
   },
   title: {
     ...typography.styles.h1,

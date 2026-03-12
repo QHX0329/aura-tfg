@@ -4,6 +4,7 @@
 
 import React, { useState } from 'react';
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -41,7 +42,12 @@ export const RegisterScreen: React.FC = () => {
         style={styles.keyboardView}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Crear cuenta</Text>
+          <Image
+            source={require('@/assets/logo.png')}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Crea tu cuenta</Text>
           <Text style={styles.subtitle}>Únete a BargAIn y empieza a ahorrar</Text>
         </View>
 
@@ -114,7 +120,12 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: spacing['2xl'],
-    marginBottom: spacing['2xl'],
+    marginBottom: spacing['xl'],
+    alignItems: 'center',
+  },
+  logoImage: {
+    width: 200,
+    height: 100,
   },
   title: {
     ...typography.styles.h1,

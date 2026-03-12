@@ -1,6 +1,9 @@
-# 🛒 BargAIn — Asistente Unificado de Rutas y Ahorro
+<div align="center">
+  <img src="./docs/assets/logo.png" alt="BargAIn Logo" width="400">
+</div>
 
-> **"Compra inteligente, al mejor precio y en el menor tiempo."**
+-------------------------------------------------------------------
+# **BarGAIN** — Compra inteligente, al mejor precio y en el menor tiempo.
 
 [![CI Backend](https://img.shields.io/badge/CI-Backend-blue)]()
 [![CI Frontend](https://img.shields.io/badge/CI-Frontend-green)]()
