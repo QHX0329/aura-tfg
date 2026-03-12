@@ -53,7 +53,7 @@ bargain-tfg/
 │   ├── workflows/
 │   │   ├── ci-backend.yml       # Tests + lint backend
 │   │   ├── ci-frontend.yml      # Tests + lint frontend
-│   │   └── deploy-staging.yml   # Deploy automático a staging
+│   │   └── deploy-staging.yml   # Deploy automático a staging (pendiente — no creado aún)
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.md
 │   │   ├── feature_request.md
@@ -147,6 +147,7 @@ bargain-tfg/
 │       ├── pipelines.py
 │       └── middlewares.py
 │
+├── memory/                      # Memorias persistentes de Claude Code (gitignored)
 ├── docker-compose.yml
 ├── docker-compose.dev.yml
 ├── Makefile                     # Comandos útiles
@@ -226,27 +227,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
 
 ### Backend
 ```bash
-# Tests unitarios
-pytest backend/tests/unit/ -v
+# Desde la raíz del repo (recomendado)
+make test-backend           # Tests con -v --tb=short
+make test-backend-cov       # Con cobertura HTML + terminal
 
-# Tests de integración
-pytest backend/tests/integration/ -v
-
-# Cobertura
-pytest --cov=backend/apps --cov-report=html
+# O directamente (pytest.ini está en backend/, ejecutar desde ahí)
+cd backend && pytest tests/unit/ -v
+cd backend && pytest tests/integration/ -v
+cd backend && pytest --cov=apps --cov-report=html --cov-report=term -v
 
 # Lint
-ruff check backend/ && ruff format --check backend/
+make lint-backend           # Verificar (ruff check + ruff format --check)
+make lint-backend-fix       # Autofix (ruff check --fix + ruff format)
 ```
 
 ### Frontend
 ```bash
 # Tests
-npx jest --coverage
+cd frontend && npx jest --coverage
 
-# Lint
-npx eslint src/ --ext .ts,.tsx
-npx prettier --check "src/**/*.{ts,tsx}"
+# Lint (ESLint 9 flat config — usa eslint.config.mjs, --ext no aplica)
+cd frontend && npx eslint src/
+cd frontend && npx prettier --check "src/**/*.{ts,tsx}"
 ```
 
 ---
@@ -433,18 +435,41 @@ en `docs/memoria/`. La memoria sigue la estructura de TFG de la ETSII-US:
 
 ---
 
+## ⚠️ Setup inicial
+
+```bash
+cp .env.example .env   # Rellenar variables antes de cualquier otro paso
+```
+
+---
+
 ## ⚡ Comandos Rápidos (Makefile)
 
 ```makefile
-make setup          # Instalar dependencias y configurar entorno
-make dev            # Levantar backend (Docker)
-make frontend       # Levantar frontend (Nativo: npx expo start --web)
-make test           # Ejecutar todos los tests
-make lint           # Lint backend + frontend
-make migrate        # Aplicar migraciones Django
-make seed           # Poblar BD con datos de prueba
-make scrape         # Ejecutar spiders de scraping
-make docs           # Generar documentación API
-make build          # Build de producción
-make deploy-staging # Deploy a staging
+make setup              # Instalar dependencias y configurar entorno completo
+make dev                # Levantar backend en Docker (docker-compose.dev.yml)
+make frontend           # Levantar frontend nativo (npx expo start --web)
+make stop               # Detener todos los servicios Docker
+
+make test               # Todos los tests (backend + frontend)
+make test-backend       # Solo backend (-v --tb=short)
+make test-backend-cov   # Backend con cobertura HTML
+
+make lint               # Lint completo (backend + frontend)
+make lint-backend       # Verificar con Ruff
+make lint-backend-fix   # Autofix con Ruff
+
+make migrate            # Aplicar migraciones Django
+make makemigrations     # Crear nuevas migraciones
+make createsuperuser    # Crear superusuario Django
+make seed               # Poblar BD con datos de prueba
+
+make scrape             # Ejecutar spiders (Mercadona + Carrefour)
+make docs               # Generar documentación API (OpenAPI)
+
+make build              # Build imagen producción
+make build-dev          # Build imagen desarrollo
+make logs               # Logs de todos los servicios
+make logs-backend       # Logs solo del backend
+make deploy-staging     # Deploy a staging (Render)
 ```
