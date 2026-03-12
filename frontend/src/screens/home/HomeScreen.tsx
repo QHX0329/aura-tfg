@@ -6,7 +6,7 @@
  */
 
 import React from "react";
-import { Image, Platform, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { colors, spacing, typography } from "@/theme";
