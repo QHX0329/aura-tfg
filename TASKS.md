@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-12 (F2-07 completada; Sincronización con GitHub F1/F2; Notion pendiente por auth)
+> Última sincronización: 2026-03-13 (F2-08 completada; observabilidad backend actualizada; Notion pendiente por auth)
 
 ---
 
@@ -80,11 +80,11 @@
 | F2-05 | Setup React Native + Expo + navegación base (Híbrido) | Tarea técnica | Infraestructura | 🔴 Crítica | ✅ | 5 | Nativo en host |
 | F2-06 | Configuración Celery + Redis | Tarea técnica | Infraestructura | 🟠 Alta | ✅ | 2 | `backend/config/celery.py`, `backend/config/__init__.py`, `backend/config/settings/base.py`, `backend/apps/prices/tasks.py`, `backend/apps/scraping/tasks.py` |
 | F2-07 | Setup linters (Ruff, ESLint, Prettier) | Infraestructura | Infraestructura | 🟡 Media | ✅ | 2 | 2 | Config files |
-| F2-08 | Configuración Sentry + logging estructurado | Infraestructura | Infraestructura | 🟡 Media | ⬜ | 2 | `backend/config/settings/` |
+| F2-08 | Configuración Sentry + logging estructurado | Infraestructura | Infraestructura | 🟡 Media | ✅ | 2 | 2 | `backend/config/settings/` |
 | F2-09 | Seed de datos de prueba (fixtures) | Tarea técnica | Infraestructura | 🟡 Media | ⬜ | 3 | `backend/scripts/seed.py` |
 | F2-10 | Documentación de herramientas usadas | Documentación | Documentación | 🟡 Media | ⬜ | 2 | `docs/memoria/05-herramientas.md` |
 
-**Subtotal F2:** 23 h completadas / 30 h estimadas (F2-07 completada el 2026-03-12)
+**Subtotal F2:** 25 h completadas / 30 h estimadas (F2-08 completada el 2026-03-13)
 
 ---
 

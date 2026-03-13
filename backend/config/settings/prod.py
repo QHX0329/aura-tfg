@@ -1,8 +1,12 @@
 """Configuración de producción."""
 
+import logging
 import os
 
 import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from .base import *  # noqa: F401, F403
 
@@ -26,8 +30,17 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Sentry
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
 if SENTRY_DSN:
+    sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.ERROR)
     sentry_sdk.init(
         dsn=SENTRY_DSN,
-        traces_sample_rate=0.1,
-        profiles_sample_rate=0.1,
+        integrations=[
+            DjangoIntegration(),
+            CeleryIntegration(),
+            sentry_logging,
+        ],
+        environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
+        release=os.environ.get("SENTRY_RELEASE"),
+        send_default_pii=False,
+        traces_sample_rate=float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "0.1")),
+        profiles_sample_rate=float(os.environ.get("SENTRY_PROFILES_SAMPLE_RATE", "0.0")),
     )

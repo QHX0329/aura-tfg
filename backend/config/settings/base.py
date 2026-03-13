@@ -9,6 +9,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
+import structlog
 from celery.schedules import crontab
 
 # ── Paths ────────────────────────────────────────────
@@ -226,35 +227,63 @@ SPECTACULAR_SETTINGS = {
 
 # ── Logging ──────────────────────────────────────────
 
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
+LOG_JSON_FORMAT = os.environ.get("LOG_JSON_FORMAT", "true").lower() == "true"
+
+SHARED_LOG_PROCESSORS = [
+    structlog.contextvars.merge_contextvars,
+    structlog.stdlib.add_logger_name,
+    structlog.stdlib.add_log_level,
+    structlog.processors.TimeStamper(fmt="iso"),
+]
+
+LOG_RENDERER = (
+    structlog.processors.JSONRenderer()
+    if LOG_JSON_FORMAT
+    else structlog.dev.ConsoleRenderer(colors=False)
+)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
-            "style": "{",
+        "structlog": {
+            "()": "structlog.stdlib.ProcessorFormatter",
+            "processor": LOG_RENDERER,
+            "foreign_pre_chain": SHARED_LOG_PROCESSORS,
         },
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            "formatter": "verbose",
+            "formatter": "structlog",
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
+        "level": LOG_LEVEL,
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "INFO",
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "apps": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": LOG_LEVEL,
             "propagate": False,
         },
     },
 }
+
+structlog.configure(
+    processors=[
+        *SHARED_LOG_PROCESSORS,
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    cache_logger_on_first_use=True,
+)

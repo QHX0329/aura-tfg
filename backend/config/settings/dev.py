@@ -1,5 +1,7 @@
 """Configuración de desarrollo."""
 
+import structlog
+
 from .base import *  # noqa: F401, F403
 
 DEBUG = True
@@ -15,3 +17,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Logging más verboso
 LOGGING["loggers"]["apps"]["level"] = "DEBUG"  # noqa: F405
+LOGGING["root"]["level"] = "DEBUG"  # noqa: F405
+LOGGING["formatters"]["structlog"]["processor"] = structlog.dev.ConsoleRenderer(  # noqa: F405
+    colors=False
+)
