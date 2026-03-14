@@ -9,8 +9,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
-import { colors, spacing, typography } from "@/theme";
+import { colors, spacing, textStyles } from "@/theme";
 import type { ListsStackParamList } from "@/navigation/types";
 
 type ListsScreenNavigationProp = NativeStackNavigationProp<
@@ -31,7 +32,12 @@ export const ListsScreen: React.FC = () => {
       </View>
 
       <View style={styles.emptyState}>
-        <Text style={styles.emptyIcon}>📋</Text>
+        <Ionicons
+          name="list-outline"
+          size={64}
+          color={colors.textMuted}
+          style={styles.emptyIcon}
+        />
         <Text style={styles.emptyTitle}>Sin listas todavía</Text>
         <Text style={styles.emptySubtitle}>
           Crea tu primera lista de la compra{"\n"}y empieza a ahorrar
@@ -47,7 +53,7 @@ export const ListsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
@@ -58,49 +64,51 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   title: {
-    ...typography.styles.h2,
-    color: colors.light.text,
+    ...textStyles.heading2,
+    color: colors.text,
   },
   addButton: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     borderRadius: 20,
+    minHeight: 44,
+    justifyContent: "center",
   },
   addButtonText: {
-    ...typography.styles.button,
+    ...textStyles.buttonSmall,
     color: colors.white,
-    fontSize: 13,
   },
   emptyState: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: spacing["3xl"],
+    paddingHorizontal: spacing.xxxl,
   },
   emptyIcon: {
-    fontSize: 64,
     marginBottom: spacing.lg,
   },
   emptyTitle: {
-    ...typography.styles.h3,
-    color: colors.light.text,
+    ...textStyles.heading3,
+    color: colors.text,
     marginBottom: spacing.sm,
   },
   emptySubtitle: {
-    ...typography.styles.body,
-    color: colors.light.textSecondary,
+    ...textStyles.body,
+    color: colors.textMuted,
     textAlign: "center",
-    marginBottom: spacing["2xl"],
+    marginBottom: spacing.xxl,
   },
   createButton: {
-    backgroundColor: colors.primary[500],
-    paddingHorizontal: spacing["2xl"],
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.xxl,
     paddingVertical: spacing.md,
     borderRadius: 12,
+    minHeight: 44,
+    justifyContent: "center",
   },
   createButtonText: {
-    ...typography.styles.button,
+    ...textStyles.button,
     color: colors.white,
   },
 });

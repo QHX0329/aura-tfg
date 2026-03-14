@@ -10,7 +10,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 
-import { colors } from "@/theme";
+import { BottomTabBar } from "@/components/ui";
+import { colors, sizes } from "@/theme";
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -42,8 +43,8 @@ const HomeStackNavigator: React.FC = () => (
 const ListsStackNavigator: React.FC = () => (
   <ListsStack.Navigator
     screenOptions={{
-      headerStyle: { backgroundColor: colors.light.surface },
-      headerTintColor: colors.primary[700],
+      headerStyle: { backgroundColor: colors.surface },
+      headerTintColor: colors.text,
     }}
   >
     <ListsStack.Screen
@@ -91,26 +92,67 @@ const TAB_ICONS: Record<
 export const MainTabs: React.FC = () => {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary[600],
-        tabBarInactiveTintColor: colors.light.tabBarInactive,
-        tabBarStyle: {
-          backgroundColor: colors.light.tabBar,
-          borderTopColor: colors.light.divider,
-          paddingBottom: 4,
-          height: 56,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: "500" as const,
-        },
-        tabBarIcon: ({ focused, color, size }) => {
-          const icons = TAB_ICONS[route.name];
-          const iconName = focused ? icons.focused : icons.unfocused;
-          return <Ionicons name={iconName as any} size={size} color={color} />;
-        },
-      })}
+      }}
+      tabBar={(props) => {
+        const tabs = props.state.routes.map((route) => {
+          const icons = TAB_ICONS[route.name as keyof MainTabParamList];
+          return {
+            key: route.key,
+            route: route.name,
+            label:
+              route.name === "HomeTab"
+                ? "Inicio"
+                : route.name === "ListsTab"
+                  ? "Listas"
+                  : route.name === "MapTab"
+                    ? "Mapa"
+                    : "Perfil",
+            icon: (
+              <Ionicons
+                name={icons.unfocused as any}
+                size={sizes.tabIconSize}
+                color={colors.textMuted}
+              />
+            ),
+            iconActive: (
+              <Ionicons
+                name={icons.focused as any}
+                size={sizes.tabIconSize}
+                color={colors.primary}
+              />
+            ),
+            accessibilityLabel:
+              route.name === "HomeTab"
+                ? "Inicio"
+                : route.name === "ListsTab"
+                  ? "Listas"
+                  : route.name === "MapTab"
+                    ? "Mapa"
+                    : "Perfil",
+          };
+        });
+
+        return (
+          <BottomTabBar
+            tabs={tabs}
+            activeIndex={props.state.index}
+            onTabPress={(index) => {
+              const route = props.state.routes[index];
+              const event = props.navigation.emit({
+                type: "tabPress",
+                target: route.key,
+                canPreventDefault: true,
+              });
+
+              if (!event.defaultPrevented) {
+                props.navigation.navigate(route.name as never);
+              }
+            }}
+          />
+        );
+      }}
     >
       <Tab.Screen
         name="HomeTab"
