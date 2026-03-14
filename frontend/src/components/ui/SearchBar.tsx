@@ -20,7 +20,7 @@
  * />
  */
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -39,6 +39,7 @@ import Animated, {
   FadeIn,
   FadeOut,
 } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontFamilies, fontSize, sizes } from '@/theme';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
@@ -72,25 +73,16 @@ export interface SearchBarProps {
 
 const FOCUS_DURATION = 180;
 
-// ─── Icono de lupa (SVG inline via Text Unicode) ─────────────────────────────
-// Reemplaza con <Ionicons name="search" /> si tienes @expo/vector-icons.
-
 const SearchIcon: React.FC<{ color: string }> = ({ color }) => (
-  <Animated.Text style={{ fontSize: 16, color, lineHeight: 20 }} aria-hidden>
-    {'⌕'}
-  </Animated.Text>
+  <Ionicons name="search" size={18} color={color} />
 );
 
 const FilterIcon: React.FC<{ color: string }> = ({ color }) => (
-  <Animated.Text style={{ fontSize: 15, color, lineHeight: 20 }} aria-hidden>
-    {'⊟'}
-  </Animated.Text>
+  <Ionicons name="options-outline" size={18} color={color} />
 );
 
 const ClearIcon: React.FC<{ color: string }> = ({ color }) => (
-  <Animated.Text style={{ fontSize: 14, color, lineHeight: 18 }} aria-hidden>
-    {'✕'}
-  </Animated.Text>
+  <Ionicons name="close" size={18} color={color} />
 );
 
 // ─── Componente ───────────────────────────────────────────────────────────────
@@ -109,6 +101,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   inputProps,
 }) => {
   const inputRef = useRef<TextInput>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   // ─── Animación de foco ─────────────────────────────────────────────────────
   const focusProgress = useSharedValue(0);
@@ -126,20 +119,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     ),
   }));
 
-  const animatedIconStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      focusProgress.value,
-      [0, 1],
-      [colors.textMuted, colors.primary],
-    ) as string,
-  }));
-
   const handleFocus = useCallback(() => {
     focusProgress.value = withTiming(1, { duration: FOCUS_DURATION });
+    setIsFocused(true);
   }, [focusProgress]);
 
   const handleBlur = useCallback(() => {
     focusProgress.value = withTiming(0, { duration: FOCUS_DURATION });
+    setIsFocused(false);
   }, [focusProgress]);
 
   const handleClear = useCallback(() => {
@@ -151,7 +138,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     if (!disabled) inputRef.current?.focus();
   }, [disabled]);
 
-  const iconColor = colors.textMuted;
+  const iconColor = isFocused ? colors.primary : colors.textMuted;
   const hasValue = value.length > 0;
   const showClear = hasValue && !loading;
   const showFilters = !!onFilterPress && !showClear;
@@ -167,9 +154,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     >
       <Animated.View style={[styles.container, animatedContainerStyle]}>
         {/* Icono de búsqueda izquierdo */}
-        <Animated.View style={[styles.leftIcon, animatedIconStyle]} pointerEvents="none">
+        <View style={[styles.leftIcon, styles.pointerNone]}>
           <SearchIcon color={iconColor} />
-        </Animated.View>
+        </View>
 
         {/* Input */}
         <TextInput
@@ -230,7 +217,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           >
             <FilterIcon color={hasActiveFilters ? colors.primary : colors.textMuted} />
             {hasActiveFilters && (
-              <View style={styles.filterBadge} accessibilityElementsHidden>
+              <View
+                style={styles.filterBadge}
+                accessible={false}
+                importantForAccessibility="no"
+              >
                 <Animated.Text style={styles.filterBadgeText}>
                   {activeFilterCount}
                 </Animated.Text>
@@ -266,6 +257,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  pointerNone: {
+    pointerEvents: 'none',
+  },
   input: {
     flex: 1,
     height: '100%',
@@ -287,8 +281,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   filterButton: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',

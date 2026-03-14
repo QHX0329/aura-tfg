@@ -50,6 +50,25 @@ export const borderRadius = {
 // por plataforma (shadowColor/Offset/Opacity/Radius en iOS,
 // elevation en Android). Se proveen ambas formas.
 
+const hexToRgba = (hex: string, opacity: number): string => {
+  const sanitized = hex.replace('#', '').trim();
+  const expanded =
+    sanitized.length === 3
+      ? sanitized
+          .split('')
+          .map((char) => char + char)
+          .join('')
+      : sanitized;
+
+  if (expanded.length !== 6) return `rgba(0,0,0,${opacity})`;
+
+  const r = parseInt(expanded.slice(0, 2), 16);
+  const g = parseInt(expanded.slice(2, 4), 16);
+  const b = parseInt(expanded.slice(4, 6), 16);
+
+  return `rgba(${r},${g},${b},${opacity})`;
+};
+
 const _buildShadow = (
   color: string,
   offsetX: number,
@@ -68,6 +87,9 @@ const _buildShadow = (
     android: {
       elevation,
     },
+    web: {
+      boxShadow: `${offsetX}px ${offsetY}px ${blur}px ${hexToRgba(color, opacity)}`,
+    },
     default: {
       shadowColor: color,
       shadowOffset: { width: offsetX, height: offsetY },
@@ -75,11 +97,12 @@ const _buildShadow = (
       shadowRadius: blur,
     },
   }) as {
-    shadowColor: string;
-    shadowOffset: { width: number; height: number };
-    shadowOpacity: number;
-    shadowRadius: number;
+    shadowColor?: string;
+    shadowOffset?: { width: number; height: number };
+    shadowOpacity?: number;
+    shadowRadius?: number;
     elevation?: number;
+    boxShadow?: string;
   };
 
 export const shadows = {
@@ -117,6 +140,7 @@ export const shadows = {
       shadowRadius: 0,
     },
     android: { elevation: 0 },
+    web: { boxShadow: 'none' },
     default: {
       shadowColor: 'transparent',
       shadowOffset: { width: 0, height: 0 },
@@ -124,11 +148,12 @@ export const shadows = {
       shadowRadius: 0,
     },
   }) as {
-    shadowColor: string;
-    shadowOffset: { width: number; height: number };
-    shadowOpacity: number;
-    shadowRadius: number;
+    shadowColor?: string;
+    shadowOffset?: { width: number; height: number };
+    shadowOpacity?: number;
+    shadowRadius?: number;
     elevation?: number;
+    boxShadow?: string;
   },
 } as const;
 

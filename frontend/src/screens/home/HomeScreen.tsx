@@ -40,21 +40,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   FadeInDown,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import {
   colors,
-  textStyles,
   spacing,
   borderRadius,
   shadows,
   fontFamilies,
   fontSize,
+  sizes,
 } from '@/theme';
 import { SearchBar } from '@/components/ui/SearchBar';
 import type { ShoppingList, Store, StoreChain, WeeklySavings } from '@/types/domain';
@@ -222,7 +223,7 @@ const SavingsHero: React.FC<SavingsHeroProps> = ({ savings }) => {
   return (
     <View style={heroStyles.container}>
       {/* Patrón de azulejos abstracto, decorativo */}
-      <View style={heroStyles.tilePattern} pointerEvents="none">
+      <View style={[heroStyles.tilePattern, heroStyles.pointerNone]}>
         {[0, 1, 2, 3, 4, 5].map((i) => (
           <View key={i} style={[heroStyles.tile, { opacity: 0.06 + i * 0.02 }]} />
         ))}
@@ -260,7 +261,7 @@ const SavingsHero: React.FC<SavingsHeroProps> = ({ savings }) => {
 interface QuickAction {
   id: string;
   label: string;
-  icon: string;
+  iconName: string;
   color: string;
   bg: string;
   onPress: () => void;
@@ -284,7 +285,7 @@ const QuickActionTile: React.FC<{ action: QuickAction; delay: number }> = ({ act
         accessibilityLabel={action.label}
       >
         <View style={[quickStyles.iconCircle, { backgroundColor: action.color + '20' }]}>
-          <Text style={[quickStyles.icon, { color: action.color }]}>{action.icon}</Text>
+          <Ionicons name={action.iconName as any} size={18} color={action.color} />
         </View>
         <Text style={[quickStyles.label, { color: action.color }]}>{action.label}</Text>
       </Pressable>
@@ -399,6 +400,7 @@ const NearbyStoreCard: React.FC<{ store: Store; onPress: () => void }> = ({
 
 export const HomeScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const insets = useSafeAreaInsets();
 
   const handleListPress = useCallback(() => {
     // TODO: router.push('/(tabs)/lists/' + MOCK_ACTIVE_LIST.id)
@@ -413,7 +415,7 @@ export const HomeScreen: React.FC = () => {
     {
       id: 'new-list',
       label: 'Nueva lista',
-      icon: '＋',
+      iconName: 'add',
       color: colors.secondary,
       bg: colors.secondaryTint,
       onPress: () => console.log('Nueva lista'),
@@ -421,7 +423,7 @@ export const HomeScreen: React.FC = () => {
     {
       id: 'search',
       label: 'Buscar',
-      icon: '⌕',
+      iconName: 'search',
       color: colors.primary,
       bg: colors.primaryTint,
       onPress: () => console.log('Buscar'),
@@ -429,7 +431,7 @@ export const HomeScreen: React.FC = () => {
     {
       id: 'scan',
       label: 'Escanear',
-      icon: '⊡',
+      iconName: 'scan',
       color: colors.accentDark,
       bg: colors.accentTint,
       onPress: () => console.log('Escanear'),
@@ -437,7 +439,7 @@ export const HomeScreen: React.FC = () => {
     {
       id: 'route',
       label: 'Mi ruta',
-      icon: '◎',
+      iconName: 'navigate',
       color: colors.info,
       bg: colors.infoBg,
       onPress: () => console.log('Mi ruta'),
@@ -448,7 +450,10 @@ export const HomeScreen: React.FC = () => {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: spacing.xxl + sizes.tabBarHeight + insets.bottom },
+        ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -517,6 +522,7 @@ export const HomeScreen: React.FC = () => {
             <TouchableOpacity
               accessibilityRole="button"
               accessibilityLabel="Ver todas las listas"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Text style={styles.sectionLink}>Ver todas →</Text>
             </TouchableOpacity>
@@ -533,6 +539,7 @@ export const HomeScreen: React.FC = () => {
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel="Ver mapa de tiendas"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Text style={styles.sectionLink}>Mapa →</Text>
           </TouchableOpacity>
@@ -677,6 +684,9 @@ const heroStyles = StyleSheet.create({
     width: 120,
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  pointerNone: {
+    pointerEvents: 'none',
   },
   tile: {
     width: 40,

@@ -160,7 +160,8 @@ const VerticalCard: React.FC<ProductCardProps> = ({ data, onPress, onSave, isSav
             source={imageSource}
             style={styles.verticalImage}
             resizeMode="cover"
-            accessibilityElementsHidden
+            accessible={false}
+            importantForAccessibility="no"
           />
 
           {/* Badge de oferta sobre la imagen */}
@@ -256,7 +257,8 @@ const HorizontalCard: React.FC<ProductCardProps> = ({ data, onPress, onSave, isS
             source={imageSource}
             style={styles.horizontalImage}
             resizeMode="cover"
-            accessibilityElementsHidden
+            accessible={false}
+            importantForAccessibility="no"
           />
           {discountPercent && discountPercent > 0 && (
             <View style={styles.offerBadgeOnImage}>

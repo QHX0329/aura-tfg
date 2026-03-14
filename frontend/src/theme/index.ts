@@ -8,6 +8,13 @@
  * import { colors, typography, spacing, borderRadius, shadows, sizes } from '@/theme';
  */
 
+// ─── Objeto `theme` consolidado ──────────────────────────────────────────────
+// Útil cuando se necesita pasar el tema completo a un provider o función helper.
+
+import { colors } from './colors';
+import { typography, fontFamilies, fontSize, fontWeight, lineHeight, letterSpacing, textStyles } from './typography';
+import { spacing, borderRadius, shadows, sizes } from './spacing';
+
 export { colors } from './colors';
 export type { Colors } from './colors';
 
@@ -24,13 +31,6 @@ export type { Typography } from './typography';
 
 export { spacing, borderRadius, shadows, sizes } from './spacing';
 export type { Spacing, BorderRadius, Shadows, Sizes } from './spacing';
-
-// ─── Objeto `theme` consolidado ──────────────────────────────────────────────
-// Útil cuando se necesita pasar el tema completo a un provider o función helper.
-
-import { colors } from './colors';
-import { typography, fontFamilies, fontSize, fontWeight, lineHeight, letterSpacing, textStyles } from './typography';
-import { spacing, borderRadius, shadows, sizes } from './spacing';
 
 export const theme = {
   colors,

@@ -38,7 +38,7 @@ import Animated, {
   interpolate,
   Extrapolation,
 } from 'react-native-reanimated';
-import { colors, textStyles, spacing, borderRadius, sizes } from '@/theme';
+import { colors, textStyles, spacing, borderRadius, sizes, shadows } from '@/theme';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -146,7 +146,8 @@ const TabItem: React.FC<TabItemProps> = ({ tab, isActive, onPress }) => {
           labelAnimatedStyle,
         ]}
         numberOfLines={1}
-        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility="no"
       >
         {tab.label}
       </Animated.Text>
@@ -178,11 +179,10 @@ const SlidingIndicator: React.FC<SlidingIndicatorProps> = ({ activeIndex, tabCou
 
   return (
     <View
-      style={styles.indicatorTrack}
+      style={[styles.indicatorTrack, styles.pointerNone]}
       onLayout={(e) => {
         tabWidth.value = e.nativeEvent.layout.width / tabCount;
       }}
-      pointerEvents="none"
     >
       <Animated.View style={[styles.indicator, animatedStyle]} />
     </View>
@@ -294,6 +294,9 @@ const styles = StyleSheet.create({
     right: 0,
     height: 3,
     flexDirection: 'row',
+  },
+  pointerNone: {
+    pointerEvents: 'none',
   },
   indicator: {
     position: 'absolute',

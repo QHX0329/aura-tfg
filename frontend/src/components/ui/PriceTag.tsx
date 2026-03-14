@@ -188,7 +188,8 @@ export const PriceTag: React.FC<PriceTagProps> = ({
               color: hasOffer ? colors.primary : colors.text,
             },
           ]}
-          aria-hidden
+          accessible={false}
+          importantForAccessibility="no"
         >
           €
         </Text>

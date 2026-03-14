@@ -1,69 +1,70 @@
 /**
- * Sistema tipográfico de BargAIn — "Mercado Mediterráneo Digital"
+ * Sistema tipografico de BargAIn - "Mercado Mediterraneo Digital"
  *
- * Tres familias tipográficas con roles muy definidos:
+ * Tres familias tipograficas con roles muy definidos:
  *
- * • DM Serif Display  — Headings y display text. Personalidad mediterránea,
- *                       carácter serifa cálido que evoca carteles de mercado.
+ * - Fraunces          - Headings y display text. Serif con personalidad
+ *                       editorial y un tono mediterraneo contemporaneo.
  *
- * • Plus Jakarta Sans — Body, UI labels, navegación. Sans-serif moderno y
- *                       legible a cualquier tamaño en pantalla móvil.
+ * - Source Sans 3     - Body, UI labels, navegacion. Sans-serif neutro y
+ *                       legible a cualquier tamano en pantalla movil.
  *
- * • Fira Code         — Exclusivo para cantidades monetarias (€). Monoespaciado
- *                       que da peso visual y precisión a los precios.
+ * - IBM Plex Mono     - Exclusivo para cantidades monetarias (EUR). Monoespaciado
+ *                       que da peso visual y precision a los precios.
  *
- * Instalación (expo-google-fonts):
- *   npx expo install @expo-google-fonts/dm-serif-display
- *   npx expo install @expo-google-fonts/plus-jakarta-sans
- *   npx expo install @expo-google-fonts/fira-code
+ * Instalacion (expo-google-fonts):
+ *   npx expo install @expo-google-fonts/fraunces
+ *   npx expo install @expo-google-fonts/source-sans-3
+ *   npx expo install @expo-google-fonts/ibm-plex-mono
  *
  * En _layout.tsx o App.tsx:
  *   const [fontsLoaded] = useFonts({
- *     'DMSerifDisplay-Regular': DMSerifDisplay_400Regular,
- *     'PlusJakartaSans-Regular': PlusJakartaSans_400Regular,
- *     'PlusJakartaSans-Medium': PlusJakartaSans_500Medium,
- *     'PlusJakartaSans-SemiBold': PlusJakartaSans_600SemiBold,
- *     'PlusJakartaSans-Bold': PlusJakartaSans_700Bold,
- *     'FiraCode-Regular': FiraCode_400Regular,
- *     'FiraCode-Medium': FiraCode_500Medium,
+ *     Fraunces_600SemiBold,
+ *     Fraunces_700Bold,
+ *     SourceSans3_400Regular,
+ *     SourceSans3_500Medium,
+ *     SourceSans3_600SemiBold,
+ *     SourceSans3_700Bold,
+ *     IBMPlexMono_400Regular,
+ *     IBMPlexMono_500Medium,
  *   });
  */
 
 // ─── Nombres de familia ───────────────────────────────────────────────────────
 
 export const fontFamilies = {
-  /** DM Serif Display Regular — headings, hero text, display */
-  display: 'DMSerifDisplay-Regular',
-  /** Plus Jakarta Sans — todos los textos de interfaz */
-  body: 'PlusJakartaSans-Regular',
-  bodyMedium: 'PlusJakartaSans-Medium',
-  bodySemiBold: 'PlusJakartaSans-SemiBold',
-  bodyBold: 'PlusJakartaSans-Bold',
-  /** Fira Code — cantidades monetarias únicamente */
-  mono: 'FiraCode-Regular',
-  monoMedium: 'FiraCode-Medium',
+  /** Fraunces - headings, hero text, display */
+  display: 'Fraunces_600SemiBold',
+  /** Source Sans 3 - todos los textos de interfaz */
+  body: 'SourceSans3_400Regular',
+  bodyMedium: 'SourceSans3_500Medium',
+  bodySemiBold: 'SourceSans3_600SemiBold',
+  bodyBold: 'SourceSans3_700Bold',
+  /** IBM Plex Mono - cantidades monetarias unicamente */
+  mono: 'IBMPlexMono_400Regular',
+  monoMedium: 'IBMPlexMono_500Medium',
 } as const;
 
-// ─── Escala de tamaños (8pt grid, mínimo 11px) ───────────────────────────────
+// ─── Escala de tamanos (movil 360px) ─────────────────────────────────────────
 
 export const fontSize = {
-  /** 11px — caption, badges, etiquetas muy pequeñas */
-  xs: 11,
-  /** 13px — labels de formulario, metadata, tiempo */
-  sm: 13,
-  /** 15px — texto de cuerpo estándar */
-  md: 15,
-  /** 17px — texto de cuerpo grande, subtítulos */
-  lg: 17,
-  /** 20px — subtítulos de sección */
+  /** 12px - caption, badges, etiquetas muy pequenas */
+  xs: 12,
+  /** 14px - labels de formulario, metadata, tiempo */
+  sm: 14,
+  /** 16px - texto de cuerpo estandar */
+  md: 16,
+  /** 18px - texto de cuerpo grande, subtitulos */
+  lg: 18,
+  /** 20px - subtitulos de seccion */
   xl: 20,
-  /** 24px — títulos de pantalla */
+  /** 24px - titulos de pantalla */
   '2xl': 24,
-  /** 30px — títulos grandes */
+  /** 30px - titulos grandes */
   '3xl': 30,
-  /** 38px — display, número de ahorro destacado */
+  /** 38px - display, numero de ahorro destacado */
   '4xl': 38,
-  /** 48px — hero display (onboarding, cifras clave) */
+  /** 48px - hero display (onboarding, cifras clave) */
   '5xl': 48,
 } as const;
 
@@ -79,26 +80,26 @@ export const fontWeight = {
 // ─── Alturas de línea ─────────────────────────────────────────────────────────
 
 export const lineHeight = {
-  /** 1.15 — display grandes, un solo renglón */
+  /** 1.15 - display grandes, un solo renglon */
   tight: 1.15,
-  /** 1.35 — headings H2-H3 */
+  /** 1.35 - headings H2-H3 */
   snug: 1.35,
-  /** 1.5 — cuerpo de texto estándar */
-  normal: 1.5,
-  /** 1.7 — texto largo, párrafos de chat */
+  /** 1.55 - cuerpo de texto estandar */
+  normal: 1.55,
+  /** 1.7 - texto largo, parrafos de chat */
   relaxed: 1.7,
 } as const;
 
 // ─── Tracking (letter-spacing) ───────────────────────────────────────────────
 
 export const letterSpacing = {
-  tight: -0.4,
+  tight: -0.3,
   normal: 0,
-  wide: 0.4,
-  /** Para labels en mayúsculas */
-  wider: 0.8,
+  wide: 0.2,
+  /** Para labels en mayusculas */
+  wider: 0.4,
   /** Para caps tracking decorativo */
-  widest: 1.5,
+  widest: 0.8,
 } as const;
 
 // ─── Estilos compuestos listos para usar ─────────────────────────────────────
@@ -112,7 +113,7 @@ export const letterSpacing = {
  * </Text>
  */
 export const textStyles = {
-  // Display — DM Serif, pantalla completa / hero
+  // Display - Fraunces, pantalla completa / hero
   heroDisplay: {
     fontFamily: fontFamilies.display,
     fontSize: fontSize['5xl'],
@@ -126,7 +127,7 @@ export const textStyles = {
     letterSpacing: letterSpacing.tight,
   },
 
-  // Headings — DM Serif
+  // Headings - Fraunces
   heading1: {
     fontFamily: fontFamilies.display,
     fontSize: fontSize['3xl'],
@@ -139,7 +140,7 @@ export const textStyles = {
     lineHeight: Math.round(fontSize['2xl'] * lineHeight.snug),
     letterSpacing: letterSpacing.tight,
   },
-  // Sub-headings — Plus Jakarta Sans (sans da más densidad de info)
+  // Sub-headings - Source Sans 3 (sans da mas densidad de info)
   heading3: {
     fontFamily: fontFamilies.bodySemiBold,
     fontSize: fontSize.xl,
@@ -153,7 +154,7 @@ export const textStyles = {
     letterSpacing: letterSpacing.normal,
   },
 
-  // Body — Plus Jakarta Sans
+  // Body - Source Sans 3
   bodyLarge: {
     fontFamily: fontFamilies.body,
     fontSize: fontSize.lg,
@@ -175,7 +176,7 @@ export const textStyles = {
     lineHeight: Math.round(fontSize.sm * lineHeight.normal),
   },
 
-  // Label — Plus Jakarta Sans SemiBold con tracking
+  // Label - Source Sans 3 SemiBold con tracking
   label: {
     fontFamily: fontFamilies.bodySemiBold,
     fontSize: fontSize.sm,
@@ -189,14 +190,14 @@ export const textStyles = {
     letterSpacing: letterSpacing.wider,
   },
 
-  // Caption — muy pequeño, metadatos
+  // Caption - muy pequeno, metadatos
   caption: {
     fontFamily: fontFamilies.body,
     fontSize: fontSize.xs,
     lineHeight: Math.round(fontSize.xs * lineHeight.normal),
   },
 
-  // Button — CTA, acciones principales
+  // Button - CTA, acciones principales
   button: {
     fontFamily: fontFamilies.bodySemiBold,
     fontSize: fontSize.md,
@@ -210,7 +211,7 @@ export const textStyles = {
     letterSpacing: letterSpacing.wide,
   },
 
-  // Precio — Fira Code, exclusivo para cantidades monetarias
+  // Precio - IBM Plex Mono, exclusivo para cantidades monetarias
   priceLarge: {
     fontFamily: fontFamilies.monoMedium,
     fontSize: fontSize['3xl'],

@@ -21,13 +21,13 @@ export const colors = {
   /** Crema Cerámica — superficie de cards, modals y paneles */
   surface: '#FDF6EC',
   /** Variante de superficie — separadores visuales, input backgrounds */
-  surfaceVariant: '#F5EDD9',
+  surfaceVariant: '#F2E3D1',
 
   // ─── Texto ───────────────────────────────────────────────────────────
   /** Casi Negro cálido — texto principal */
   text: '#1A1A18',
   /** Gris Tierra — texto secundario, subtítulos, placeholders */
-  textMuted: '#6B6B63',
+  textMuted: '#4F4F47',
   /** Texto desactivado */
   textDisabled: '#B0AFA6',
 
@@ -48,7 +48,7 @@ export const colors = {
   divider: '#EFE9DB',
 
   // ─── Tintes de primaria (estados interactivos) ───────────────────────
-  primaryTint: '#FDF0EA',    // Fondo hover / focus suave
+  primaryTint: '#FCE7DD',    // Fondo hover / focus suave
   primaryLight: '#F5A07A',   // Versión clara para estados visuales
   primaryDark: '#C03E0E',    // Pressed / versión profunda
 
@@ -87,6 +87,21 @@ export const colors = {
     dia: '#E30613',
     alcampo: '#E4002B',
     local: '#E8541A',   // Comercio local = primario BargAIn
+  },
+
+  // ─── Compat legacy (v1 theme API) ─────────────────────────────────────
+  // Mantiene operativas pantallas que todavía consumen `colors.light.*`.
+  light: {
+    background: '#FAFAF7',
+    surface: '#FDF6EC',
+    surfaceVariant: '#F5EDD9',
+    text: '#1A1A18',
+    textSecondary: '#6B6B63',
+    textTertiary: '#B0AFA6',
+    border: '#E8E0D0',
+    divider: '#EFE9DB',
+    tabBar: '#FDF6EC',
+    tabBarInactive: '#6B6B63',
   },
 } as const;
 
