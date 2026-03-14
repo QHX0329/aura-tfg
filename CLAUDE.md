@@ -1,8 +1,8 @@
-# CLAUDE.md — Instrucciones del Proyecto BargAIn
+# CLAUDE.md — Instrucciones del Proyecto BarGAIN
 
 ## 🎯 Resumen del Proyecto
 
-**BargAIn** es una aplicación web/móvil de compra inteligente que optimiza la cesta de la compra del usuario cruzando **precio**, **distancia** y **tiempo** entre múltiples supermercados y comercios locales.
+**BarGAIN** es una aplicación web/móvil de compra inteligente que optimiza la cesta de la compra del usuario cruzando **precio**, **distancia** y **tiempo** entre múltiples supermercados y comercios locales.
 
 **Tipo:** Trabajo Fin de Grado — Grado en Ingeniería Informática (Ingeniería del Software), Universidad de Sevilla.
 
@@ -30,7 +30,7 @@
 
 ### IA y ML
 - **Asistente LLM:** Claude API (Anthropic) vía backend proxy
-- **OCR/Visión:** Tesseract.js + modelo fine-tuned para tickets
+- **OCR/Visión:** Tesseract OCR (backend) + Tesseract.js (frontend, opción dual)
 - **Optimización de rutas:** OR-Tools (Google) + algoritmo propio ponderado
 
 ### Infraestructura
@@ -53,7 +53,7 @@ bargain-tfg/
 │   ├── workflows/
 │   │   ├── ci-backend.yml       # Tests + lint backend
 │   │   ├── ci-frontend.yml      # Tests + lint frontend
-│   │   └── deploy-staging.yml   # Deploy automático a staging (pendiente — no creado aún)
+│   │   └── (deploy-staging.yml pendiente)
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.md
 │   │   ├── feature_request.md
@@ -485,10 +485,10 @@ make lint               # Lint completo (backend + frontend)
 make lint-backend       # Verificar con Ruff
 make lint-backend-fix   # Autofix con Ruff
 
-make migrate            # Aplicar migraciones Django
-make makemigrations     # Crear nuevas migraciones
-make createsuperuser    # Crear superusuario Django
-make seed               # Poblar BD con datos de prueba
+make migrate-docker     # Aplicar migraciones Django en Docker
+make makemigrations-docker # Crear nuevas migraciones en Docker
+make createsuperuser-docker # Crear superusuario Django en Docker
+make seed-docker        # Poblar BD con datos de prueba en Docker
 
 make scrape             # Ejecutar spiders (Mercadona + Carrefour)
 make docs               # Generar documentación API (OpenAPI)

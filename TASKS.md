@@ -1,6 +1,6 @@
-# TASKS.md — BargAIn Task Tracker
+# TASKS.md — BarGAIN Task Tracker
 
-> **Fuente de verdad única** para el seguimiento de tareas del proyecto BargAIn.
+> **Fuente de verdad única** para el seguimiento de tareas del proyecto BarGAIN.
 > Sincronizado con GitHub (git) y espejo del Notion Backlog.
 >
 > **Notion Backlog:** https://www.notion.so/234f4ce235f74bf388c3892e44bd5667
@@ -35,8 +35,8 @@
 
 ## Estado actual del proyecto
 
-**Fase activa:** F2 — Infraestructura
-**Semana estimada:** S4
+**Fase activa:** F3 — Desarrollo Core Backend
+**Semana estimada:** S5
 **Horas consumidas:** ~78 h / 300 h totales
 **Progreso global:** █████▒░░░░░░░░░░░░░░ 26%
 
@@ -67,7 +67,7 @@
 
 ---
 
-## F2 — Infraestructura Base (30 h) · 🔄 En progreso
+## F2 — Infraestructura Base (30 h) · ✅ Completada
 
 > Semanas S3–S5
 
@@ -201,7 +201,7 @@
 | 02 — Objetivos | `docs/memoria/02-objetivos.md` | ✅ |
 | 03 — Antecedentes | `docs/memoria/03-antecedentes.md` | ✅ |
 | 04 — Comparativa | `docs/memoria/04-comparativa.md` | ✅ |
-| 05 — Herramientas | `docs/memoria/05-herramientas.md` | ⬜ |
+| 05 — Herramientas | `docs/memoria/05-herramientas.md` | ✅ |
 | 06 — Planificación | `docs/memoria/06-planificacion.md` | ✅ |
 | 07 — Requisitos | `docs/memoria/07-requisitos.md` | ✅ |
 | 08 — Diseño e Implementación | `docs/memoria/08-diseno-implementacion.md` | ✅ |

@@ -1,4 +1,4 @@
-.PHONY: help setup dev stop test test-backend test-backend-cov test-backend-host test-backend-cov-host test-backend-docker test-backend-cov-docker test-frontend lint lint-backend lint-backend-fix lint-frontend migrate makemigrations seed createsuperuser scrape scrape-mercadona docs build build-dev logs logs-backend logs-frontend deploy-staging clean frontend frontend-install
+.PHONY: help setup dev stop test test-backend test-backend-cov test-backend-host test-backend-cov-host test-backend-docker test-backend-cov-docker test-frontend lint lint-backend lint-backend-fix lint-frontend migrate makemigrations seed createsuperuser migrate-docker makemigrations-docker seed-docker createsuperuser-docker scrape scrape-mercadona docs build build-dev logs logs-backend logs-frontend deploy-staging clean frontend frontend-install
 
 help: ## Mostrar esta ayuda
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -75,14 +75,30 @@ lint-frontend: ## Lint del frontend (ESLint + Prettier)
 migrate: ## Aplicar migraciones de Django
 	cd backend && python manage.py migrate
 
+migrate-docker: ## Aplicar migraciones de Django en Docker
+	docker compose -f docker-compose.dev.yml up -d postgres redis backend
+	docker compose -f docker-compose.dev.yml exec backend python manage.py migrate
+
 makemigrations: ## Crear nuevas migraciones
 	cd backend && python manage.py makemigrations
+
+makemigrations-docker: ## Crear nuevas migraciones en Docker
+	docker compose -f docker-compose.dev.yml up -d postgres redis backend
+	docker compose -f docker-compose.dev.yml exec backend python manage.py makemigrations
 
 seed: ## Poblar BD con datos de prueba
 	cd backend && python manage.py seed_data
 
+seed-docker: ## Poblar BD con datos de prueba en Docker
+	docker compose -f docker-compose.dev.yml up -d postgres redis backend
+	docker compose -f docker-compose.dev.yml exec backend python manage.py seed_data
+
 createsuperuser: ## Crear superusuario de Django
 	cd backend && python manage.py createsuperuser
+
+createsuperuser-docker: ## Crear superusuario de Django en Docker
+	docker compose -f docker-compose.dev.yml up -d postgres redis backend
+	docker compose -f docker-compose.dev.yml exec backend python manage.py createsuperuser
 
 # ── Scraping ─────────────────────────────────────────
 

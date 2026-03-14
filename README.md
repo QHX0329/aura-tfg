@@ -1,18 +1,18 @@
 <div align="center">
-  <img src="./docs/assets/logo.png" alt="BargAIn Logo" width="400">
+  <img src="./docs/assets/logo.png" alt="BarGAIN Logo" width="400">
 </div>
 
 ---
 
 # **BarGAIN** — Compra inteligente, al mejor precio y en el menor tiempo.
 
-[![CI Backend](https://img.shields.io/badge/CI-Backend-blue)]()
-[![CI Frontend](https://img.shields.io/badge/CI-Frontend-green)]()
+[![CI Backend](https://img.shields.io/badge/CI-Backend-blue)](https://github.com/QHX0329/bargain-tfg/actions/workflows/ci-backend.yml)
+[![CI Frontend](https://img.shields.io/badge/CI-Frontend-green)](https://github.com/QHX0329/bargain-tfg/actions/workflows/ci-frontend.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 📋 Descripción
 
-BargAIn es una aplicación móvil y web que elimina la ineficiencia en la compra diaria. No solo indica dónde es más barato un producto, sino que calcula la **combinación óptima de supermercados** que ofrece la mejor relación **Precio–Distancia–Tiempo**.
+BarGAIN es una aplicación móvil y web que elimina la ineficiencia en la compra diaria. No solo indica dónde es más barato un producto, sino que calcula la **combinación óptima de supermercados** que ofrece la mejor relación **Precio–Distancia–Tiempo**.
 
 Este proyecto es un **Trabajo Fin de Grado** del Grado en Ingeniería Informática — Ingeniería del Software, Universidad de Sevilla (ETSII).
 
@@ -30,7 +30,7 @@ El consumidor se enfrenta a tres barreras:
 
 ## 💡 La Solución
 
-BargAIn actúa como un **orquestador inteligente de la cesta de la compra** mediante cuatro módulos:
+BarGAIN actúa como un **orquestador inteligente de la cesta de la compra** mediante cuatro módulos:
 
 | Módulo                  | Descripción                                                                                    |
 | ----------------------- | ---------------------------------------------------------------------------------------------- |
@@ -45,12 +45,12 @@ BargAIn actúa como un **orquestador inteligente de la cesta de la compra** medi
 | ------------- | ------------------------------------- |
 | Backend       | Django 5 + Django REST Framework      |
 | Base de datos | PostgreSQL 16 + PostGIS               |
-| Frontend      | React Native (Expo)                   |
-| IA/ML         | Claude API + Tesseract OCR + OR-Tools |
+| Frontend      | React Native (Expo) + React web companion |
+| IA/ML         | Claude API + Tesseract (backend) + Tesseract.js (frontend) + OR-Tools |
 | Scraping      | Scrapy + Playwright                   |
 | Async         | Celery + Redis                        |
 | CI/CD         | GitHub Actions                        |
-| Infra         | Docker + Render                       |
+| Infra         | Docker + Docker Compose (dev híbrido) + Render |
 
 ## 🚀 Inicio Rápido
 
@@ -58,7 +58,12 @@ BargAIn actúa como un **orquestador inteligente de la cesta de la compra** medi
 
 - Docker y Docker Compose
 - Node.js >=24.10.0 y npm (frontend nativo en host)
-- Python 3.12+
+
+Notas importantes:
+- El entorno oficial de desarrollo es híbrido: backend en Docker y frontend nativo en host.
+- Los comandos de Django (migrate, seed, createsuperuser) deben ejecutarse dentro del contenedor backend.
+- Ejecutar Django en local puede funcionar contra PostgreSQL en Docker, pero no es la ruta recomendada
+  porque rompe la paridad del entorno y puede introducir diferencias de dependencias (GIS/liberías nativas).
 
 ### Instalación
 
@@ -74,24 +79,23 @@ cp .env.example .env
 make dev
 
 # O manualmente:
-docker-compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml up -d
 
-# Aplicar migraciones
-make migrate
+# Aplicar migraciones (en el contenedor backend)
+make migrate-docker
 
-# Crear superusuario
-make createsuperuser
+# Crear superusuario (en el contenedor backend)
+make createsuperuser-docker
 
-# Poblar con datos de prueba
-make seed
+# Poblar con datos de prueba (en el contenedor backend)
+make seed-docker
 ```
 
 ### Desarrollo frontend
 
 ```bash
-cd frontend
-npm install
-npx expo start
+make frontend-install
+make frontend
 ```
 
 ## 📁 Estructura del Proyecto
@@ -99,8 +103,8 @@ npx expo start
 ```
 bargain-tfg/
 ├── backend/        # API Django + lógica de negocio
-├── frontend/       # App React Native
-├── scraping/       # Spiders de Scrapy
+├── frontend/       # App React Native + companion web
+├── scraping/       # Spiders de Scrapy (paquete bargain_scraping)
 ├── docs/           # Documentación y Memoria del TFG
 ├── .github/        # CI/CD y templates
 └── docker-compose.yml
@@ -121,7 +125,7 @@ make test
 
 ## 🤝 Diferenciación del Mercado
 
-| Funcionalidad               | Soysuper/OCU | Tiendeo | Apps Super | **BargAIn** |
+| Funcionalidad               | Soysuper/OCU | Tiendeo | Apps Super | **BarGAIN** |
 | --------------------------- | :----------: | :-----: | :--------: | :---------: |
 | Comparación de Precios      |      ✅      |   ⚠️    |     ❌     |     ✅      |
 | Cálculo de Ruta Óptima      |      ❌      |   ❌    |     ❌     |     ✅      |
