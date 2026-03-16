@@ -1,22 +1,20 @@
 """Tareas Celery relacionadas con scraping."""
 
-import logging
-
+import structlog
 from celery import shared_task
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 @shared_task(bind=True, ignore_result=True)
-def run_spider(self, spider_name: str) -> str:
-    """Lanza un spider de scraping por nombre.
+def run_spider(self, spider_name: str) -> dict[str, str]:
+    """Stub task — implementado en Fase 4.
 
-    El scraper vive en un proyecto separado (carpeta /scraping), por lo que
-    esta tarea actua como punto de integracion y se implementara mas adelante.
+    Args:
+        spider_name: Nombre del spider a lanzar (mercadona, carrefour, etc.).
+
+    Returns:
+        Dict con status ``stub`` y el nombre del spider.
     """
-    if not spider_name:
-        logger.warning("run_spider called without spider_name; skipping.")
-        return "skipped"
-
-    logger.info("run_spider placeholder: requested spider '%s'.", spider_name)
-    return spider_name
+    logger.info("run_spider stub called", spider=spider_name)
+    return {"status": "stub", "spider": spider_name}
