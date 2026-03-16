@@ -204,6 +204,14 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.prices.tasks.expire_stale_prices",
         "schedule": crontab(minute=0, hour="*"),
     },
+    "check-price-alerts-every-30min": {
+        "task": "apps.prices.tasks.check_price_alerts",
+        "schedule": crontab(minute="*/30"),
+    },
+    "purge-old-price-history-daily": {
+        "task": "apps.prices.tasks.purge_old_price_history",
+        "schedule": crontab(minute=0, hour=3),
+    },
     "scrape-mercadona-daily": {
         "task": "apps.scraping.tasks.run_spider",
         "schedule": crontab(minute=0, hour=6),
