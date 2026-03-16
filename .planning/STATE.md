@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-core-backend/01-03-PLAN.md
-last_updated: "2026-03-16T21:02:08.418Z"
+stopped_at: Completed 01-core-backend/01-05-PLAN.md
+last_updated: "2026-03-16T21:14:00.011Z"
 last_activity: 2026-03-16 — Plan 01-02 complete. Products domain with pg_trgm search API (7 min).
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 4
   percent: 50
 ---
 
@@ -69,6 +69,7 @@ Progress: [██░░░░░░░░░░░░░░░░░░] ~10% (F
 | Phase 01-core-backend P01 | 10 | 2 tasks | 10 files |
 | Phase 01-core-backend P02 | 7 | 2 tasks | 9 files |
 | Phase 01-core-backend P03 | 52 | 2 tasks | 8 files |
+| Phase 01-core-backend P05 | 25 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ Decisions are logged in PROJECT.md Key Decisions table. Key decisions affecting 
 - [Phase 01-core-backend P02]: CategoryViewSet has no pagination; returns flat array with children nested
 - [Phase 01-core-backend P02]: ProductDetailSerializer returns null for price_min/price_max until Plan 01-04 implements Price model
 - [Phase 01-core-backend]: favorite action uses Store.objects.get(pk=pk) directly to avoid requiring lat/lng for non-geospatial operations
+- [Phase 01-core-backend]: ActiveListLimitError in views.py (domain-specific exception, not in core/exceptions.py)
+- [Phase 01-core-backend]: Product Meta.indexes must declare GIN index to match 0001_initial migration — prevents Django generating spurious removal migration on each makemigrations call
+- [Phase 01-core-backend]: ListCollaborator related_name=listcollaborator_set to match IsOwnerOrCollaborator permission filter; template copy rule: product FKs only, qty=1, is_checked=False
 
 ### Pending Todos
 
@@ -97,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T21:02:08.415Z
-Stopped at: Completed 01-core-backend/01-03-PLAN.md
+Last session: 2026-03-16T21:13:47.385Z
+Stopped at: Completed 01-core-backend/01-05-PLAN.md
 Resume file: None
