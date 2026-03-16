@@ -7,6 +7,7 @@ Incluye:
 - ProductProposal: propuestas de crowdsourcing
 """
 
+from django.contrib.postgres.indexes import GinIndex
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
@@ -94,6 +95,13 @@ class Product(models.Model):
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
         ordering = ["normalized_name"]
+        indexes = [
+            GinIndex(
+                fields=["normalized_name"],
+                name="products_normalized_name_gin",
+                opclasses=["gin_trgm_ops"],
+            )
+        ]
 
     def __str__(self) -> str:
         return f"{self.name} ({self.brand})" if self.brand else self.name
