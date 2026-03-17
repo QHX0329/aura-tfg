@@ -99,18 +99,57 @@ class PriceCompareView(APIView):
 
         # Construir respuesta: un precio por tienda (el más reciente no-stale, o el stale si no hay otro)
         seen_stores: set[int] = set()
-        results = []
+        price_list = []
         for price_obj in prices_qs:
             store_id = price_obj.store_id
             if store_id in seen_stores:
                 continue
             seen_stores.add(store_id)
+            price_list.append(price_obj)
+
+        # Prefetch active promotions for this product across seen stores (no N+1)
+        from apps.business.models import Promotion
+
+        store_ids = [p.store_id for p in price_list]
+        promo_qs = Promotion.objects.filter(
+            product_id=product_id,
+            store_id__in=store_ids,
+            is_active=True,
+        )
+        promo_lookup: dict[int, object] = {p.store_id: p for p in promo_qs}
+
+        results = []
+        for price_obj in price_list:
+            store_id = price_obj.store_id
+            promo = promo_lookup.get(store_id)
+
+            # Calcular promo_price
+            promo_price = None
+            promo_data = None
+            if promo is not None:
+                base = float(price_obj.price)
+                if promo.discount_type == "flat":
+                    promo_price = round(base - float(promo.discount_value), 2)
+                else:  # percentage
+                    promo_price = round(base * (1 - float(promo.discount_value) / 100), 2)
+                promo_price = max(promo_price, 0)
+
+                promo_data = {
+                    "id": promo.id,
+                    "discount_type": promo.discount_type,
+                    "discount_value": promo.discount_value,
+                    "title": promo.title,
+                    "end_date": promo.end_date,
+                }
+
             results.append(
                 {
                     "store_id": store_id,
                     "store_name": price_obj.store.name,
                     "price": price_obj.price,
                     "offer_price": price_obj.offer_price,
+                    "promo_price": promo_price,
+                    "promotion": promo_data,
                     "source": price_obj.source,
                     "is_stale": price_obj.is_stale,
                     "distance_km": distance_map.get(store_id),

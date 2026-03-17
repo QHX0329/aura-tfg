@@ -38,3 +38,4 @@ sentry-sdk[django]>=2.8,<3.0
 Pillow>=10.4,<11.0
 requests>=2.32,<3.0
 redis>=5.0,<6.0
+exponent_server_sdk>=2.0,<3.0

@@ -222,6 +222,14 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=30, hour=6),
         "args": ("carrefour",),
     },
+    "deactivate-expired-promotions-hourly": {
+        "task": "apps.business.tasks.deactivate_expired_promotions",
+        "schedule": crontab(minute=5, hour="*"),
+    },
+    "check-competitor-prices-daily": {
+        "task": "apps.business.tasks.check_competitor_prices",
+        "schedule": crontab(minute=0, hour=8),
+    },
 }
 
 # ── DRF Spectacular (OpenAPI) ────────────────────────

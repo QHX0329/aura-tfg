@@ -131,3 +131,19 @@ class RateLimitExceededError(BargainAPIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
     default_code = "RATE_LIMIT_EXCEEDED"
     default_detail = "Ha superado el límite de solicitudes. Por favor, espere antes de reintentar."
+
+
+class BusinessNotVerifiedError(BargainAPIException):
+    """El negocio no está verificado por un administrador."""
+
+    status_code = status.HTTP_403_FORBIDDEN
+    default_code = "business_not_verified"
+    default_detail = "Tu negocio no está verificado. Espera a la aprobación del administrador."
+
+
+class PromotionConflictError(BargainAPIException):
+    """Ya existe una promoción activa para este producto en esta tienda."""
+
+    status_code = status.HTTP_409_CONFLICT
+    default_code = "promotion_conflict"
+    default_detail = "Ya existe una promoción activa para este producto en esta tienda."

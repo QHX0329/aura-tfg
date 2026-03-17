@@ -7,6 +7,16 @@ from apps.stores.models import Store
 from .models import Price, PriceAlert
 
 
+class PromotionMinimalSerializer(serializers.Serializer):
+    """Representación mínima de una promoción activa para incluir en la comparación de precios."""
+
+    id = serializers.IntegerField()
+    discount_type = serializers.CharField()
+    discount_value = serializers.DecimalField(max_digits=10, decimal_places=2)
+    title = serializers.CharField(allow_blank=True)
+    end_date = serializers.DateField(allow_null=True)
+
+
 class PriceCompareSerializer(serializers.Serializer):
     """Serializer para un resultado del endpoint de comparación de precios."""
 
@@ -14,6 +24,8 @@ class PriceCompareSerializer(serializers.Serializer):
     store_name = serializers.CharField()
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     offer_price = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+    promo_price = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+    promotion = PromotionMinimalSerializer(allow_null=True)
     source = serializers.CharField()
     is_stale = serializers.BooleanField()
     distance_km = serializers.FloatField(allow_null=True)
