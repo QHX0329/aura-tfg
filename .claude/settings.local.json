@@ -4,7 +4,8 @@
       "Read",
       "Write",
       "Edit",
-      "Bash(*)"
+      "Bash(*)",
+      "WebSearch"
     ]
   },
   "hooks": {
