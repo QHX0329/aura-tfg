@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-17 (F3-01..F3-20, F3-27, F3-28 completadas — Phase 1 core backend 100%)
+> Última sincronización: 2026-03-17 (F3-01..F3-28 completadas — Phase 2 business + notifications 100%)
 
 ---
 
@@ -35,10 +35,10 @@
 
 ## Estado actual del proyecto
 
-**Fase activa:** F3 (concluida parcialmente) / F2 GSD → iniciando Phase 2
-**Semana estimada:** S6
-**Horas consumidas:** ~145 h / 300 h totales
-**Progreso global:** ██████████░░░░░░░░░░ ~48%
+**Fase activa:** F4 — Desarrollo Frontend (iniciando)
+**Semana estimada:** S8
+**Horas consumidas:** ~168 h / 300 h totales
+**Progreso global:** ████████████░░░░░░░░ ~56%
 
 ---
 
@@ -104,7 +104,7 @@
 | F3-08 | Tests unitarios módulo Products | Products | 🟠 Alta | ✅ | 2 | 2 | 01-02, 33 tests |
 | F3-09 | Modelo Store con PostGIS PointField | Stores | 🔴 Crítica | ✅ | 4 | 4 | 01-03, StoreChain + Store with PointField |
 | F3-10 | API tiendas con búsqueda geoespacial | Stores | 🔴 Crítica | ✅ | 5 | 5 | 01-03, radius search ordered by distance, favorites toggle |
-| F3-11 | Integración Google Places API | Stores | 🟡 Media | ⬜ | 3 | - | Not in scope for Phase 1, deferred to Phase 4 |
+| F3-11 | Integración Google Places API | Stores | 🟡 Media | ➡️ | 3 | - | Movida a F4-21 — requiere pantalla de mapa (F4-11) |
 | F3-12 | Tests unitarios módulo Stores | Stores | 🟠 Alta | ✅ | 2 | 2 | 01-03 |
 | F3-13 | Modelo Price + PriceHistory | Prices | 🔴 Crítica | ✅ | 3 | 3 | 01-04, Price, PriceAlert, soft-delete pattern |
 | F3-14 | API de precios con comparación multi-tienda | Prices | 🔴 Crítica | ✅ | 5 | 5 | 01-04, compare, history, list-total, crowdsource |
@@ -114,16 +114,16 @@
 | F3-18 | API CRUD listas de la compra | Shopping Lists | 🔴 Crítica | ✅ | 4 | 4 | 01-05, CRUD + 20-list limit + enriched items |
 | F3-19 | Compartir listas entre usuarios | Shopping Lists | 🟡 Media | ✅ | 2 | 2 | 01-05, collaborators invite by username |
 | F3-20 | Tests unitarios módulo Shopping Lists | Shopping Lists | 🟠 Alta | ✅ | 2 | 2 | 01-05 |
-| F3-21 | Modelo BusinessProfile + Subscription | Business | 🟠 Alta | ⬜ | 3 | - | |
-| F3-22 | Portal de gestión de precios para PYMEs | Business | 🟠 Alta | ⬜ | 5 | - | |
-| F3-23 | Sistema de promociones | Business | 🟡 Media | ⬜ | 3 | - | |
-| F3-24 | Tests módulo Business | Business | 🟡 Media | ⬜ | 2 | - | |
-| F3-25 | Notificaciones push + email | Notifications | 🟡 Media | ⬜ | 4 | - | |
-| F3-26 | Tests módulo Notifications | Notifications | 🟡 Media | ⬜ | 2 | - | |
+| F3-21 | Modelo BusinessProfile + verificación admin | Business | 🟠 Alta | ✅ | 3 | 4 | 02-01, BusinessProfile (tax_id, is_verified, rejection_reason, price alerts), admin verify endpoint |
+| F3-22 | Portal de gestión de precios para PYMEs | Business | 🟠 Alta | ✅ | 5 | 5 | 02-01, BusinessPriceViewSet, bulk-update CSV, competidor alert Celery task |
+| F3-23 | Sistema de promociones | Business | 🟡 Media | ✅ | 3 | 3 | 02-01, Promotion (product+store FK, discount_type, min_quantity, views), promo active endpoint |
+| F3-24 | Tests módulo Business | Business | 🟡 Media | ✅ | 2 | 3 | 02-01, 48 tests (models + API + Celery tasks) |
+| F3-25 | Notificaciones push + email | Notifications | 🟡 Media | ✅ | 4 | 5 | 02-02, Notification + UserPushToken models, Expo push tasks, event hooks (price_alert, new_promo, shared_list_changed, business_approved/rejected) |
+| F3-26 | Tests módulo Notifications | Notifications | 🟡 Media | ✅ | 2 | 3 | 02-02, 36 tests (models + API inbox + Celery tasks) |
 | F3-27 | Tests de integración y E2E backend | Infraestructura | 🟠 Alta | ✅ | 6 | 4 | 01-06, cross-domain happy path, 179 tests total |
 | F3-28 | Documentación API (OpenAPI/Swagger) | Documentación | 🟡 Media | ✅ | 3 | 2 | 01-06, Swagger UI + ReDoc at /api/v1/schema/ |
 
-**Subtotal F3:** ~60 h completadas (F3-01..F3-20, F3-27, F3-28). Pendiente: F3-21..F3-26 (Business + Notifications — Fase 2)
+**Subtotal F3:** ~83 h completadas. F3-11 (Google Places) movida a F4-21. Business portal + Notifications completados en Phase 2 GSD.
 
 ---
 
@@ -153,6 +153,7 @@
 | F4-18 | Historial de conversaciones | Assistant | 🟡 Media | ⬜ | 2 |
 | F4-19 | Dashboard PYME (portal Business web) | Business | 🟡 Media | ⬜ | 4 |
 | F4-20 | Tests frontend (Jest + RNTL) | Infraestructura | 🟠 Alta | ⬜ | 4 |
+| F4-21 | Integración Google Places API | Stores | 🟡 Media | ⬜ | 3 |
 
 ---
 

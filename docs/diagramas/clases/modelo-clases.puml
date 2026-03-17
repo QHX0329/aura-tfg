@@ -30,6 +30,9 @@ package "apps.users" as pkg_users #E3F2FD {
         +optimization_preference: CharField
         +push_notifications_enabled: BooleanField
         +email_notifications_enabled: BooleanField
+        +notify_price_alerts: BooleanField [optional]
+        +notify_new_promos: BooleanField [optional]
+        +notify_shared_list_changes: BooleanField [optional]
         +created_at: DateTimeField
         +updated_at: DateTimeField
         --
@@ -95,6 +98,7 @@ package "apps.stores" as pkg_stores #FFF3E0 {
         +phone: CharField [optional]
         +is_local_business: BooleanField
         +subscription_tier: CharField
+        +business_profile: FK(BusinessProfile) [optional]
         +is_active: BooleanField
         --
         +distance_to(point): float
@@ -229,42 +233,62 @@ package "apps.assistant" as pkg_assistant #FFF9C4 {
 package "apps.business" as pkg_business #EFEBE9 {
     class BusinessProfile {
         +id: BigAutoField
-        +user: FK(User)
+        +user: OneToOneField(User)
         +business_name: CharField
-        +nif_cif: CharField
-        +description: TextField
-        +store: FK(Store)
-        +subscription_tier: CharField
-        +status: CharField {active|pending|suspended}
+        +tax_id: CharField [UNIQUE]
+        +address: TextField
+        +website: URLField [optional]
+        +is_verified: BooleanField = False
+        +rejection_reason: TextField [optional]
+        +price_alert_threshold_pct: SmallIntegerField = 10
+        +last_competitor_alert_at: DateTimeField [optional]
         +created_at: DateTimeField
+        +updated_at: DateTimeField
     }
 
     class Promotion {
         +id: BigAutoField
-        +business_profile: FK(BusinessProfile)
         +product: FK(Product)
-        +discount_percent: DecimalField [optional]
-        +discount_amount: DecimalField [optional]
-        +description: TextField
+        +store: FK(Store)
+        +discount_type: CharField {flat|percentage}
+        +discount_value: DecimalField
         +start_date: DateField
-        +end_date: DateField
+        +end_date: DateField [optional]
         +is_active: BooleanField
+        +min_quantity: SmallIntegerField [optional]
+        +title: CharField [optional]
+        +description: TextField [optional]
+        +views: PositiveIntegerField = 0
+        +created_at: DateTimeField
+        ..
+        <<UNIQUE PARTIAL (product, store) WHERE is_active>>
     }
 }
 
 ' ===== NOTIFICACIONES =====
 package "apps.notifications" as pkg_notif #F5F5F5 {
+    class UserPushToken {
+        +id: BigAutoField
+        +user: FK(User)
+        +token: CharField
+        +device_id: CharField [optional]
+        +created_at: DateTimeField
+        +updated_at: DateTimeField
+        ..
+        <<UNIQUE(user, device_id)>>
+    }
+
     class Notification {
         +id: BigAutoField
         +user: FK(User)
-        +notification_type: CharField
+        +notification_type: CharField {price_alert|new_promo|shared_list_changed|business_approved|business_rejected}
         +title: CharField
-        +message: TextField
-        +data: JSONField [optional]
-        +is_read: BooleanField
-        +channel: CharField {push|email|both}
-        +sent_at: DateTimeField
-        +read_at: DateTimeField [optional]
+        +body: TextField
+        +is_read: BooleanField = False
+        +data: JSONField = {}
+        +action_url: CharField [optional]
+        +created_at: DateTimeField
+        +deleted_at: DateTimeField [optional]
     }
 }
 
@@ -308,11 +332,12 @@ Message "*" --o "1" Conversation
 
 ' Business
 BusinessProfile "0..1" --o "1" User
-BusinessProfile "*" --o "1" Store
-Promotion "*" --o "1" BusinessProfile
+Store "*" --o "0..1" BusinessProfile
 Promotion "*" --o "1" Product
+Promotion "*" --o "1" Store
 
 ' Notificaciones
+UserPushToken "*" --o "1" User
 Notification "*" --o "1" User
 
 @enduml

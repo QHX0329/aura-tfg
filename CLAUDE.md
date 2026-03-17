@@ -346,7 +346,7 @@ Mantener ambos conjuntos sincronizados cuando cambie el flujo del proyecto.
 ### Store (Tienda con geolocalización)
 - `id`, `name`, `chain` (FK a cadena), `address`
 - `location` (PostGIS PointField), `opening_hours` (JSON)
-- `is_local_business`, `subscription_tier` (para PYMEs)
+- `is_local_business`, `subscription_tier`, `business_profile` (FK nullable, PYMEs)
 
 ### Price (Precio de producto en tienda)
 - `id`, `product` (FK), `store` (FK)
@@ -363,6 +363,23 @@ Mantener ambos conjuntos sincronizados cuando cambie el flujo del proyecto.
 - `max_distance_km`, `optimization_mode` (precio/tiempo/balanced)
 - `total_price`, `total_distance_km`, `estimated_time_minutes`
 - `route_data` (JSON con paradas ordenadas)
+
+### BusinessProfile (Portal PYME)
+- `id`, `user` (OneToOne), `business_name`, `tax_id` (CIF/NIF único)
+- `address`, `website`, `is_verified`, `rejection_reason`
+- `price_alert_threshold_pct` (umbral alertas competidor, %), `last_competitor_alert_at`
+
+### Promotion (Promoción de PYME)
+- `id`, `product` (FK), `store` (FK), `discount_type` (flat|percentage), `discount_value`
+- `start_date`, `end_date` (nullable), `is_active`, `min_quantity`, `views`
+- UNIQUE PARTIAL `(product, store)` WHERE `is_active`
+
+### Notification (Buzón de notificaciones)
+- `id`, `user` (FK), `notification_type`, `title`, `body`
+- `is_read`, `data` (JSONB), `action_url` (deep link), `deleted_at` (soft-delete)
+
+### UserPushToken (Token Expo Push)
+- `id`, `user` (FK), `token`, `device_id`, UNIQUE `(user, device_id)`
 
 ---
 
