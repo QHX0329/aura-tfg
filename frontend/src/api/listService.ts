@@ -3,7 +3,19 @@
  */
 
 import { apiClient } from "./client";
-import type { ShoppingList, ShoppingListItem } from "@/types/domain";
+import type { ShoppingList, ShoppingListItem, ListTemplate } from "@/types/domain";
+
+export interface ListCollaboratorUser {
+  id: number;
+  username: string;
+}
+
+export interface ListCollaborator {
+  id: string;
+  user: ListCollaboratorUser;
+  invited_by: ListCollaboratorUser | null;
+  created_at: string;
+}
 
 interface PaginatedResponse<T> {
   count: number;
@@ -81,4 +93,56 @@ export const listService = {
   /** DELETE /lists/{id}/items/{itemId}/ — eliminar ítem */
   deleteItem: (listId: string, itemId: string): Promise<void> =>
     apiClient.delete<never, void>(`/lists/${listId}/items/${itemId}/`),
+
+  /** GET /lists/{id}/collaborators/ — listar colaboradores */
+  getCollaborators: (listId: string): Promise<ListCollaborator[]> =>
+    apiClient.get<never, ListCollaborator[]>(`/lists/${listId}/collaborators/`),
+
+  /** POST /lists/{id}/collaborators/ — invitar colaborador por username */
+  addCollaborator: (listId: string, username: string): Promise<ListCollaborator> =>
+    apiClient.post<never, ListCollaborator>(`/lists/${listId}/collaborators/`, {
+      username,
+    }),
+
+  /** DELETE /lists/{id}/collaborators/{userId}/ — eliminar colaborador */
+  removeCollaborator: (listId: string, userId: number): Promise<void> =>
+    apiClient.delete<never, void>(`/lists/${listId}/collaborators/${userId}/`),
+
+  // ── Plantillas ──────────────────────────────────────────────────────────────
+
+  /** GET /lists/templates/ — listar plantillas del usuario */
+  getTemplates: async (): Promise<ListTemplate[]> => {
+    const payload = await apiClient.get<never, ListTemplate[] | { results: ListTemplate[] }>(
+      "/lists/templates/",
+    );
+    if (Array.isArray(payload)) return payload;
+    if (payload && Array.isArray((payload as any).results)) return (payload as any).results;
+    return [];
+  },
+
+  /** GET /lists/templates/{id}/ — detalle de plantilla */
+  getTemplate: (id: string): Promise<ListTemplate> =>
+    apiClient.get<never, ListTemplate>(`/lists/templates/${id}/`),
+
+  /** POST /lists/templates/ — crear plantilla vacía con nombre */
+  createTemplate: (name: string): Promise<ListTemplate> =>
+    apiClient.post<never, ListTemplate>("/lists/templates/", { name }),
+
+  /** PATCH /lists/templates/{id}/ — renombrar plantilla */
+  updateTemplate: (id: string, name: string): Promise<ListTemplate> =>
+    apiClient.patch<never, ListTemplate>(`/lists/templates/${id}/`, { name }),
+
+  /** DELETE /lists/templates/{id}/ — eliminar plantilla */
+  deleteTemplate: (id: string): Promise<void> =>
+    apiClient.delete<never, void>(`/lists/templates/${id}/`),
+
+  /** POST /lists/templates/{id}/create-list/ — instanciar lista desde plantilla */
+  createListFromTemplate: (templateId: string, name?: string): Promise<ShoppingList> =>
+    apiClient.post<never, ShoppingList>(`/lists/templates/${templateId}/create-list/`, {
+      ...(name ? { name } : {}),
+    }),
+
+  /** POST /lists/{id}/save-template/ — guardar lista actual como plantilla */
+  saveAsTemplate: (listId: string, name: string): Promise<ListTemplate> =>
+    apiClient.post<never, ListTemplate>(`/lists/${listId}/save-template/`, { name }),
 };

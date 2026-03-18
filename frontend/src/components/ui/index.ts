@@ -25,3 +25,6 @@ export type { SearchBarProps } from "./SearchBar";
 
 export { SkeletonBox } from "./SkeletonBox";
 export type { SkeletonBoxProps } from "./SkeletonBox";
+
+export { AppModal } from "./AppModal";
+export type { AppModalProps, AppModalType } from "./AppModal";

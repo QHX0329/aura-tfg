@@ -26,6 +26,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import MapView, { Marker, type Region } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import {
   borderRadius,
@@ -37,12 +39,14 @@ import {
   textStyles,
 } from "@/theme";
 import { storeService } from "@/api/storeService";
+import type { MapStackParamList } from "@/navigation/types";
 import type { Store, StoreChain } from "@/types/domain";
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
 /** Coordenadas de Sevilla centro como fallback en __DEV__ */
 const SEVILLE_COORDS = { lat: 37.3886, lng: -5.9823 };
+const EARTH_RADIUS_KM = 6371;
 
 const CHAIN_COLORS: Record<StoreChain, string> = {
   mercadona: colors.chains.mercadona,
@@ -83,6 +87,25 @@ function getStoreCoords(
   };
 }
 
+function haversineDistanceKm(
+  aLat: number,
+  aLng: number,
+  bLat: number,
+  bLng: number,
+): number {
+  const toRad = (value: number) => (value * Math.PI) / 180;
+  const dLat = toRad(bLat - aLat);
+  const dLng = toRad(bLng - aLng);
+  const lat1 = toRad(aLat);
+  const lat2 = toRad(bLat);
+
+  const h =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+  return 2 * EARTH_RADIUS_KM * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+}
+
 // ─── Sub-componentes ──────────────────────────────────────────────────────────
 
 const LocationDeniedCard: React.FC = () => (
@@ -110,15 +133,20 @@ const LocationDeniedCard: React.FC = () => (
 interface StoreCardProps {
   store: Store;
   onPress: (store: Store) => void;
+  isSelected?: boolean;
 }
 
-const StoreCard: React.FC<StoreCardProps> = ({ store, onPress }) => {
+const StoreCard: React.FC<StoreCardProps> = ({ store, onPress, isSelected }) => {
   const chainColor = CHAIN_COLORS[store.chain];
   const initial = CHAIN_INITIALS[store.chain];
 
   return (
     <TouchableOpacity
-      style={[cardStyles.card, shadows.card]}
+      style={[
+        cardStyles.card, 
+        shadows.card,
+        isSelected && { borderColor: colors.primary, borderWidth: 2 }
+      ]}
       onPress={() => onPress(store)}
       activeOpacity={0.85}
       accessibilityRole="button"
@@ -151,6 +179,7 @@ const StoreCard: React.FC<StoreCardProps> = ({ store, onPress }) => {
 // ─── Pantalla principal ───────────────────────────────────────────────────────
 
 export const MapScreen: React.FC = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<MapStackParamList, "Map">>();
   const mapRef = useRef<MapView>(null);
 
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(
@@ -160,6 +189,7 @@ export const MapScreen: React.FC = () => {
   const [userLng, setUserLng] = useState<number>(SEVILLE_COORDS.lng);
   const [stores, setStores] = useState<Store[]>([]);
   const [isFetchingStores, setIsFetchingStores] = useState(false);
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
 
   // ── Solicitar permiso y obtener ubicación ────────────────────────────────
 
@@ -227,6 +257,7 @@ export const MapScreen: React.FC = () => {
 
   const handleStoreCardPress = useCallback(
     (store: Store) => {
+      setSelectedStore(store);
       const { latitude, longitude } = getStoreCoords(store, userLat, userLng);
       const region: Region = {
         latitude,
@@ -238,6 +269,46 @@ export const MapScreen: React.FC = () => {
     },
     [userLat, userLng],
   );
+
+  const handleSearchAreaPress = useCallback(async () => {
+    if (!mapRef.current) {
+      return;
+    }
+
+    setIsFetchingStores(true);
+
+    try {
+      const [camera, boundaries] = await Promise.all([
+        mapRef.current.getCamera(),
+        mapRef.current.getMapBoundaries(),
+      ]);
+
+      const center = camera.center;
+      const northEast = boundaries.northEast;
+
+      const viewportRadiusKm = haversineDistanceKm(
+        center.latitude,
+        center.longitude,
+        northEast.latitude,
+        northEast.longitude,
+      );
+
+      // Ajuste defensivo para evitar radios demasiado pequeños o demasiado costosos.
+      const searchRadiusKm = Math.min(Math.max(viewportRadiusKm, 2), 30);
+      const nearby = await storeService.getNearby(
+        center.latitude,
+        center.longitude,
+        searchRadiusKm,
+      );
+
+      setStores(nearby);
+      setSelectedStore(null);
+    } catch (err) {
+      console.warn("Error fetching stores in map area:", err);
+    } finally {
+      setIsFetchingStores(false);
+    }
+  }, []);
 
   // ── Renderizado ──────────────────────────────────────────────────────────
 
@@ -278,6 +349,7 @@ export const MapScreen: React.FC = () => {
         initialRegion={initialRegion}
         showsUserLocation={true}
         showsMyLocationButton={true}
+        onPress={() => setSelectedStore && setSelectedStore(null)}
       >
         {stores.map((store) => {
           const { latitude, longitude } = getStoreCoords(
@@ -291,10 +363,21 @@ export const MapScreen: React.FC = () => {
               coordinate={{ latitude, longitude }}
               title={store.name}
               description={store.address}
+              onPress={() => setSelectedStore && setSelectedStore(store)}
             />
           );
         })}
       </MapView>
+
+      {/* ── Botón: Buscar en esta zona ────────────────────────── */}
+      <TouchableOpacity 
+        style={[styles.searchAreaButton, shadows.elevated]}
+        onPress={handleSearchAreaPress}
+        activeOpacity={0.9}
+      >
+        <Ionicons name="refresh" size={18} color={colors.primary} />
+        <Text style={styles.searchAreaText}>Buscar en esta zona</Text>
+      </TouchableOpacity>
 
       {/* ── Overlay de carga sobre el mapa ────────────────────────── */}
       {isFetchingStores && (
@@ -308,14 +391,35 @@ export const MapScreen: React.FC = () => {
       <View style={styles.bottomPanel}>
         {stores.length > 0 ? (
           <>
+            {selectedStore && (
+              <TouchableOpacity
+                style={styles.storeProfileButton}
+                onPress={() =>
+                  navigation.navigate("StoreProfile", {
+                    storeId: selectedStore.id,
+                    storeName: selectedStore.name,
+                    userLat,
+                    userLng,
+                  })
+                }
+                activeOpacity={0.9}
+              >
+                <Ionicons name="storefront-outline" size={16} color={colors.primary} />
+                <Text style={styles.storeProfileButtonText}>Ver perfil de tienda</Text>
+              </TouchableOpacity>
+            )}
             <Text style={styles.panelTitle}>
-              {stores.length} tienda{stores.length !== 1 ? "s" : ""} cercanas
+              {stores.length} tienda{stores.length !== 1 ? "s" : ""} en esta zona
             </Text>
             <FlatList
               data={stores}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <StoreCard store={item} onPress={handleStoreCardPress} />
+                <StoreCard 
+                  store={item} 
+                  onPress={handleStoreCardPress}
+                  isSelected={selectedStore?.id === item.id}
+                />
               )}
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -325,7 +429,7 @@ export const MapScreen: React.FC = () => {
         ) : !isFetchingStores ? (
           <View style={styles.emptyStores}>
             <Text style={styles.emptyStoresText}>
-              No se encontraron tiendas en el radio de 10 km
+              No se encontraron tiendas en el area visible del mapa
             </Text>
           </View>
         ) : null}
@@ -369,6 +473,23 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.text,
   },
+  searchAreaButton: {
+    position: "absolute",
+    top: 80,
+    alignSelf: "center",
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  searchAreaText: {
+    fontFamily: fontFamilies.bodySemiBold,
+    fontSize: fontSize.sm,
+    color: colors.primary,
+  },
   bottomPanel: {
     position: "absolute",
     bottom: 0,
@@ -388,6 +509,25 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     paddingHorizontal: spacing.md,
     marginBottom: spacing.sm,
+  },
+  storeProfileButton: {
+    marginHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+    borderRadius: borderRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryTint,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xs,
+  },
+  storeProfileButtonText: {
+    fontFamily: fontFamilies.bodySemiBold,
+    fontSize: fontSize.xs,
+    color: colors.primary,
   },
   storeListContent: {
     paddingHorizontal: spacing.md,

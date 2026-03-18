@@ -5,13 +5,128 @@
 import { apiClient } from "./client";
 import type { Store } from "@/types/domain";
 
+interface RawStoreChain {
+  id?: number;
+  name?: string;
+}
+
+interface RawStore {
+  id: string | number;
+  name: string;
+  chain?: string | RawStoreChain;
+  address?: string;
+  distance_km?: number | null;
+  distanceKm?: number;
+  location?: { type?: string; coordinates?: [number, number] } | null;
+  opening_hours?: Record<string, string>;
+  is_favorite?: boolean;
+}
+
+interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+function normalizeChain(chain: RawStore["chain"]): Store["chain"] {
+  if (typeof chain === "string") {
+    return (chain.toLowerCase() as Store["chain"]) ?? "local";
+  }
+
+  const value = chain?.name?.toLowerCase();
+  switch (value) {
+    case "mercadona":
+    case "lidl":
+    case "aldi":
+    case "carrefour":
+    case "dia":
+    case "alcampo":
+    case "local":
+      return value;
+    default:
+      return "local";
+  }
+}
+
+function normalizeStore(raw: RawStore): Store {
+  const distanceKm = raw.distanceKm ?? raw.distance_km ?? 0;
+  const location = raw.location?.coordinates
+    ? {
+        type: raw.location.type ?? "Point",
+        coordinates: raw.location.coordinates,
+      }
+    : undefined;
+
+  return {
+    id: String(raw.id),
+    name: raw.name,
+    chain: normalizeChain(raw.chain),
+    address: raw.address ?? "",
+    distanceKm,
+    estimatedMinutes: Math.max(1, Math.round(distanceKm * 3.5)),
+    isOpen: true,
+    location,
+    openingHours: raw.opening_hours,
+    isFavorite: raw.is_favorite,
+  };
+}
+
+function normalizeCollection(payload: RawStore[] | PaginatedResponse<RawStore>): Store[] {
+  if (Array.isArray(payload)) {
+    return payload.map(normalizeStore);
+  }
+
+  if (payload && Array.isArray(payload.results)) {
+    return payload.results.map(normalizeStore);
+  }
+
+  return [];
+}
+
 export const storeService = {
   /**
    * GET /stores/?lat={lat}&lng={lng}&radius={radius}
    * Devuelve tiendas cercanas a la ubicación del usuario.
    */
-  getNearby: (lat: number, lng: number, radius_km = 10): Promise<Store[]> =>
-    apiClient.get<never, Store[]>("/stores/", {
+  getNearby: async (lat: number, lng: number, radius_km = 10): Promise<Store[]> => {
+    const payload = await apiClient.get<never, RawStore[] | PaginatedResponse<RawStore>>('/stores/', {
       params: { lat, lng, radius_km },
-    }),
+    });
+
+    return normalizeCollection(payload);
+  },
+
+  /** GET /stores/{id}/?lat={lat}&lng={lng}&radius_km={radius} */
+  getDetail: async (
+    storeId: string,
+    lat: number,
+    lng: number,
+    radius_km = 10,
+  ): Promise<Store> => {
+    const payload = await apiClient.get<never, RawStore>(`/stores/${storeId}/`, {
+      params: { lat, lng, radius_km },
+    });
+
+    return normalizeStore(payload);
+  },
+
+  /** GET /stores/?favorites=true — tiendas marcadas como favoritas por el usuario */
+  getFavorites: async (): Promise<Store[]> => {
+    const payload = await apiClient.get<never, RawStore[] | PaginatedResponse<RawStore>>(
+      '/stores/',
+      { params: { favorites: 'true' } },
+    );
+    return normalizeCollection(payload);
+  },
+
+  /** POST /stores/{id}/favorite/ — alterna favorito y devuelve estado final */
+  toggleFavorite: async (storeId: string): Promise<boolean> => {
+    const payload = await apiClient.post<never, { is_favorite: boolean }>(
+      `/stores/${storeId}/favorite/`,
+      {},
+    );
+
+    return Boolean(payload.is_favorite);
+  },
 };

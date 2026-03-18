@@ -51,11 +51,19 @@ class PriceAlertSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
+    product_name = serializers.SerializerMethodField()
+
+    def get_product_name(self, obj: PriceAlert) -> str:
+        """Devuelve el nombre del producto asociado a la alerta."""
+        try:
+            return obj.product.name
+        except AttributeError:
+            return f"Producto #{obj.product_id}"
 
     class Meta:
         model = PriceAlert
-        fields = ["id", "product", "store", "target_price", "is_active", "triggered_at", "created_at"]
-        read_only_fields = ["id", "is_active", "triggered_at", "created_at"]
+        fields = ["id", "product", "product_name", "store", "target_price", "is_active", "triggered_at", "created_at"]
+        read_only_fields = ["id", "product_name", "is_active", "triggered_at", "created_at"]
 
 
 class CrowdsourcePriceSerializer(serializers.ModelSerializer):

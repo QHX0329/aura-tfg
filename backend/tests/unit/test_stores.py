@@ -39,6 +39,18 @@ def local_store(db, seville_point) -> Store:
 class TestStoreListSerializer:
     """Tests para StoreListSerializer."""
 
+    def test_includes_geojson_location_field(self, store_with_chain):
+        """El serializer debe incluir location como GeoJSON [lng, lat]."""
+        store = store_with_chain
+        store.distance = Distance(m=500)
+
+        serializer = StoreListSerializer(store)
+        data = serializer.data
+
+        assert "location" in data
+        assert data["location"]["type"] == "Point"
+        assert data["location"]["coordinates"] == [store.location.x, store.location.y]
+
     def test_includes_is_local_business_field(self, local_store):
         """El serializer debe incluir is_local_business."""
         store = local_store

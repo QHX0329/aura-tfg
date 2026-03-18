@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-17 (F3-01..F3-28 completadas — Phase 2 business + notifications 100%)
+> Última sincronización: 2026-03-18 (F4-25 completada — alertas de precio, perfil de tienda en mapa y colaboradores de listas)
 
 ---
 
@@ -35,10 +35,10 @@
 
 ## Estado actual del proyecto
 
-**Fase activa:** F4 — Desarrollo Frontend (iniciando)
-**Semana estimada:** S8
-**Horas consumidas:** ~168 h / 300 h totales
-**Progreso global:** ████████████░░░░░░░░ ~56%
+**Fase activa:** F4 — Desarrollo Frontend (en progreso)
+**Semana estimada:** S9
+**Horas consumidas:** ~185 h / 300 h totales
+**Progreso global:** █████████████░░░░░░░ ~62%
 
 ---
 
@@ -88,7 +88,7 @@
 
 ---
 
-## F3 — Desarrollo Core Backend (95 h) · 🔄 En progreso
+## F3 — Desarrollo Core Backend (95 h) · ✅ Completada
 
 > Semanas S5–S12
 
@@ -127,33 +127,38 @@
 
 ---
 
-## F4 — Desarrollo Frontend (70 h) · ⬜ Pendiente
+## F4 — Desarrollo Frontend (70 h) · 🔄 En progreso
 
 > Semanas S8–S16
 
-| ID | Tarea | Módulo | Prioridad | Estado | Horas est. |
-|----|-------|--------|-----------|--------|:---:|
-| F4-01 | Sistema de navegación (tabs + stack) | Infraestructura | 🔴 Crítica | ⬜ | 3 |
-| F4-02 | Tema global (colores, tipografía) | Infraestructura | 🟠 Alta | ⬜ | 3 |
-| F4-03 | Componentes reutilizables base | Infraestructura | 🔴 Crítica | ⬜ | 4 |
-| F4-04 | Pantallas Login + Registro | Users | 🔴 Crítica | ⬜ | 4 |
-| F4-05 | Gestión JWT (interceptor Axios, refresh) | Users | 🔴 Crítica | ⬜ | 3 |
-| F4-06 | Pantalla de perfil de usuario | Users | 🟠 Alta | ⬜ | 2 |
-| F4-07 | Pantalla principal de listas | Shopping Lists | 🔴 Crítica | ⬜ | 4 |
-| F4-08 | Buscador de productos con autocompletado | Products | 🔴 Crítica | ⬜ | 4 |
-| F4-09 | Gestión de ítems de lista | Shopping Lists | 🔴 Crítica | ⬜ | 3 |
-| F4-10 | Pantalla de comparación de precios | Prices | 🟠 Alta | ⬜ | 4 |
-| F4-11 | Mapa con tiendas cercanas | Stores | 🟠 Alta | ⬜ | 5 |
-| F4-12 | Pantalla configuración optimizador | Optimizer | 🔴 Crítica | ⬜ | 3 |
-| F4-13 | Visualización de ruta en mapa | Optimizer | 🔴 Crítica | ⬜ | 6 |
-| F4-14 | Desglose de ahorro por parada | Optimizer | 🟠 Alta | ⬜ | 3 |
-| F4-15 | Pantalla de captura OCR (cámara/galería) | OCR | 🟠 Alta | ⬜ | 3 |
-| F4-16 | Revisión y edición de productos OCR | OCR | 🟠 Alta | ⬜ | 4 |
-| F4-17 | Interfaz de chat del asistente | Assistant | 🟠 Alta | ⬜ | 5 |
-| F4-18 | Historial de conversaciones | Assistant | 🟡 Media | ⬜ | 2 |
-| F4-19 | Dashboard PYME (portal Business web) | Business | 🟡 Media | ⬜ | 4 |
-| F4-20 | Tests frontend (Jest + RNTL) | Infraestructura | 🟠 Alta | ⬜ | 4 |
-| F4-21 | Integración Google Places API | Stores | 🟡 Media | ⬜ | 3 |
+| ID | Tarea | Módulo | Prioridad | Estado | Horas est. | Horas reales | Notas |
+|----|-------|--------|-----------|--------|:---:|:---:|-------|
+| F4-01 | Sistema de navegación (tabs + stack) | Infraestructura | 🔴 Crítica | ✅ | 3 | 3 | Tab navigator (5 tabs) + stack por sección; verificado con Playwright |
+| F4-02 | Tema global (colores, tipografía) | Infraestructura | 🟠 Alta | ✅ | 3 | 4 | Design system "Mercado Mediterráneo Digital": colors, typography, spacing, shadows |
+| F4-03 | Componentes reutilizables base | Infraestructura | 🔴 Crítica | ✅ | 4 | 5 | BargainButton, SkeletonBox, SearchBar, PriceTag, ProductCard, AppModal (input/confirm/info) |
+| F4-04 | Pantallas Login + Registro | Users | 🔴 Crítica | ✅ | 4 | 5 | Login válido/inválido, registro con 6 campos, auto-login post-registro; verificado |
+| F4-05 | Gestión JWT (interceptor Axios, refresh) | Users | 🔴 Crítica | ✅ | 3 | 3 | SecureStore, rehydration al arrancar, auth guard, interceptor refresh |
+| F4-06 | Pantalla de perfil de usuario | Users | 🟠 Alta | ✅ | 2 | 3 | Info usuario, sliders optimización independientes (0-100, normalización al guardar), toggles notif, cambio contraseña |
+| F4-07 | Pantalla principal de listas | Shopping Lists | 🔴 Crítica | ✅ | 4 | 4 | CRUD listas, AppModal para crear/eliminar, pull-to-refresh, skeleton loading |
+| F4-08 | Buscador de productos con autocompletado | Products | 🔴 Crítica | ✅ | 4 | 4 | Autocomplete contra API, sugerencias en tiempo real, añadir producto a lista |
+| F4-09 | Gestión de ítems de lista | Shopping Lists | 🔴 Crítica | ✅ | 3 | 3 | Añadir/eliminar/marcar ítems, toggle checked, enrichment product_name |
+| F4-10 | Pantalla de comparación de precios | Prices | 🟠 Alta | ✅ | 4 | 3 | PriceCompareScreen: /prices/compare/ con filtro de ubicación, alertas de precio, ordenado por precio efectivo |
+| F4-11 | Mapa con tiendas cercanas | Stores | 🟠 Alta | ✅ | 5 | 5 | MapScreen nativa con react-native-maps, markers por cadena, panel inferior de tiendas; web fallback |
+| F4-12 | Pantalla configuración optimizador | Optimizer | 🔴 Crítica | ✅ | 3 | 2 | OptimizerConfigScreen: radio, paradas, modo (price/distance/time/balanced), pesos normalizados |
+| F4-13 | Visualización de ruta en mapa | Optimizer | 🔴 Crítica | ✅ | 6 | 3 | RouteScreen tab Ruta: paradas ordenadas con conectores, ítems por tienda, subtotales; mock UI lista para API |
+| F4-14 | Desglose de ahorro por parada | Optimizer | 🟠 Alta | ✅ | 3 | 2 | RouteScreen tab Ahorro: hero de ahorro, barra comparativa, desglose por tienda y producto; mock UI |
+| F4-15 | Pantalla de captura OCR (cámara/galería) | OCR | 🟠 Alta | ✅ | 3 | 2 | OCRScreen tab Captura: permisos cámara/galería, animación de escáner, simulación de procesamiento |
+| F4-16 | Revisión y edición de productos OCR | OCR | 🟠 Alta | ✅ | 4 | 2 | OCRScreen tab Revisión: edición de nombre/cantidad/precio, indicador de confianza, añadir a lista |
+| F4-17 | Interfaz de chat del asistente | Assistant | 🟠 Alta | ✅ | 5 | 3 | AssistantScreen: chat con burbujas, typing indicator animado, sugerencias rápidas, respuestas mock |
+| F4-18 | Historial de conversaciones | Assistant | 🟡 Media | ✅ | 2 | 1 | Integrado en AssistantScreen: historial local de sesión, botón de nueva conversación |
+| F4-19 | Dashboard PYME (portal Business web) | Business | 🟡 Media | ✅ | 4 | 5 | Vite+React+AntD: Login, Dashboard, Precios, Promociones, Perfil; auth guard, token refresh |
+| F4-20 | Tests frontend (Jest + RNTL) | Infraestructura | 🟠 Alta | ✅ | 4 | 3 | Tests actualizados para reflejar shapes reales de API y cambios de pantallas |
+| F4-21 | Integración Google Places API | Stores | 🟡 Media | ⬜ | 3 | - | |
+| F4-22 | Flujo catálogo-producto-listas (añadir desde lista + detalle con precios) | Products/Shopping Lists | 🔴 Crítica | ✅ | 6 | 6 | Botón en detalle de lista para abrir catálogo; catálogo con precio mínimo + añadir a listas; detalle de producto con comparación de precios |
+| F4-23 | Pulido UX catálogo/listas (cantidad + suma duplicados + simplificación detalle) | Products/Shopping Lists | 🟠 Alta | ✅ | 4 | 4 | Selector de cantidad al añadir producto, backend suma cantidades para duplicados, toast UX en catálogo y eliminación del buscador en detalle de lista |
+| F4-24 | Ajuste interacción cantidad y acciones rápidas (quick-add + control item + SearchBar Home) | Products/Shopping Lists | 🟠 Alta | ✅ | 3 | 3 | Quick-add con cantidad desde tarjeta en catálogo; botones +/- por ítem en detalle (si llega a 0 se elimina); eliminación de botón de filtros en SearchBar de Home |
+| F4-25 | Alertas de precio + perfil de tienda en mapa + colaboradores de listas | Prices/Stores/Shopping Lists | 🔴 Crítica | ✅ | 8 | 8 | Crear alertas desde pantalla dedicada; abrir perfil de tienda desde mapa (info, favoritos y productos); gestión de colaboradores en detalle de lista |
+| F4-26 | CRUD completo alertas + listas renombrables/plantillas + paginación catálogo + refresco en vivo | Prices/Notifications/Shopping Lists/Products | 🔴 Crítica | 🔄 <!-- 2026-03-18 --> | 10 | - | Mostrar nombre de producto y modal editable en alertas; botón eliminar de notificaciones funcional; renombrar listas y crear plantilla desde listas; paginación real en catálogo; refresco automático sin recarga manual |
 
 ---
 

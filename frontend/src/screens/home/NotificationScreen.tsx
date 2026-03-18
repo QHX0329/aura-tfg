@@ -13,6 +13,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
+  Modal,
+  Pressable,
   SectionList,
   SectionListData,
   StyleSheet,
@@ -24,10 +26,12 @@ import { Swipeable } from "react-native-gesture-handler";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import {
+  borderRadius,
   colors,
-  spacing,
   fontFamilies,
   fontSize,
+  shadows,
+  spacing,
 } from "@/theme";
 import { SkeletonBox } from "@/components/ui/SkeletonBox";
 import { useNotificationStore } from "@/store/notificationStore";
@@ -199,6 +203,7 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
 
   const [loadingMore, setLoadingMore] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [selectedNotif, setSelectedNotif] = useState<Notification | null>(null);
   const currentPage = useRef(1);
 
   const handleMarkAllRead = useCallback(async () => {
@@ -248,21 +253,17 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
 
   const handleTap = useCallback(
     async (notification: Notification) => {
+      // Open modal with notification details
+      setSelectedNotif(notification);
+      // Mark as read in background
       try {
         await notificationService.markAsRead(notification.id);
         markRead(notification.id);
-        if (notification.action_url) {
-          try {
-            parseAndNavigate(notification.action_url, navigation);
-          } catch {
-            Alert.alert("El contenido ya no está disponible");
-          }
-        }
       } catch {
         // silent
       }
     },
-    [markRead, navigation],
+    [markRead],
   );
 
   const handleDelete = useCallback(
@@ -336,36 +337,71 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
   }
 
   return (
-    <SectionList
-      testID="notifications-list"
-      sections={sections}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <NotificationRow
-          notification={item}
-          onTap={handleTap}
-          onDelete={handleDelete}
-        />
-      )}
-      renderSectionHeader={({ section: { title } }) => (
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{title}</Text>
-        </View>
-      )}
-      ListHeaderComponent={
-        <TouchableOpacity
-          testID="mark-all-read-btn"
-          onPress={handleMarkAllRead}
-          style={styles.markAllHeader}
-        >
-          <Text style={headerStyles.markAllText}>Marcar todo leído</Text>
-        </TouchableOpacity>
-      }
-      contentContainerStyle={styles.listContent}
-      onEndReached={handleLoadMore}
-      onEndReachedThreshold={0.3}
-      stickySectionHeadersEnabled={false}
-    />
+    <>
+      <SectionList
+        testID="notifications-list"
+        sections={sections}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <NotificationRow
+            notification={item}
+            onTap={handleTap}
+            onDelete={handleDelete}
+          />
+        )}
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{title}</Text>
+          </View>
+        )}
+        ListHeaderComponent={
+          <TouchableOpacity
+            testID="mark-all-read-btn"
+            onPress={handleMarkAllRead}
+            style={styles.markAllHeader}
+          >
+            <Text style={headerStyles.markAllText}>Marcar todo leído</Text>
+          </TouchableOpacity>
+        }
+        contentContainerStyle={styles.listContent}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.3}
+        stickySectionHeadersEnabled={false}
+      />
+
+      {/* Notification detail modal */}
+      <Modal
+        visible={selectedNotif !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedNotif(null)}
+      >
+        <Pressable style={modalStyles.overlay} onPress={() => setSelectedNotif(null)}>
+          <Pressable style={modalStyles.card} onPress={(e) => e.stopPropagation()}>
+            <View style={modalStyles.accentBar} />
+            <Text style={modalStyles.title}>{selectedNotif?.title}</Text>
+            <Text style={modalStyles.body}>{selectedNotif?.body}</Text>
+            {selectedNotif?.created_at ? (
+              <Text style={modalStyles.date}>
+                {new Date(selectedNotif.created_at).toLocaleString("es-ES", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Text>
+            ) : null}
+            <TouchableOpacity
+              style={modalStyles.closeButton}
+              onPress={() => setSelectedNotif(null)}
+            >
+              <Text style={modalStyles.closeText}>Cerrar</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
+    </>
   );
 };
 
@@ -482,6 +518,63 @@ const rowStyles = StyleSheet.create({
 
 const headerStyles = StyleSheet.create({
   markAllText: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.primary,
+  },
+});
+
+const modalStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: colors.overlay,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: spacing.xl,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 420,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    overflow: "hidden",
+    ...(shadows.elevated as object),
+  },
+  accentBar: {
+    height: 4,
+    backgroundColor: colors.primary,
+  },
+  title: {
+    fontFamily: fontFamilies.display,
+    fontSize: fontSize.lg,
+    color: colors.text,
+    marginTop: spacing.lg,
+    marginHorizontal: spacing.lg,
+  },
+  body: {
+    fontFamily: fontFamilies.body,
+    fontSize: fontSize.md,
+    color: colors.textMuted,
+    marginTop: spacing.sm,
+    marginHorizontal: spacing.lg,
+    lineHeight: 22,
+  },
+  date: {
+    fontFamily: fontFamilies.body,
+    fontSize: fontSize.xs,
+    color: colors.textDisabled,
+    marginTop: spacing.sm,
+    marginHorizontal: spacing.lg,
+  },
+  closeButton: {
+    margin: spacing.lg,
+    alignSelf: "flex-end",
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.primaryTint,
+    borderRadius: borderRadius.md,
+  },
+  closeText: {
     fontFamily: fontFamilies.bodyMedium,
     fontSize: fontSize.sm,
     color: colors.primary,

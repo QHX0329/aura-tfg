@@ -154,20 +154,31 @@ class AddCollaboratorSerializer(serializers.Serializer):
 
 
 class ListTemplateItemSerializer(serializers.ModelSerializer):
-    """Serializer de ítem de plantilla."""
+    """Serializer de ítem de plantilla con nombre de producto."""
+
+    product_name = serializers.SerializerMethodField()
 
     class Meta:
         model = ListTemplateItem
-        fields = ["id", "product", "ordering"]
+        fields = ["id", "product", "product_name", "ordering"]
         read_only_fields = ["id"]
+
+    def get_product_name(self, obj) -> str | None:
+        if obj.product_id and hasattr(obj, "product"):
+            return obj.product.name
+        return None
 
 
 class ListTemplateSerializer(serializers.ModelSerializer):
-    """Serializer de plantilla con sus ítems."""
+    """Serializer de plantilla con sus ítems enriquecidos."""
 
     items = ListTemplateItemSerializer(many=True, read_only=True)
+    item_count = serializers.SerializerMethodField()
 
     class Meta:
         model = ListTemplate
-        fields = ["id", "name", "source_list", "created_at", "items"]
+        fields = ["id", "name", "source_list", "created_at", "items", "item_count"]
         read_only_fields = ["id", "source_list", "created_at"]
+
+    def get_item_count(self, obj) -> int:
+        return obj.items.count()

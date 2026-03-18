@@ -4,34 +4,35 @@
  * Muestra los productos de una lista con opción de:
  * - Marcar/desmarcar ítems (con actualización optimista)
  * - Eliminar ítems (con confirmación)
- * - Buscar y añadir productos mediante autocompletado con debounce
+ * - Abrir catálogo para añadir productos
  */
 
 import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useRef,
   useState,
-  type ListRenderItem,
 } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
+  Modal,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
+  type ListRenderItem,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 
 import { colors, spacing, textStyles, borderRadius } from "@/theme";
 import type { ListsStackParamList } from "@/navigation/types";
-import type { Product, ShoppingListItem } from "@/types/domain";
+import type { ShoppingListItem } from "@/types/domain";
 import { listService } from "@/api/listService";
-import { productService } from "@/api/productService";
+import type { ListCollaborator } from "@/api/listService";
 import { useListStore } from "@/store/listStore";
 import { SkeletonBox } from "@/components/ui/SkeletonBox";
 
@@ -45,9 +46,17 @@ interface ItemRowProps {
   item: ShoppingListItem;
   onToggle: (item: ShoppingListItem) => void;
   onDelete: (item: ShoppingListItem) => void;
+  onIncreaseQuantity: (item: ShoppingListItem) => void;
+  onDecreaseQuantity: (item: ShoppingListItem) => void;
 }
 
-const ItemRow: React.FC<ItemRowProps> = ({ item, onToggle, onDelete }) => {
+const ItemRow: React.FC<ItemRowProps> = ({
+  item,
+  onToggle,
+  onDelete,
+  onIncreaseQuantity,
+  onDecreaseQuantity,
+}) => {
   // Backend enriched GET returns product_name; POST returns product as integer FK.
   // Support both shapes.
   const productName =
@@ -109,9 +118,32 @@ const ItemRow: React.FC<ItemRowProps> = ({ item, onToggle, onDelete }) => {
           {productName}
         </Text>
         <Text style={styles.itemMeta}>
-          {item.quantity > 1 ? `×${item.quantity}` : (productUnit ?? "")}
+          {`x${item.quantity}`}
+          {productUnit ? ` · ${productUnit}` : ""}
           {item.note ? ` · ${item.note}` : ""}
         </Text>
+      </View>
+
+      <View style={styles.quantityControls}>
+        <TouchableOpacity
+          testID={`decrease-item-${item.id}`}
+          onPress={() => onDecreaseQuantity(item)}
+          style={styles.quantityButton}
+          accessibilityRole="button"
+          accessibilityLabel={`Reducir cantidad de ${productName}`}
+        >
+          <Ionicons name="remove" size={14} color={colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.quantityValue}>{item.quantity}</Text>
+        <TouchableOpacity
+          testID={`increase-item-${item.id}`}
+          onPress={() => onIncreaseQuantity(item)}
+          style={styles.quantityButton}
+          accessibilityRole="button"
+          accessibilityLabel={`Aumentar cantidad de ${productName}`}
+        >
+          <Ionicons name="add" size={14} color={colors.text} />
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -121,39 +153,22 @@ const ItemRow: React.FC<ItemRowProps> = ({ item, onToggle, onDelete }) => {
 function makeRenderItem(
   onToggle: (item: ShoppingListItem) => void,
   onDelete: (item: ShoppingListItem) => void,
+  onIncreaseQuantity: (item: ShoppingListItem) => void,
+  onDecreaseQuantity: (item: ShoppingListItem) => void,
 ): ListRenderItem<ShoppingListItem> {
   function renderItemRow({ item }: { item: ShoppingListItem }) {
-    return <ItemRow item={item} onToggle={onToggle} onDelete={onDelete} />;
+    return (
+      <ItemRow
+        item={item}
+        onToggle={onToggle}
+        onDelete={onDelete}
+        onIncreaseQuantity={onIncreaseQuantity}
+        onDecreaseQuantity={onDecreaseQuantity}
+      />
+    );
   }
   return renderItemRow;
 }
-
-// ─── Autocomplete result row ───────────────────────────────────────────────────
-
-interface AutocompleteRowProps {
-  product: Product;
-  onSelect: (product: Product) => void;
-}
-
-const AutocompleteRow: React.FC<AutocompleteRowProps> = ({ product, onSelect }) => (
-  <TouchableOpacity
-    testID={`autocomplete-item-${product.id}`}
-    style={styles.autocompleteRow}
-    onPress={() => onSelect(product)}
-    activeOpacity={0.7}
-  >
-    <View style={styles.autocompleteContent}>
-      <Text style={styles.autocompleteName} numberOfLines={1}>
-        {product.name}
-      </Text>
-      <Text style={styles.autocompleteCategory} numberOfLines={1}>
-        {product.category} · {product.unit}
-        {product.brand ? ` · ${product.brand}` : ""}
-      </Text>
-    </View>
-    <Ionicons name="add-circle-outline" size={20} color={colors.primary} />
-  </TouchableOpacity>
-);
 
 // ─── ListDetailScreen ─────────────────────────────────────────────────────────
 
@@ -162,24 +177,103 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const { activeList, setActiveList, updateListItem } = useListStore();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<Product[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [collabModalVisible, setCollabModalVisible] = useState(false);
+  const [collaborators, setCollaborators] = useState<ListCollaborator[]>([]);
+  const [collabUsername, setCollabUsername] = useState("");
+  const [isLoadingCollaborators, setIsLoadingCollaborators] = useState(false);
+  const [isAddingCollaborator, setIsAddingCollaborator] = useState(false);
+  const [removingCollaboratorId, setRemovingCollaboratorId] = useState<number | null>(null);
+  const [inviteError, setInviteError] = useState<string | null>(null);
 
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadCollaborators = useCallback(async () => {
+    setIsLoadingCollaborators(true);
+    try {
+      const data = await listService.getCollaborators(listId);
+      setCollaborators(data);
+    } catch {
+      setCollaborators([]);
+    } finally {
+      setIsLoadingCollaborators(false);
+    }
+  }, [listId]);
 
   // ─── Set screen title ─────────────────────────────────────────────────────
   useLayoutEffect(() => {
-    const items = activeList?.items ?? [];
     navigation.setOptions({
       title: listName,
       headerRight: () => (
-        <Text style={styles.headerBadge}>
-          {items.length} {items.length === 1 ? "producto" : "productos"}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ProductsCatalog", { listId, listName })}
+            style={{ padding: 4 }}
+            accessibilityLabel="Abrir catalogo de productos"
+          >
+            <Ionicons name="cube-outline" size={22} color={colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setCollabModalVisible(true);
+              void loadCollaborators();
+            }}
+            style={{ padding: 4 }}
+            accessibilityLabel="Gestionar colaboradores"
+          >
+            <Ionicons name="people-outline" size={22} color={colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("OCR", { listId })}
+            style={{ padding: 4 }}
+            accessibilityLabel="Escanear ticket"
+          >
+            <Ionicons name="scan-outline" size={22} color={colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Route", { listId, listName })}
+            style={{ padding: 4 }}
+            accessibilityLabel="Optimizar ruta"
+          >
+            <Ionicons name="navigate-outline" size={22} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
       ),
     });
-  }, [navigation, listName, activeList?.items]);
+  }, [navigation, listId, listName, loadCollaborators]);
+
+  const handleInviteCollaborator = useCallback(async () => {
+    const username = collabUsername.trim();
+    if (!username) {
+      return;
+    }
+
+    setInviteError(null);
+    setIsAddingCollaborator(true);
+    try {
+      await listService.addCollaborator(listId, username);
+      setCollabUsername("");
+      await loadCollaborators();
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 404) {
+        setInviteError("El usuario no existe");
+      } else {
+        setInviteError("No se pudo invitar al colaborador");
+      }
+    } finally {
+      setIsAddingCollaborator(false);
+    }
+  }, [collabUsername, listId, loadCollaborators]);
+
+  const handleRemoveCollaborator = useCallback(async (collaborator: ListCollaborator) => {
+    setRemovingCollaboratorId(collaborator.user.id);
+    try {
+      await listService.removeCollaborator(listId, collaborator.user.id);
+      await loadCollaborators();
+    } catch {
+      Alert.alert("Error", "No se pudo eliminar el colaborador.");
+    } finally {
+      setRemovingCollaboratorId(null);
+    }
+  }, [listId, loadCollaborators]);
 
   // ─── Fetch list on mount ──────────────────────────────────────────────────
   useEffect(() => {
@@ -195,72 +289,7 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       }
     };
     void load();
-
-    return () => {
-      // Clear debounce timer on unmount
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-    };
   }, [listId, setActiveList]);
-
-  // ─── Autocomplete search with debounce ────────────────────────────────────
-  const handleSearchChange = useCallback((text: string) => {
-    setSearchQuery(text);
-
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
-    }
-
-    if (!text.trim()) {
-      setSuggestions([]);
-      return;
-    }
-
-    debounceTimer.current = setTimeout(async () => {
-      setIsSearching(true);
-      try {
-        const results = await productService.autocomplete(text.trim());
-        setSuggestions(results.slice(0, 5));
-      } catch {
-        setSuggestions([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300);
-  }, []);
-
-  // ─── Add product to list ──────────────────────────────────────────────────
-  const handleSelectProduct = useCallback(
-    async (product: Product) => {
-      setSearchQuery("");
-      setSuggestions([]);
-      try {
-        const newItem = await listService.addItem(listId, {
-          product: product.id,
-          quantity: 1,
-        });
-        // Enrich the response with product metadata the POST endpoint doesn't return
-        const enrichedItem: ShoppingListItem = {
-          ...newItem,
-          product_name: product.name,
-          category_name: typeof product.category === "string" ? product.category : undefined,
-          isChecked: newItem.is_checked ?? false,
-        };
-        // Update activeList in store
-        const currentList = useListStore.getState().activeList;
-        if (currentList) {
-          setActiveList({
-            ...currentList,
-            items: [...(currentList.items ?? []), enrichedItem],
-          });
-        }
-      } catch {
-        Alert.alert("Error", "No se pudo añadir el producto.");
-      }
-    },
-    [listId, setActiveList],
-  );
 
   // ─── Toggle item checked (optimistic update) ──────────────────────────────
   const handleToggleItem = useCallback(
@@ -317,7 +346,72 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     [listId, setActiveList],
   );
 
-  const renderItem = makeRenderItem(handleToggleItem, handleDeleteItem);
+  const handleIncreaseQuantity = useCallback(
+    async (item: ShoppingListItem) => {
+      const nextQuantity = item.quantity + 1;
+      const optimisticItem: ShoppingListItem = {
+        ...item,
+        quantity: nextQuantity,
+      };
+      updateListItem(listId, optimisticItem);
+
+      try {
+        const serverItem = await listService.updateItem(listId, item.id, {
+          quantity: nextQuantity,
+        });
+        updateListItem(listId, {
+          ...item,
+          ...serverItem,
+          product_name: item.product_name ?? serverItem.product_name,
+          category_name: item.category_name ?? serverItem.category_name,
+        });
+      } catch {
+        updateListItem(listId, item);
+        Alert.alert("Error", "No se pudo actualizar la cantidad.");
+      }
+    },
+    [listId, updateListItem],
+  );
+
+  const handleDecreaseQuantity = useCallback(
+    async (item: ShoppingListItem) => {
+      const nextQuantity = item.quantity - 1;
+
+      if (nextQuantity <= 0) {
+        await handleDeleteItem(item);
+        return;
+      }
+
+      const optimisticItem: ShoppingListItem = {
+        ...item,
+        quantity: nextQuantity,
+      };
+      updateListItem(listId, optimisticItem);
+
+      try {
+        const serverItem = await listService.updateItem(listId, item.id, {
+          quantity: nextQuantity,
+        });
+        updateListItem(listId, {
+          ...item,
+          ...serverItem,
+          product_name: item.product_name ?? serverItem.product_name,
+          category_name: item.category_name ?? serverItem.category_name,
+        });
+      } catch {
+        updateListItem(listId, item);
+        Alert.alert("Error", "No se pudo actualizar la cantidad.");
+      }
+    },
+    [handleDeleteItem, listId, updateListItem],
+  );
+
+  const renderItem = makeRenderItem(
+    handleToggleItem,
+    handleDeleteItem,
+    handleIncreaseQuantity,
+    handleDecreaseQuantity,
+  );
   const items = activeList?.items ?? [];
 
   // ─── Loading skeleton ─────────────────────────────────────────────────────
@@ -348,68 +442,106 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Text style={styles.emptyText}>
-                Añade productos con el buscador de abajo
+                Añade productos desde el boton + del catalogo
               </Text>
             </View>
           }
         />
       )}
 
-      {/* Search / Add products section */}
-      <View style={styles.searchSection}>
-        {/* Autocomplete results overlay */}
-        {(suggestions.length > 0 || isSearching) && (
-          <View style={styles.autocompleteContainer}>
-            {isSearching ? (
-              <View style={styles.autocompleteSkeletons}>
-                <SkeletonBox testID="skeleton-autocomplete-0" width="100%" height={32} borderRadius={4} style={styles.autocompleteSkeletonRow} />
-                <SkeletonBox testID="skeleton-autocomplete-1" width="100%" height={32} borderRadius={4} style={styles.autocompleteSkeletonRow} />
-                <SkeletonBox testID="skeleton-autocomplete-2" width="100%" height={32} borderRadius={4} style={styles.autocompleteSkeletonRow} />
+      <TouchableOpacity
+        testID="fab-open-product-catalog"
+        style={styles.catalogFab}
+        onPress={() => navigation.navigate("ProductsCatalog", { listId, listName })}
+        activeOpacity={0.9}
+        accessibilityRole="button"
+        accessibilityLabel="Añadir productos desde catalogo"
+      >
+        <Ionicons name="add" size={26} color={colors.white} />
+      </TouchableOpacity>
+
+      <Modal
+        visible={collabModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setCollabModalVisible(false)}
+      >
+        <View style={styles.collabOverlay}>
+          <View style={styles.collabSheet}>
+            <Text style={styles.collabTitle}>Colaboradores</Text>
+
+            <View style={styles.collabInputRow}>
+              <TextInput
+                value={collabUsername}
+                onChangeText={(text) => { setCollabUsername(text); setInviteError(null); }}
+                placeholder="Nombre de usuario"
+                placeholderTextColor={colors.textMuted}
+                autoCapitalize="none"
+                style={styles.collabInput}
+              />
+              <TouchableOpacity
+                style={styles.collabAddButton}
+                onPress={handleInviteCollaborator}
+                disabled={isAddingCollaborator}
+              >
+                {isAddingCollaborator ? (
+                  <ActivityIndicator size="small" color={colors.white} />
+                ) : (
+                  <Ionicons name="person-add-outline" size={16} color={colors.white} />
+                )}
+              </TouchableOpacity>
+            </View>
+            {inviteError ? (
+              <Text style={styles.inviteError}>{inviteError}</Text>
+            ) : null}
+
+            {isLoadingCollaborators ? (
+              <View style={styles.collabLoadingWrap}>
+                <ActivityIndicator size="small" color={colors.primary} />
               </View>
             ) : (
               <FlatList
-                data={suggestions}
-                keyExtractor={(p) => p.id}
-                renderItem={({ item: product }) => (
-                  <AutocompleteRow product={product} onSelect={handleSelectProduct} />
+                data={collaborators}
+                keyExtractor={(item) => String(item.id)}
+                style={styles.collabList}
+                renderItem={({ item }) => (
+                  <View style={styles.collabRow}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.collabUsername}>{item.user.username}</Text>
+                      <Text style={styles.collabMeta}>
+                        Invitado por {item.invited_by?.username ?? "sistema"}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        void handleRemoveCollaborator(item);
+                      }}
+                      disabled={removingCollaboratorId === item.user.id}
+                      style={styles.collabRemoveButton}
+                    >
+                      {removingCollaboratorId === item.user.id ? (
+                        <ActivityIndicator size="small" color={colors.error} />
+                      ) : (
+                        <Ionicons name="trash-outline" size={16} color={colors.error} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 )}
-                scrollEnabled={suggestions.length > 3}
-                style={styles.autocompleteList}
+                ListEmptyComponent={
+                  <Text style={styles.collabEmptyText}>Aun no hay colaboradores.</Text>
+                }
               />
             )}
-          </View>
-        )}
 
-        {/* Search input */}
-        <View style={styles.searchInputContainer}>
-          <Ionicons name="search" size={18} color={colors.textMuted} style={styles.searchIcon} />
-          <TextInput
-            testID="autocomplete-search-input"
-            value={searchQuery}
-            onChangeText={handleSearchChange}
-            placeholder="Añade productos a tu lista…"
-            placeholderTextColor={colors.textMuted}
-            style={styles.searchInput}
-            autoCorrect={false}
-            autoCapitalize="none"
-            returnKeyType="search"
-            accessibilityLabel="Buscar productos para añadir"
-          />
-          {searchQuery.length > 0 && (
             <TouchableOpacity
-              onPress={() => {
-                setSearchQuery("");
-                setSuggestions([]);
-              }}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              accessibilityRole="button"
-              accessibilityLabel="Limpiar búsqueda"
+              style={styles.collabCloseButton}
+              onPress={() => setCollabModalVisible(false)}
             >
-              <Ionicons name="close" size={18} color={colors.textMuted} />
+              <Text style={styles.collabCloseText}>Cerrar</Text>
             </TouchableOpacity>
-          )}
+          </View>
         </View>
-      </View>
+      </Modal>
     </View>
   );
 };
@@ -431,7 +563,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.md,
-    paddingBottom: 120, // space for search section
+    paddingBottom: spacing.xxxl,
   },
   emptyContentContainer: {
     flex: 1,
@@ -471,6 +603,7 @@ const styles = StyleSheet.create({
   itemContent: {
     flex: 1,
     marginLeft: spacing.sm,
+    marginRight: spacing.sm,
   },
   itemName: {
     ...textStyles.bodyMedium,
@@ -485,84 +618,133 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 2,
   },
-  searchSection: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.background,
-    borderTopWidth: 1,
-    borderTopColor: colors.divider,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-  },
-  searchInputContainer: {
+  quantityControls: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.sm,
-    height: 48,
     gap: spacing.xs,
   },
-  searchIcon: {
-    marginRight: spacing.xs,
-  },
-  searchInput: {
-    flex: 1,
-    ...textStyles.body,
-    color: colors.text,
-    paddingVertical: 0,
-    height: "100%",
-  },
-  autocompleteContainer: {
-    position: "absolute",
-    bottom: 72, // above search bar
-    left: spacing.xl,
-    right: spacing.xl,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
+  quantityButton: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    maxHeight: 220,
-    overflow: "hidden",
-    zIndex: 10,
-    elevation: 4,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    backgroundColor: colors.background,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  autocompleteList: {
-    maxHeight: 220,
+  quantityValue: {
+    minWidth: 18,
+    textAlign: "center",
+    ...textStyles.bodySmall,
+    color: colors.text,
   },
-  autocompleteRow: {
+  catalogFab: {
+    position: "absolute",
+    right: spacing.xl,
+    bottom: spacing.xxl,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 6,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+  },
+  collabOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    paddingHorizontal: spacing.lg,
+  },
+  collabSheet: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    maxHeight: "75%",
+  },
+  collabTitle: {
+    ...textStyles.bodyLarge,
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  collabInputRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: spacing.md,
+    gap: spacing.xs,
+  },
+  collabInput: {
+    flex: 1,
+    backgroundColor: colors.background,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    color: colors.text,
+    ...textStyles.body,
+  },
+  collabAddButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  collabLoadingWrap: {
+    paddingVertical: spacing.lg,
+    alignItems: "center",
+  },
+  collabList: {
+    marginTop: spacing.sm,
+  },
+  collabRow: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.divider,
   },
-  autocompleteContent: {
-    flex: 1,
-    marginRight: spacing.sm,
-  },
-  autocompleteName: {
+  collabUsername: {
     ...textStyles.bodyMedium,
     color: colors.text,
   },
-  autocompleteCategory: {
+  collabMeta: {
     ...textStyles.bodySmall,
     color: colors.textMuted,
     marginTop: 2,
   },
-  autocompleteSkeletons: {
-    padding: spacing.md,
+  collabRemoveButton: {
+    width: 28,
+    height: 28,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  autocompleteSkeletonRow: {
-    marginBottom: spacing.xs,
+  collabEmptyText: {
+    ...textStyles.bodySmall,
+    color: colors.textMuted,
+    textAlign: "center",
+    marginVertical: spacing.md,
+  },
+  collabCloseButton: {
+    alignSelf: "flex-end",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    marginTop: spacing.sm,
+  },
+  collabCloseText: {
+    ...textStyles.bodyMedium,
+    color: colors.primary,
+  },
+  inviteError: {
+    ...textStyles.bodySmall,
+    color: colors.error ?? "#E53E3E",
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.xs,
   },
 });

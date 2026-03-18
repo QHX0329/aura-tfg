@@ -21,36 +21,91 @@ from .serializers import StoreDetailSerializer, StoreListSerializer
 
 class StoreViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet de tiendas con búsqueda geoespacial por radio.
+    ViewSet de tiendas.
 
     Endpoints:
-        GET /api/v1/stores/?lat=<lat>&lng=<lng>[&radius_km=<km>]
-        GET /api/v1/stores/<id>/
-        POST /api/v1/stores/<id>/favorite/
+        GET /api/v1/stores/?lat=<lat>&lng=<lng>[&radius_km=<km>]  — búsqueda geoespacial
+        GET /api/v1/stores/?favorites=true                         — favoritos del usuario (auth)
+        GET /api/v1/stores/<id>/                                   — detalle por PK
+        POST /api/v1/stores/<id>/favorite/                         — alternar favorito
     """
 
     permission_classes = []  # list/retrieve son públicos; favorite define el suyo propio
 
     @extend_schema(
+        summary="Listar tiendas",
+        description=(
+            "Devuelve tiendas según el modo de consulta:\n\n"
+            "**Modo favoritos** (`?favorites=true`, requiere autenticación):\n"
+            "Devuelve todas las tiendas marcadas como favoritas por el usuario "
+            "autenticado, ordenadas por nombre. No requiere `lat`/`lng`.\n\n"
+            "**Modo geoespacial** (por defecto):\n"
+            "Devuelve las tiendas dentro del radio especificado, ordenadas por "
+            "distancia al usuario. Requiere `lat` y `lng`."
+        ),
         parameters=[
-            OpenApiParameter("lat", float, required=True, description="Latitud del usuario (WGS-84)"),
-            OpenApiParameter("lng", float, required=True, description="Longitud del usuario (WGS-84)"),
-            OpenApiParameter("radius_km", float, required=False, description="Radio de búsqueda en km (defecto: radio del perfil o 10 km)"),
-        ]
+            OpenApiParameter(
+                "favorites",
+                bool,
+                required=False,
+                description=(
+                    "Si `true`, devuelve las tiendas favoritas del usuario autenticado "
+                    "sin necesitar coordenadas. Incompatible con `lat`/`lng`."
+                ),
+            ),
+            OpenApiParameter(
+                "lat",
+                float,
+                required=False,
+                description="Latitud del usuario (WGS-84). Requerido en modo geoespacial.",
+            ),
+            OpenApiParameter(
+                "lng",
+                float,
+                required=False,
+                description="Longitud del usuario (WGS-84). Requerido en modo geoespacial.",
+            ),
+            OpenApiParameter(
+                "radius_km",
+                float,
+                required=False,
+                description="Radio de búsqueda en km (defecto: radio del perfil del usuario o 10 km). Solo aplica en modo geoespacial.",
+            ),
+        ],
     )
     def list(self, request: Request, *args, **kwargs) -> Response:
-        """Lista tiendas dentro del radio especificado, ordenadas por distancia."""
+        """Lista tiendas en modo favoritos o geoespacial según los parámetros recibidos."""
         return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
         """
-        Devuelve tiendas dentro del radio especificado, ordenadas por distancia.
+        Devuelve el queryset adecuado según la acción:
 
-        Requiere parámetros lat y lng en la query string.
+        - retrieve / favorite: lookup directo por PK, sin filtro geoespacial.
+        - list?favorites=true: tiendas favoritas del usuario autenticado, sin geo.
+        - list: tiendas dentro del radio especificado, ordenadas por distancia.
+          Requiere parámetros lat y lng en la query string.
+
         Raises:
-            BargainAPIException: Si faltan lat o lng.
+            BargainAPIException: Si faltan lat o lng en la acción list.
         """
+        # Para detail/retrieve no aplicamos filtro geoespacial — sólo buscamos por PK.
+        if self.action in ("retrieve", "favorite"):
+            return Store.objects.filter(is_active=True).select_related("chain")
+
         request: Request = self.request
+
+        # Favoritos: no requieren coordenadas
+        if request.query_params.get("favorites") == "true" and request.user.is_authenticated:
+            return (
+                Store.objects.filter(
+                    is_active=True,
+                    favorited_by__user=request.user,
+                )
+                .select_related("chain")
+                .order_by("name")
+            )
+
         lat = request.query_params.get("lat")
         lng = request.query_params.get("lng")
 

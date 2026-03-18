@@ -29,6 +29,8 @@ export interface Store {
   estimatedMinutes: number;
   isOpen: boolean;
   logoUrl?: string;
+  openingHours?: Record<string, string>;
+  isFavorite?: boolean;
   /**
    * Punto geográfico PostGIS serializado como GeoJSON.
    * Formato: { type: "Point", coordinates: [lng, lat] }
@@ -184,20 +186,42 @@ export interface UserProfile {
   max_search_radius_km: number;
   /** Máx. paradas — campo real del backend */
   max_stops: number;
-  /** Preferencia de optimización del perfil */
-  optimization_preference?: string;
+  /** Peso del criterio precio (0-100) — persistido en BD, default 34 */
+  weight_price: number;
+  /** Peso del criterio distancia (0-100) — persistido en BD, default 33 */
+  weight_distance: number;
+  /** Peso del criterio tiempo (0-100) — persistido en BD, default 33 */
+  weight_time: number;
   push_notifications_enabled?: boolean;
   email_notifications_enabled?: boolean;
   notify_price_alerts?: boolean | null;
   notify_new_promos?: boolean | null;
   notify_shared_list_changes?: boolean | null;
   created_at?: string;
-  // Campos locales para compatibilidad con profileStore (no existen en el backend)
+  // Alias camelCase generados localmente por normalizeProfile
   searchRadiusKm: number;
   maxStops: number;
   weightPrice: number;
   weightDistance: number;
   weightTime: number;
+}
+
+// ─── Plantillas de lista ───────────────────────────────────────────────────────
+
+export interface ListTemplateItem {
+  id: string;
+  product: string;
+  product_name?: string;
+  ordering: number;
+}
+
+export interface ListTemplate {
+  id: string;
+  name: string;
+  source_list?: string | null;
+  created_at: string;
+  items: ListTemplateItem[];
+  item_count: number;
 }
 
 // ─── Preferencias de usuario ──────────────────────────────────────────────────
@@ -231,9 +255,55 @@ export interface Notification {
 
 export interface PriceAlert {
   id: string;
-  product: Product;
+  product: number | Product;
+  product_name?: string;
+  store?: number | null;
   target_price: number;
-  current_price: number;
+  current_price?: number;
   is_active: boolean;
+  triggered_at?: string | null;
   created_at: string;
+}
+
+// ─── Comparación de precios (endpoint /prices/compare/) ───────────────────────
+
+export interface PromotionMinimal {
+  id: number;
+  discount_type: "flat" | "percentage";
+  discount_value: string;
+  title: string;
+  end_date: string | null;
+}
+
+export interface PriceCompare {
+  store_id: number;
+  store_name: string;
+  price: string;
+  offer_price: string | null;
+  promo_price: string | null;
+  promotion: PromotionMinimal | null;
+  source: "scraping" | "crowdsourcing" | "api" | "business";
+  is_stale: boolean;
+  distance_km: number | null;
+  verified_at: string;
+}
+
+// ─── Mensajes del asistente IA ────────────────────────────────────────────────
+
+export interface AssistantMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+}
+
+// ─── Item OCR ─────────────────────────────────────────────────────────────────
+
+export interface OCRItem {
+  id: string;
+  raw_text: string;
+  matched_product?: Product;
+  quantity: number;
+  price?: number;
+  confidence: number;
 }

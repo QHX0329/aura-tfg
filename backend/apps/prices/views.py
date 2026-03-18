@@ -302,7 +302,7 @@ class PriceAlertViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return PriceAlert.objects.filter(user=self.request.user)
+        return PriceAlert.objects.filter(user=self.request.user, is_active=True).select_related("product")
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

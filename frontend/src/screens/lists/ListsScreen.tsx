@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
-  Platform,
   RefreshControl,
   StyleSheet,
   Text,
@@ -28,6 +27,7 @@ import type { ShoppingList } from "@/types/domain";
 import { listService } from "@/api/listService";
 import { useListStore } from "@/store/listStore";
 import { SkeletonBox } from "@/components/ui/SkeletonBox";
+import { AppModal } from "@/components/ui/AppModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -41,24 +41,14 @@ type ListsScreenNavigationProp = NativeStackNavigationProp<
 interface ListCardProps {
   item: ShoppingList;
   onPress: (id: string, name: string) => void;
-  onDelete: (id: string) => void;
+  /** Solicita al padre que muestre el modal de confirmación */
+  onDeleteRequest: (id: string, name: string) => void;
 }
 
-const ListCard: React.FC<ListCardProps> = ({ item, onPress, onDelete }) => {
-  const handleDelete = useCallback(() => {
-    Alert.alert(
-      "Eliminar lista",
-      `¿Eliminar "${item.name}"? Esta acción no se puede deshacer.`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => onDelete(item.id),
-        },
-      ],
-    );
-  }, [item.id, item.name, onDelete]);
+const ListCard: React.FC<ListCardProps> = ({ item, onPress, onDeleteRequest }) => {
+  const handleDeletePress = useCallback(() => {
+    onDeleteRequest(item.id, item.name);
+  }, [item.id, item.name, onDeleteRequest]);
 
   const itemCount = item.items?.length ?? 0;
   const itemLabel = itemCount === 1 ? "1 producto" : `${itemCount} productos`;
@@ -83,7 +73,7 @@ const ListCard: React.FC<ListCardProps> = ({ item, onPress, onDelete }) => {
       </View>
       <TouchableOpacity
         testID={`delete-list-${item.id}`}
-        onPress={handleDelete}
+        onPress={handleDeletePress}
         style={styles.deleteButton}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         accessibilityRole="button"
@@ -98,10 +88,10 @@ const ListCard: React.FC<ListCardProps> = ({ item, onPress, onDelete }) => {
 // renderItem extracted outside component to avoid new function per render
 function makeRenderItem(
   onPress: (id: string, name: string) => void,
-  onDelete: (id: string) => void,
+  onDeleteRequest: (id: string, name: string) => void,
 ): ListRenderItem<ShoppingList> {
   function renderListCard({ item }: { item: ShoppingList }) {
-    return <ListCard item={item} onPress={onPress} onDelete={onDelete} />;
+    return <ListCard item={item} onPress={onPress} onDeleteRequest={onDeleteRequest} />;
   }
   return renderListCard;
 }
@@ -112,6 +102,14 @@ export const ListsScreen: React.FC = () => {
   const navigation = useNavigation<ListsScreenNavigationProp>();
   const { lists, isLoading, setLists, addList, removeList } = useListStore();
   const [refreshing, setRefreshing] = useState(false);
+
+  // ─── Modal: crear lista ──────────────────────────────────────────────────
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
+
+  // ─── Modal: confirmar eliminación ────────────────────────────────────────
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // ─── Fetch on mount ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -143,50 +141,42 @@ export const ListsScreen: React.FC = () => {
   }, [setLists]);
 
   // ─── Create list ─────────────────────────────────────────────────────────
-  const handleCreateList = useCallback(() => {
-    const doCreate = async (name: string) => {
-      if (!name?.trim()) return;
-      try {
-        const newList = await listService.createList(name.trim());
-        addList(newList);
-        navigation.navigate("ListDetail", {
-          listId: newList.id,
-          listName: newList.name,
-        });
-      } catch {
-        Alert.alert("Error", "No se pudo crear la lista.");
-      }
-    };
-
-    if (Platform.OS === "web") {
-      // Alert.prompt is iOS-only; use browser prompt on web
-      const name = typeof window !== "undefined"
-        ? window.prompt("Nueva lista", "")
-        : null;
-      if (name !== null) void doCreate(name);
-      return;
+  const handleCreateConfirm = useCallback(async (name?: string) => {
+    if (!name?.trim()) return;
+    setCreateLoading(true);
+    try {
+      const newList = await listService.createList(name.trim());
+      addList(newList);
+      setCreateModalVisible(false);
+      navigation.navigate("ListDetail", {
+        listId: newList.id,
+        listName: newList.name,
+      });
+    } catch {
+      Alert.alert("Error", "No se pudo crear la lista.");
+    } finally {
+      setCreateLoading(false);
     }
-
-    Alert.prompt(
-      "Nueva lista",
-      "Nombre de la lista",
-      (name: string) => void doCreate(name),
-      "plain-text",
-    );
   }, [addList, navigation]);
 
   // ─── Delete list ─────────────────────────────────────────────────────────
-  const handleDeleteList = useCallback(
-    async (id: string) => {
-      try {
-        await listService.deleteList(id);
-        removeList(id);
-      } catch {
-        Alert.alert("Error", "No se pudo eliminar la lista.");
-      }
-    },
-    [removeList],
-  );
+  const handleDeleteRequest = useCallback((id: string, name: string) => {
+    setDeleteTarget({ id, name });
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    try {
+      await listService.deleteList(deleteTarget.id);
+      removeList(deleteTarget.id);
+      setDeleteTarget(null);
+    } catch {
+      Alert.alert("Error", "No se pudo eliminar la lista.");
+    } finally {
+      setDeleteLoading(false);
+    }
+  }, [deleteTarget, removeList]);
 
   // ─── Navigate to detail ───────────────────────────────────────────────────
   const handlePressItem = useCallback(
@@ -197,7 +187,7 @@ export const ListsScreen: React.FC = () => {
   );
 
   // ─── Render helpers ───────────────────────────────────────────────────────
-  const renderItem = makeRenderItem(handlePressItem, handleDeleteList);
+  const renderItem = makeRenderItem(handlePressItem, handleDeleteRequest);
 
   // ─── Loading skeleton ────────────────────────────────────────────────────
   if (isLoading) {
@@ -268,13 +258,47 @@ export const ListsScreen: React.FC = () => {
       <TouchableOpacity
         testID="fab-create-list"
         style={styles.fab}
-        onPress={handleCreateList}
+        onPress={() => setCreateModalVisible(true)}
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel="Crear nueva lista"
       >
         <Ionicons name="add" size={28} color={colors.white} />
       </TouchableOpacity>
+
+      {/* Modal: crear lista */}
+      <AppModal
+        visible={createModalVisible}
+        type="input"
+        title="Nueva lista"
+        message="¿Cómo quieres llamar a tu lista?"
+        placeholder="Ej. Compra semanal"
+        confirmLabel="Crear"
+        cancelLabel="Cancelar"
+        loading={createLoading}
+        onConfirm={handleCreateConfirm}
+        onCancel={() => setCreateModalVisible(false)}
+        testID="modal-create-list"
+      />
+
+      {/* Modal: confirmar eliminación */}
+      <AppModal
+        visible={deleteTarget !== null}
+        type="confirm"
+        title="Eliminar lista"
+        message={
+          deleteTarget
+            ? `¿Eliminar "${deleteTarget.name}"? Esta acción no se puede deshacer.`
+            : ""
+        }
+        confirmLabel="Eliminar"
+        confirmVariant="danger"
+        cancelLabel="Cancelar"
+        loading={deleteLoading}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+        testID="modal-delete-list"
+      />
     </SafeAreaView>
   );
 };

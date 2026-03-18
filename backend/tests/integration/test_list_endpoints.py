@@ -237,19 +237,20 @@ class TestListItems:
         assert item["product_name"] == self.product.name
         assert item["quantity"] == 2
 
-    def test_duplicate_product_returns_400(self):
-        """Adding the same product twice should fail due to unique_together."""
+    def test_duplicate_product_sums_quantity(self):
+        """Adding same product twice should increase existing item quantity."""
         self.client.post(
             f"/api/v1/lists/{self.list_id}/items/",
-            {"product": self.product.pk},
+            {"product": self.product.pk, "quantity": 2},
             format="json",
         )
         response = self.client.post(
             f"/api/v1/lists/{self.list_id}/items/",
-            {"product": self.product.pk},
+            {"product": self.product.pk, "quantity": 3},
             format="json",
         )
-        assert response.status_code == 400
+        assert response.status_code == 200
+        assert response.json()["quantity"] == 5
 
 
 # ── Collaborators ─────────────────────────────────────────────────────────────

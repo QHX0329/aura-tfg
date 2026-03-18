@@ -11,7 +11,7 @@
  * PATCH /auth/profile/me/preferences/. Los toggles se guardan inmediatamente.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Platform,
@@ -22,7 +22,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Slider from "@react-native-community/slider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -44,44 +43,6 @@ import type { ProfileStackParamList } from "@/navigation/types";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/**
- * Cuando el slider X cambia a value V, redistribuye (100 - V) proporcionalmente
- * entre los otros dos sliders manteniendo sus proporciones relativas.
- */
-function adjustWeights(
-  changed: "price" | "distance" | "time",
-  newValue: number,
-  current: { price: number; distance: number; time: number },
-): { price: number; distance: number; time: number } {
-  const remaining = 100 - newValue;
-  const others =
-    changed === "price"
-      ? { a: "distance" as const, b: "time" as const }
-      : changed === "distance"
-        ? { a: "price" as const, b: "time" as const }
-        : { a: "price" as const, b: "distance" as const };
-
-  const sumOthers = current[others.a] + current[others.b];
-
-  let aNew: number;
-  let bNew: number;
-
-  if (sumOthers === 0) {
-    // Distribución igual si ambos eran 0
-    aNew = Math.round(remaining / 2);
-    bNew = remaining - aNew;
-  } else {
-    aNew = Math.round((current[others.a] / sumOthers) * remaining);
-    bNew = remaining - aNew;
-  }
-
-  const result = { price: current.price, distance: current.distance, time: current.time };
-  result[changed] = newValue;
-  result[others.a] = aNew;
-  result[others.b] = bNew;
-  return result;
-}
 
 function formatMemberSince(isoDate: string | null | undefined): string {
   if (!isoDate) return "";
@@ -210,9 +171,6 @@ export const ProfileScreen: React.FC = () => {
   const [notifyNewPromos, setNotifyNewPromos] = useState(true);
   const [notifySharedListChanges, setNotifySharedListChanges] = useState(true);
 
-  // Debounce timer ref (NOT useState — must survive re-renders without causing them)
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   // ── Cargar perfil al montar ──────────────────────────────────────────────
 
   useEffect(() => {
@@ -242,154 +200,6 @@ export const ProfileScreen: React.FC = () => {
       cancelled = true;
     };
   }, [setProfile]);
-
-  // ── Debounce para preferencias de optimización ───────────────────────────
-
-  const schedulePreferencesSave = useCallback(
-    (prefs: {
-      weight_price: number;
-      weight_distance: number;
-      weight_time: number;
-      max_search_radius_km: number;
-      max_stops: number;
-    }) => {
-      if (debounceTimer.current !== null) {
-        clearTimeout(debounceTimer.current);
-      }
-      debounceTimer.current = setTimeout(async () => {
-        try {
-          await authService.updatePreferences(prefs);
-          // Actualizar store con los valores locales confirmados
-          // (el backend no devuelve weight_price/distance/time ya que no son campos del modelo)
-          setProfile({
-            ...(profile ?? {
-              id: "",
-              username: "",
-              email: "",
-              first_name: "",
-              last_name: "",
-              name: "",
-              max_search_radius_km: prefs.max_search_radius_km ?? 5,
-              max_stops: prefs.max_stops ?? 3,
-              searchRadiusKm: prefs.max_search_radius_km ?? 5,
-              maxStops: prefs.max_stops ?? 3,
-              weightPrice: prefs.weight_price ?? 50,
-              weightDistance: prefs.weight_distance ?? 30,
-              weightTime: prefs.weight_time ?? 20,
-            }),
-            searchRadiusKm: prefs.max_search_radius_km ?? (profile?.searchRadiusKm ?? 5),
-            maxStops: prefs.max_stops ?? (profile?.maxStops ?? 3),
-            max_search_radius_km: prefs.max_search_radius_km ?? (profile?.max_search_radius_km ?? 5),
-            max_stops: prefs.max_stops ?? (profile?.max_stops ?? 3),
-            weightPrice: prefs.weight_price ?? (profile?.weightPrice ?? 50),
-            weightDistance: prefs.weight_distance ?? (profile?.weightDistance ?? 30),
-            weightTime: prefs.weight_time ?? (profile?.weightTime ?? 20),
-          });
-        } catch {
-          // No interrumpir la UX si el guardado falla
-        }
-      }, 500);
-    },
-    [profile, setProfile],
-  );
-
-  // ── Handlers de sliders ──────────────────────────────────────────────────
-
-  const handleWeightPriceChange = useCallback(
-    (value: number) => {
-      const rounded = Math.round(value);
-      const newWeights = adjustWeights(
-        "price",
-        rounded,
-        { price: weightPrice, distance: weightDistance, time: weightTime },
-      );
-      setWeightPrice(newWeights.price);
-      setWeightDistance(newWeights.distance);
-      setWeightTime(newWeights.time);
-      schedulePreferencesSave({
-        weight_price: newWeights.price,
-        weight_distance: newWeights.distance,
-        weight_time: newWeights.time,
-        max_search_radius_km: searchRadiusKm,
-        max_stops: maxStops,
-      });
-    },
-    [weightPrice, weightDistance, weightTime, searchRadiusKm, maxStops, schedulePreferencesSave],
-  );
-
-  const handleWeightDistanceChange = useCallback(
-    (value: number) => {
-      const rounded = Math.round(value);
-      const newWeights = adjustWeights(
-        "distance",
-        rounded,
-        { price: weightPrice, distance: weightDistance, time: weightTime },
-      );
-      setWeightPrice(newWeights.price);
-      setWeightDistance(newWeights.distance);
-      setWeightTime(newWeights.time);
-      schedulePreferencesSave({
-        weight_price: newWeights.price,
-        weight_distance: newWeights.distance,
-        weight_time: newWeights.time,
-        max_search_radius_km: searchRadiusKm,
-        max_stops: maxStops,
-      });
-    },
-    [weightPrice, weightDistance, weightTime, searchRadiusKm, maxStops, schedulePreferencesSave],
-  );
-
-  const handleWeightTimeChange = useCallback(
-    (value: number) => {
-      const rounded = Math.round(value);
-      const newWeights = adjustWeights(
-        "time",
-        rounded,
-        { price: weightPrice, distance: weightDistance, time: weightTime },
-      );
-      setWeightPrice(newWeights.price);
-      setWeightDistance(newWeights.distance);
-      setWeightTime(newWeights.time);
-      schedulePreferencesSave({
-        weight_price: newWeights.price,
-        weight_distance: newWeights.distance,
-        weight_time: newWeights.time,
-        max_search_radius_km: searchRadiusKm,
-        max_stops: maxStops,
-      });
-    },
-    [weightPrice, weightDistance, weightTime, searchRadiusKm, maxStops, schedulePreferencesSave],
-  );
-
-  const handleRadiusChange = useCallback(
-    (value: number) => {
-      const rounded = Math.round(value);
-      setSearchRadiusKm(rounded);
-      schedulePreferencesSave({
-        weight_price: weightPrice,
-        weight_distance: weightDistance,
-        weight_time: weightTime,
-        max_search_radius_km: rounded,
-        max_stops: maxStops,
-      });
-    },
-    [weightPrice, weightDistance, weightTime, maxStops, schedulePreferencesSave],
-  );
-
-  const handleMaxStopsChange = useCallback(
-    (value: number) => {
-      const rounded = Math.round(value);
-      setMaxStops(rounded);
-      schedulePreferencesSave({
-        weight_price: weightPrice,
-        weight_distance: weightDistance,
-        weight_time: weightTime,
-        max_search_radius_km: searchRadiusKm,
-        max_stops: rounded,
-      });
-    },
-    [weightPrice, weightDistance, weightTime, searchRadiusKm, schedulePreferencesSave],
-  );
 
   // ── Handlers de toggles de notificación ─────────────────────────────────
 
@@ -471,7 +281,7 @@ export const ProfileScreen: React.FC = () => {
   const userName = user?.name ?? profile?.name ?? "Usuario";
   const userEmail = user?.email ?? profile?.email ?? "";
   const userInitial = userName.charAt(0).toUpperCase();
-  const weightSum = weightPrice + weightDistance + weightTime;
+
 
   // ── Renderizado ──────────────────────────────────────────────────────────
 
@@ -518,94 +328,33 @@ export const ProfileScreen: React.FC = () => {
           ) : null}
         </View>
 
-        {/* ── Sección 2: Optimización ─────────────────────────────────── */}
+        {/* ── Sección 2: Optimización (solo lectura) ──────────────────── */}
         <Section title="Optimización">
-          {/* Indicador de suma */}
-          <View style={styles.weightSumRow}>
-            <Text style={styles.weightSumLabel}>Suma total</Text>
-            <Text
-              style={[
-                styles.weightSumValue,
-                weightSum !== 100 && styles.weightSumError,
-              ]}
+          <Row label="Precio" first>
+            <Text style={styles.readonlyValue}>{weightPrice}%</Text>
+          </Row>
+          <Row label="Distancia">
+            <Text style={styles.readonlyValue}>{weightDistance}%</Text>
+          </Row>
+          <Row label="Tiempo">
+            <Text style={styles.readonlyValue}>{weightTime}%</Text>
+          </Row>
+          <Row label="Radio de búsqueda">
+            <Text style={styles.readonlyValue}>{searchRadiusKm} km</Text>
+          </Row>
+          <Row label="Máx. paradas">
+            <Text style={styles.readonlyValue}>{maxStops}</Text>
+          </Row>
+          <Row label="Ajustar preferencias" last>
+            <TouchableOpacity
+              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              onPress={() => navigation.navigate("OptimizerConfig")}
             >
-              {weightSum}%
-            </Text>
-          </View>
-
-          <Row label={`Precio: ${weightPrice}%`} first>
-            <Slider
-              testID="slider-weight-price"
-              style={styles.slider}
-              minimumValue={0}
-              maximumValue={100}
-              step={5}
-              value={weightPrice}
-              onValueChange={handleWeightPriceChange}
-              minimumTrackTintColor={colors.primary}
-              maximumTrackTintColor={colors.border}
-              thumbTintColor={colors.primary}
-            />
-          </Row>
-
-          <Row label={`Distancia: ${weightDistance}%`}>
-            <Slider
-              testID="slider-weight-distance"
-              style={styles.slider}
-              minimumValue={0}
-              maximumValue={100}
-              step={5}
-              value={weightDistance}
-              onValueChange={handleWeightDistanceChange}
-              minimumTrackTintColor={colors.secondary}
-              maximumTrackTintColor={colors.border}
-              thumbTintColor={colors.secondary}
-            />
-          </Row>
-
-          <Row label={`Tiempo: ${weightTime}%`}>
-            <Slider
-              testID="slider-weight-time"
-              style={styles.slider}
-              minimumValue={0}
-              maximumValue={100}
-              step={5}
-              value={weightTime}
-              onValueChange={handleWeightTimeChange}
-              minimumTrackTintColor={colors.info}
-              maximumTrackTintColor={colors.border}
-              thumbTintColor={colors.info}
-            />
-          </Row>
-
-          <Row label={`Radio de búsqueda: ${searchRadiusKm} km`}>
-            <Slider
-              testID="slider-search-radius"
-              style={styles.slider}
-              minimumValue={1}
-              maximumValue={20}
-              step={1}
-              value={searchRadiusKm}
-              onValueChange={handleRadiusChange}
-              minimumTrackTintColor={colors.accent}
-              maximumTrackTintColor={colors.border}
-              thumbTintColor={colors.accentDark}
-            />
-          </Row>
-
-          <Row label={`Máx. paradas: ${maxStops}`} last>
-            <Slider
-              testID="slider-max-stops"
-              style={styles.slider}
-              minimumValue={2}
-              maximumValue={5}
-              step={1}
-              value={maxStops}
-              onValueChange={handleMaxStopsChange}
-              minimumTrackTintColor={colors.warning}
-              maximumTrackTintColor={colors.border}
-              thumbTintColor={colors.warning}
-            />
+              <Text style={{ fontFamily: "SourceSans3_400Regular", fontSize: 13, color: colors.primary }}>
+                Configurar
+              </Text>
+              <Ionicons name="chevron-forward" size={14} color={colors.primary} />
+            </TouchableOpacity>
           </Row>
         </Section>
 
@@ -768,9 +517,15 @@ const styles = StyleSheet.create({
   weightSumError: {
     color: colors.error,
   },
-  slider: {
-    flex: 1,
-    height: 36,
+  weightSumNorm: {
+    ...textStyles.caption,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  readonlyValue: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
   },
   toggleDisabled: {
     opacity: 0.4,

@@ -139,6 +139,21 @@ class TestNearbyStores:
         assert carrefour is not None
         assert carrefour["is_local_business"] is True
 
+    def test_response_includes_location_geojson(
+        self, authenticated_client, store_seville_center
+    ):
+        """Cada tienda debe incluir location GeoJSON para renderizar markers."""
+        response = authenticated_client.get(
+            f"/api/v1/stores/?lat={SEVILLE_LAT}&lng={SEVILLE_LNG}"
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+        store = response.data["results"][0]
+        assert "location" in store
+        assert store["location"] is not None
+        assert store["location"]["type"] == "Point"
+        assert len(store["location"]["coordinates"]) == 2
+
 
 class TestStoreDetail:
     """Tests para el endpoint de detalle de tienda."""
@@ -165,11 +180,12 @@ class TestStoreDetail:
         assert response.status_code == status.HTTP_200_OK
         assert response.data["is_favorite"] is False
 
-    def test_detail_requires_location_params(self, authenticated_client, store_nearby):
-        """El endpoint de detalle también requiere lat/lng para el queryset."""
+    def test_detail_works_without_location_params(self, authenticated_client, store_nearby):
+        """El endpoint de detalle debe funcionar sin lat/lng — lookup por PK directo."""
         response = authenticated_client.get(f"/api/v1/stores/{store_nearby.id}/")
-        # retrieve uses get_queryset, which requires lat/lng → 400
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        # retrieve no aplica filtro geoespacial, sólo busca por PK → 200
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["name"] == "Mercadona Alameda"
 
     def test_detail_with_location_params_returns_200(
         self, authenticated_client, store_nearby

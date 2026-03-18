@@ -8,6 +8,7 @@ Endpoints:
 import redis as redis_lib
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 from django.db import models as django_models
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
@@ -142,15 +143,21 @@ class ShoppingListViewSet(viewsets.ModelViewSet):
         serializer = ShoppingListItemSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Check for duplicates (unique_together DB constraint would raise IntegrityError;
-        # better to validate first)
-        product_id = serializer.validated_data.get("product")
-        if product_id and ShoppingListItem.objects.filter(
-            shopping_list=shopping_list, product=product_id
-        ).exists():
+        product = serializer.validated_data.get("product")
+        quantity = serializer.validated_data.get("quantity", 1)
+
+        existing_item = ShoppingListItem.objects.filter(
+            shopping_list=shopping_list,
+            product=product,
+        ).first()
+
+        if existing_item is not None:
+            existing_item.quantity += quantity
+            existing_item.save(update_fields=["quantity"])
+            _trigger_list_notification(shopping_list.id, request.user.id)
             return Response(
-                {"detail": "Este producto ya está en la lista."},
-                status=status.HTTP_400_BAD_REQUEST,
+                ShoppingListItemSerializer(existing_item).data,
+                status=status.HTTP_200_OK,
             )
 
         serializer.save(shopping_list=shopping_list, added_by=request.user)
@@ -216,7 +223,14 @@ class ShoppingListViewSet(viewsets.ModelViewSet):
         serializer = AddCollaboratorSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data["username"]
-        user = User.objects.get(username=username)
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "El usuario no existe.", "code": "USER_NOT_FOUND"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         # Check if already a collaborator
         if ListCollaborator.objects.filter(
@@ -232,6 +246,45 @@ class ShoppingListViewSet(viewsets.ModelViewSet):
             user=user,
             invited_by=request.user,
         )
+
+        # In-app notification for invited user
+        try:
+            from apps.notifications.models import Notification, NotificationType
+            inviter = request.user
+            Notification.objects.create(
+                user=user,
+                notification_type=NotificationType.SHARED_LIST_CHANGED,
+                title="Has sido invitado a una lista",
+                body=(
+                    f"{inviter.get_full_name() or inviter.username} te ha invitado "
+                    f"a colaborar en la lista «{shopping_list.name}»."
+                ),
+                action_url=f"bargain://lists/{shopping_list.pk}",
+                data={"list_id": shopping_list.pk, "inviter": inviter.username},
+            )
+        except Exception:
+            pass  # No interrumpir si la notificación falla
+
+        # Email to invited user (best-effort)
+        try:
+            if user.email:
+                inviter = request.user
+                send_mail(
+                    subject=f"[BargAIn] Invitación a lista compartida: {shopping_list.name}",
+                    message=(
+                        f"Hola {user.get_full_name() or user.username},\n\n"
+                        f"{inviter.get_full_name() or inviter.username} te ha invitado "
+                        f"a colaborar en la lista «{shopping_list.name}» en BargAIn.\n\n"
+                        "Abre la app para ver la lista compartida.\n\n"
+                        "— El equipo de BargAIn"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=True,
+                )
+        except Exception:
+            pass  # No interrumpir si el correo falla
+
         out = ListCollaboratorSerializer(collab)
         return Response(out.data, status=status.HTTP_201_CREATED)
 
@@ -316,6 +369,66 @@ class ShoppingListViewSet(viewsets.ModelViewSet):
         new_list = ShoppingList.objects.create(owner=user, name=name)
 
         for template_item in template.items.all():
+            ShoppingListItem.objects.create(
+                shopping_list=new_list,
+                product=template_item.product,
+                quantity=1,
+                is_checked=False,
+                added_by=user,
+            )
+
+        serializer = ShoppingListSerializer(new_list)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ListTemplateViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet CRUD para plantillas de lista de la compra del usuario.
+
+    GET    /lists/templates/            — listar plantillas del usuario
+    POST   /lists/templates/            — crear plantilla vacía (o con items)
+    GET    /lists/templates/{id}/       — detalle de plantilla
+    PATCH  /lists/templates/{id}/       — renombrar plantilla
+    DELETE /lists/templates/{id}/       — eliminar plantilla
+
+    POST   /lists/templates/{id}/create-list/  — instanciar nueva lista desde plantilla
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return (
+            ListTemplate.objects.filter(owner=self.request.user)
+            .prefetch_related("items__product__category")
+            .order_by("-created_at")
+        )
+
+    def get_serializer_class(self):
+        from .serializers import ListTemplateSerializer
+
+        return ListTemplateSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    @extend_schema(
+        request={"application/json": {"type": "object", "properties": {"name": {"type": "string"}}}},
+        responses={201: ShoppingListSerializer},
+    )
+    @action(detail=True, methods=["post"], url_path="create-list")
+    def create_list(self, request, pk=None):
+        """POST: instancia una lista de la compra desde esta plantilla."""
+        template = self.get_object()
+        user = request.user
+
+        active_count = ShoppingList.objects.filter(owner=user, is_archived=False).count()
+        if active_count >= ACTIVE_LIST_LIMIT:
+            raise ActiveListLimitError()
+
+        name = request.data.get("name") or template.name
+        new_list = ShoppingList.objects.create(owner=user, name=name)
+
+        for template_item in template.items.prefetch_related("product").all():
             ShoppingListItem.objects.create(
                 shopping_list=new_list,
                 product=template_item.product,

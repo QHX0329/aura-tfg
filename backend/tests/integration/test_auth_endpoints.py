@@ -176,20 +176,22 @@ class TestProfile:
         data = response.data["data"]
         assert data["username"] == consumer_user.username
         assert data["email"] == consumer_user.email
-        assert "optimization_preference" in data
+        assert "weight_price" in data
+        assert "weight_distance" in data
+        assert "weight_time" in data
         assert "max_search_radius_km" in data
 
     def test_profile_get_unauthenticated_returns_401(self, api_client):
         response = api_client.get(PROFILE_URL)
         assert response.status_code == 401
 
-    def test_profile_patch_optimization_preference(self, authenticated_client):
+    def test_profile_patch_weight_price(self, authenticated_client):
         response = authenticated_client.patch(
-            PROFILE_URL, {"optimization_preference": "price"}, format="json"
+            PROFILE_URL, {"weight_price": 70, "weight_distance": 15, "weight_time": 15}, format="json"
         )
         assert response.status_code == 200
         assert response.data["success"] is True
-        assert response.data["data"]["optimization_preference"] == "price"
+        assert response.data["data"]["weight_price"] == 70
 
     def test_profile_patch_max_radius(self, authenticated_client):
         response = authenticated_client.patch(

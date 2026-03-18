@@ -36,7 +36,9 @@ class UserAdmin(BaseUserAdmin):
                     "default_location",
                     "max_search_radius_km",
                     "max_stops",
-                    "optimization_preference",
+                    "weight_price",
+                    "weight_distance",
+                    "weight_time",
                     "push_notifications_enabled",
                     "email_notifications_enabled",
                 )

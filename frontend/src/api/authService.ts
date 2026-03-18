@@ -39,13 +39,12 @@ function normalizeProfile(raw: UserProfile): UserProfile {
   return {
     ...raw,
     name,
-    // Alias camelCase para compatibilidad con profileStore
+    // Alias camelCase — los pesos ahora vienen del backend (persistidos en BD)
     searchRadiusKm: raw.max_search_radius_km,
     maxStops: raw.max_stops,
-    // El backend no persiste pesos individuales; usar valores por defecto
-    weightPrice: raw.weightPrice ?? 50,
-    weightDistance: raw.weightDistance ?? 30,
-    weightTime: raw.weightTime ?? 20,
+    weightPrice: raw.weight_price ?? 34,
+    weightDistance: raw.weight_distance ?? 33,
+    weightTime: raw.weight_time ?? 33,
   };
 }
 

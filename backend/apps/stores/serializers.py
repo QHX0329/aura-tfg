@@ -18,10 +18,20 @@ class StoreListSerializer(serializers.ModelSerializer):
 
     chain = StoreChainSerializer(read_only=True)
     distance_km = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Store
-        fields = ["id", "name", "chain", "address", "distance_km", "is_local_business", "is_active"]
+        fields = [
+            "id",
+            "name",
+            "chain",
+            "address",
+            "distance_km",
+            "location",
+            "is_local_business",
+            "is_active",
+        ]
 
     def get_distance_km(self, obj: Store) -> float | None:
         """Convierte la distancia anotada de metros a kilómetros."""
@@ -30,6 +40,15 @@ class StoreListSerializer(serializers.ModelSerializer):
             return None
         # django.contrib.gis Distance object — .m gives metres
         return round(distance.m / 1000, 2)
+
+    def get_location(self, obj: Store) -> dict[str, object] | None:
+        """Serializa PointField a GeoJSON simple para frontend de mapas."""
+        if obj.location is None:
+            return None
+        return {
+            "type": "Point",
+            "coordinates": [obj.location.x, obj.location.y],
+        }
 
 
 class StoreDetailSerializer(StoreListSerializer):

@@ -55,6 +55,7 @@ import { priceService } from "@/api/priceService";
 import { useNavigation } from "@react-navigation/native";
 import type {
   Store,
+  Product,
   PriceAlert,
   ShoppingList,
   Notification,
@@ -64,11 +65,13 @@ import type { HomeStackParamList } from "@/navigation/types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const fmt = (n: number): string =>
-  n.toLocaleString("es-ES", {
+const fmt = (n: number | null | undefined): string => {
+  if (n == null || isNaN(Number(n))) return "—";
+  return Number(n).toLocaleString("es-ES", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+};
 
 // ─── Sub-componentes ──────────────────────────────────────────────────────────
 
@@ -251,25 +254,34 @@ const RecentNotifCard: React.FC<{
 const PriceAlertCard: React.FC<{
   alert: PriceAlert;
   onPress: () => void;
-}> = ({ alert, onPress }) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={[priceAlertStyles.card, shadows.card]}
-    activeOpacity={0.85}
-  >
-    <View style={priceAlertStyles.row}>
-      <Ionicons name="pricetag-outline" size={18} color={colors.accentDark} />
-      <View style={priceAlertStyles.info}>
-        <Text style={priceAlertStyles.name} numberOfLines={1}>
-          {alert.product.name}
-        </Text>
-        <Text style={priceAlertStyles.prices}>
-          Objetivo: €{fmt(alert.target_price)} · Actual: €{fmt(alert.current_price)}
-        </Text>
+}> = ({ alert, onPress }) => {
+  const productName =
+    alert.product_name ??
+    (typeof alert.product === "object" && alert.product !== null
+      ? (alert.product as Product).name
+      : `Producto #${String(alert.product)}`);
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[priceAlertStyles.card, shadows.card]}
+      activeOpacity={0.85}
+    >
+      <View style={priceAlertStyles.row}>
+        <Ionicons name="pricetag-outline" size={18} color={colors.accentDark} />
+        <View style={priceAlertStyles.info}>
+          <Text style={priceAlertStyles.name} numberOfLines={1}>
+            {productName}
+          </Text>
+          <Text style={priceAlertStyles.prices}>
+            Objetivo: €{fmt(alert.target_price)}
+            {alert.current_price != null ? ` · Actual: €${fmt(alert.current_price)}` : ""}
+          </Text>
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 // ─── Pantalla principal ───────────────────────────────────────────────────────
 
@@ -420,20 +432,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
   const QUICK_ACTIONS: QuickAction[] = [
     {
-      id: "new-list",
-      label: "Nueva lista",
-      iconName: "add",
+      id: "templates",
+      label: "Plantillas",
+      iconName: "document-text-outline",
       color: colors.secondary,
       bg: colors.secondaryTint,
-      onPress: () => navigation.navigate("ListsTab" as never),
+      onPress: () => navigation.navigate("ListsTab" as never, { screen: "Templates" } as never),
     },
     {
-      id: "search",
-      label: "Buscar",
-      iconName: "search",
+      id: "catalog",
+      label: "Productos",
+      iconName: "cube",
       color: colors.primary,
       bg: colors.primaryTint,
-      onPress: () => console.log("Buscar"),
+      onPress: () => navigation.navigate("ProductsCatalog"),
     },
     {
       id: "scan",
@@ -444,12 +456,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
       onPress: () => console.log("Escanear"),
     },
     {
-      id: "route",
-      label: "Mi ruta",
-      iconName: "navigate",
+      id: "favorites",
+      label: "Favoritos",
+      iconName: "heart",
       color: colors.info,
       bg: colors.infoBg,
-      onPress: () => console.log("Mi ruta"),
+      onPress: () => navigation.navigate("FavoriteStores"),
     },
   ];
 
@@ -505,7 +517,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Leche, pan, aceite de oliva…"
-            onFilterPress={() => console.log("Filtros")}
           />
         </Animated.View>
 

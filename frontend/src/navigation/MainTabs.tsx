@@ -1,7 +1,7 @@
 /**
  * Tab Navigator principal de BargAIn.
  *
- * 4 tabs: Inicio, Listas, Mapa, Perfil.
+ * 5 tabs: Inicio, Listas, Mapa, Asistente, Perfil.
  * Cada tab tiene su propio Stack Navigator anidado.
  */
 
@@ -17,32 +17,74 @@ import type {
   HomeStackParamList,
   ListsStackParamList,
   MapStackParamList,
+  AssistantStackParamList,
   ProfileStackParamList,
 } from "./types";
 
-// Screens
+// ── Screens ──────────────────────────────────────────
+
+// Home
 import { HomeScreen } from "@/screens/home/HomeScreen";
+import { ProductsCatalogScreen } from "@/screens/home/ProductsCatalogScreen";
 import { NotificationScreen } from "@/screens/home/NotificationScreen";
+import { PriceAlertsScreen } from "@/screens/home/PriceAlertsScreen";
+import { PriceCompareScreen } from "@/screens/home/PriceCompareScreen";
+import { FavoriteStoresScreen } from "@/screens/home/FavoriteStoresScreen";
+
+// Lists
 import { ListsScreen } from "@/screens/lists/ListsScreen";
 import { ListDetailScreen } from "@/screens/lists/ListDetailScreen";
+import { TemplatesScreen } from "@/screens/lists/TemplatesScreen";
+import { RouteScreen } from "@/screens/lists/RouteScreen";
+import { OCRScreen } from "@/screens/lists/OCRScreen";
+
+// Map
 import { MapScreen } from "@/screens/map/MapScreen";
+import { StoreProfileScreen } from "@/screens/map/StoreProfileScreen";
+
+// Assistant
+import { AssistantScreen } from "@/screens/assistant/AssistantScreen";
+
+// Profile
 import { ProfileScreen } from "@/screens/profile/ProfileScreen";
 import { ChangePasswordScreen } from "@/screens/profile/ChangePasswordScreen";
+import { OptimizerConfigScreen } from "@/screens/profile/OptimizerConfigScreen";
 
 // ── Stack Navigators anidados ────────────────────────
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const ListsStack = createNativeStackNavigator<ListsStackParamList>();
 const MapStack = createNativeStackNavigator<MapStackParamList>();
+const AssistantStack = createNativeStackNavigator<AssistantStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
 const HomeStackNavigator: React.FC = () => (
   <HomeStack.Navigator screenOptions={{ headerShown: false }}>
     <HomeStack.Screen name="Home" component={HomeScreen} />
     <HomeStack.Screen
+      name="ProductsCatalog"
+      component={ProductsCatalogScreen}
+      options={{ headerShown: true, title: "Productos" }}
+    />
+    <HomeStack.Screen
       name="Notifications"
       component={NotificationScreen}
       options={{ headerShown: true, title: "Notificaciones" }}
+    />
+    <HomeStack.Screen
+      name="PriceAlerts"
+      component={PriceAlertsScreen}
+      options={{ headerShown: true, title: "Alertas de precio" }}
+    />
+    <HomeStack.Screen
+      name="FavoriteStores"
+      component={FavoriteStoresScreen}
+      options={{ headerShown: true, title: "Mis favoritos" }}
+    />
+    <HomeStack.Screen
+      name="PriceCompare"
+      component={PriceCompareScreen}
+      options={{ headerShown: false }}
     />
   </HomeStack.Navigator>
 );
@@ -66,13 +108,49 @@ const ListsStackNavigator: React.FC = () => (
         title: route.params.listName,
       })}
     />
+    <ListsStack.Screen
+      name="Templates"
+      component={TemplatesScreen}
+      options={{ headerShown: false }}
+    />
+    <ListsStack.Screen
+      name="ProductsCatalog"
+      component={ProductsCatalogScreen}
+      options={{ headerShown: true, title: "Productos" }}
+    />
+    <ListsStack.Screen
+      name="PriceCompare"
+      component={PriceCompareScreen}
+      options={{ headerShown: false }}
+    />
+    <ListsStack.Screen
+      name="Route"
+      component={RouteScreen}
+      options={{ headerShown: false }}
+    />
+    <ListsStack.Screen
+      name="OCR"
+      component={OCRScreen}
+      options={{ headerShown: false }}
+    />
   </ListsStack.Navigator>
 );
 
 const MapStackNavigator: React.FC = () => (
   <MapStack.Navigator screenOptions={{ headerShown: false }}>
     <MapStack.Screen name="Map" component={MapScreen} />
+    <MapStack.Screen
+      name="StoreProfile"
+      component={StoreProfileScreen}
+      options={{ headerShown: true, title: "Tienda" }}
+    />
   </MapStack.Navigator>
+);
+
+const AssistantStackNavigator: React.FC = () => (
+  <AssistantStack.Navigator screenOptions={{ headerShown: false }}>
+    <AssistantStack.Screen name="Assistant" component={AssistantScreen} />
+  </AssistantStack.Navigator>
 );
 
 const ProfileStackNavigator: React.FC = () => (
@@ -92,6 +170,11 @@ const ProfileStackNavigator: React.FC = () => (
       component={ChangePasswordScreen}
       options={{ title: "Cambiar contraseña" }}
     />
+    <ProfileStack.Screen
+      name="OptimizerConfig"
+      component={OptimizerConfigScreen}
+      options={{ headerShown: false }}
+    />
   </ProfileStack.Navigator>
 );
 
@@ -102,56 +185,41 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 /** Mapa de iconos por cada tab */
 const TAB_ICONS: Record<
   keyof MainTabParamList,
-  { focused: string; unfocused: string }
+  { focused: string; unfocused: string; label: string }
 > = {
-  HomeTab: { focused: "home", unfocused: "home-outline" },
-  ListsTab: { focused: "list", unfocused: "list-outline" },
-  MapTab: { focused: "map", unfocused: "map-outline" },
-  ProfileTab: { focused: "person", unfocused: "person-outline" },
+  HomeTab: { focused: "home", unfocused: "home-outline", label: "Inicio" },
+  ListsTab: { focused: "list", unfocused: "list-outline", label: "Listas" },
+  MapTab: { focused: "map", unfocused: "map-outline", label: "Mapa" },
+  AssistantTab: { focused: "sparkles", unfocused: "sparkles-outline", label: "Asistente" },
+  ProfileTab: { focused: "person", unfocused: "person-outline", label: "Perfil" },
 };
 
 export const MainTabs: React.FC = () => {
   return (
     <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
+      screenOptions={{ headerShown: false }}
       tabBar={(props) => {
         const tabs = props.state.routes.map((route) => {
-          const icons = TAB_ICONS[route.name as keyof MainTabParamList];
+          const info = TAB_ICONS[route.name as keyof MainTabParamList];
           return {
             key: route.key,
             route: route.name,
-            label:
-              route.name === "HomeTab"
-                ? "Inicio"
-                : route.name === "ListsTab"
-                  ? "Listas"
-                  : route.name === "MapTab"
-                    ? "Mapa"
-                    : "Perfil",
+            label: info.label,
             icon: (
               <Ionicons
-                name={icons.unfocused as any}
+                name={info.unfocused as any}
                 size={sizes.tabIconSize}
                 color={colors.textMuted}
               />
             ),
             iconActive: (
               <Ionicons
-                name={icons.focused as any}
+                name={info.focused as any}
                 size={sizes.tabIconSize}
                 color={colors.primary}
               />
             ),
-            accessibilityLabel:
-              route.name === "HomeTab"
-                ? "Inicio"
-                : route.name === "ListsTab"
-                  ? "Listas"
-                  : route.name === "MapTab"
-                    ? "Mapa"
-                    : "Perfil",
+            accessibilityLabel: info.label,
           };
         });
 
@@ -166,7 +234,6 @@ export const MainTabs: React.FC = () => {
                 target: route.key,
                 canPreventDefault: true,
               });
-
               if (!event.defaultPrevented) {
                 props.navigation.navigate(route.name as never);
               }
@@ -175,26 +242,11 @@ export const MainTabs: React.FC = () => {
         );
       }}
     >
-      <Tab.Screen
-        name="HomeTab"
-        component={HomeStackNavigator}
-        options={{ tabBarLabel: "Inicio" }}
-      />
-      <Tab.Screen
-        name="ListsTab"
-        component={ListsStackNavigator}
-        options={{ tabBarLabel: "Listas" }}
-      />
-      <Tab.Screen
-        name="MapTab"
-        component={MapStackNavigator}
-        options={{ tabBarLabel: "Mapa" }}
-      />
-      <Tab.Screen
-        name="ProfileTab"
-        component={ProfileStackNavigator}
-        options={{ tabBarLabel: "Perfil" }}
-      />
+      <Tab.Screen name="HomeTab" component={HomeStackNavigator} />
+      <Tab.Screen name="ListsTab" component={ListsStackNavigator} />
+      <Tab.Screen name="MapTab" component={MapStackNavigator} />
+      <Tab.Screen name="AssistantTab" component={AssistantStackNavigator} />
+      <Tab.Screen name="ProfileTab" component={ProfileStackNavigator} />
     </Tab.Navigator>
   );
 };

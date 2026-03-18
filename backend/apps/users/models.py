@@ -52,16 +52,20 @@ class User(AbstractUser):
         default=3,
         verbose_name="Máximo de paradas por ruta",
     )
-    optimization_preference = models.CharField(
-        max_length=20,
-        choices=[
-            ("price", "Priorizar precio"),
-            ("distance", "Priorizar distancia"),
-            ("time", "Priorizar tiempo"),
-            ("balanced", "Equilibrado"),
-        ],
-        default="balanced",
-        verbose_name="Preferencia de optimización",
+    weight_price = models.PositiveSmallIntegerField(
+        default=34,
+        verbose_name="Peso precio (%)",
+        help_text="Importancia del precio en la optimización (0-100). Junto a weight_distance y weight_time deben sumar ~100.",
+    )
+    weight_distance = models.PositiveSmallIntegerField(
+        default=33,
+        verbose_name="Peso distancia (%)",
+        help_text="Importancia de la distancia en la optimización (0-100).",
+    )
+    weight_time = models.PositiveSmallIntegerField(
+        default=33,
+        verbose_name="Peso tiempo (%)",
+        help_text="Importancia del tiempo en la optimización (0-100).",
     )
     push_notifications_enabled = models.BooleanField(
         default=True,

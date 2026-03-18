@@ -66,16 +66,17 @@ class TestUserProfileSerializer:
         serializer = UserProfileSerializer()
         assert serializer.fields["created_at"].read_only is True
 
-    def test_optimization_preference_choices_valid(self, consumer_user):
+    def test_weight_fields_valid(self, consumer_user):
         from apps.users.serializers import UserProfileSerializer
 
-        data = {"optimization_preference": "price"}
+        data = {"weight_price": 70, "weight_distance": 15, "weight_time": 15}
         serializer = UserProfileSerializer(consumer_user, data=data, partial=True)
         assert serializer.is_valid(), serializer.errors
 
-    def test_optimization_preference_invalid_value_rejected(self, consumer_user):
+    def test_weight_price_field_present(self, consumer_user):
         from apps.users.serializers import UserProfileSerializer
 
-        data = {"optimization_preference": "invalid_value"}
-        serializer = UserProfileSerializer(consumer_user, data=data, partial=True)
-        assert not serializer.is_valid()
+        serializer = UserProfileSerializer(consumer_user)
+        assert "weight_price" in serializer.data
+        assert "weight_distance" in serializer.data
+        assert "weight_time" in serializer.data
