@@ -2,9 +2,12 @@
  * Entry point de la aplicación BargAIn.
  *
  * Configura el NavigationContainer y renderiza el RootNavigator.
+ * Llama a authStore.hydrate() en el montaje para restaurar la sesión
+ * desde SecureStore antes de renderizar la navegación (evita el auth flicker).
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -26,6 +29,8 @@ import {
 } from '@expo-google-fonts/ibm-plex-mono';
 
 import { RootNavigator } from '@/navigation';
+import { useAuthStore } from '@/store/authStore';
+import { colors } from '@/theme';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -39,8 +44,15 @@ export default function App() {
     IBMPlexMono_500Medium,
   });
 
-  if (!fontsLoaded) {
-    return null;
+  /** Indica si la sesión ha sido restaurada desde SecureStore */
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    useAuthStore.getState().hydrate().finally(() => setHydrated(true));
+  }, []);
+
+  if (!fontsLoaded || !hydrated) {
+    return <View style={{ flex: 1, backgroundColor: colors.background }} />;
   }
 
   return (

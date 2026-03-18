@@ -1,9 +1,14 @@
 /**
  * Pantalla de inicio de sesión.
+ *
+ * Conectada a POST /auth/token/ a través de authService.login.
+ * Tras obtener los tokens, llama a authService.getProfile() para recuperar
+ * el objeto User completo y lo persiste en authStore + SecureStore.
  */
 
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -21,6 +26,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, spacing, textStyles } from "@/theme";
 import { useAuthStore } from "@/store/authStore";
+import { authService } from "@/api/authService";
 import type { AuthStackParamList } from "@/navigation/types";
 
 type LoginNavigationProp = NativeStackNavigationProp<
@@ -30,15 +36,56 @@ type LoginNavigationProp = NativeStackNavigationProp<
 
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginNavigationProp>();
-  const login = useAuthStore((state) => state.login);
   const { height } = useWindowDimensions();
   const isCompact = height <= 650;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    // TODO: implementar lógica real de login con API (F3-02)
-    login("fake-token", { id: "1", email, name: "Usuario" });
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setError("Email o contraseña incorrectos");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setResetMessage(null);
+
+    try {
+      const tokens = await authService.login(email.trim(), password);
+      const profile = await authService.getProfile();
+
+      const user = {
+        id: profile.id,
+        email: profile.email,
+        name: profile.name,
+      };
+
+      await useAuthStore.getState().login(tokens.access, tokens.refresh, user);
+    } catch {
+      setError("Email o contraseña incorrectos");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setError("Introduce tu email para recuperar la contraseña");
+      return;
+    }
+
+    try {
+      await authService.requestPasswordReset(email.trim());
+      setResetMessage("Si el email existe, recibirás instrucciones.");
+      setError(null);
+    } catch {
+      setResetMessage("Si el email existe, recibirás instrucciones.");
+    }
   };
 
   return (
@@ -79,6 +126,7 @@ export const LoginScreen: React.FC = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
+                editable={!isLoading}
               />
             </View>
 
@@ -93,17 +141,43 @@ export const LoginScreen: React.FC = () => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                editable={!isLoading}
               />
             </View>
 
+            {error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : null}
+
+            {resetMessage ? (
+              <Text style={styles.successText}>{resetMessage}</Text>
+            ) : null}
+
             <TouchableOpacity
+              testID="login-submit-button"
               style={[
                 styles.loginButton,
                 isCompact && styles.loginButtonCompact,
+                isLoading && styles.loginButtonDisabled,
               ]}
               onPress={handleLogin}
+              disabled={isLoading}
+              accessibilityState={{ disabled: isLoading }}
             >
-              <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+              {isLoading ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.forgotLink, isCompact && styles.forgotLinkCompact]}
+              onPress={handleForgotPassword}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              disabled={isLoading}
+            >
+              <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -113,6 +187,7 @@ export const LoginScreen: React.FC = () => {
               ]}
               onPress={() => navigation.navigate("Register")}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              disabled={isLoading}
             >
               <Text style={styles.registerText}>
                 ¿No tienes cuenta?{" "}
@@ -195,6 +270,18 @@ const styles = StyleSheet.create({
   inputCompact: {
     paddingVertical: spacing.sm,
   },
+  errorText: {
+    ...textStyles.caption,
+    color: colors.error,
+    marginBottom: spacing.md,
+    textAlign: "center",
+  },
+  successText: {
+    ...textStyles.caption,
+    color: colors.success,
+    marginBottom: spacing.md,
+    textAlign: "center",
+  },
   loginButton: {
     backgroundColor: colors.primary,
     paddingVertical: spacing.lg,
@@ -208,18 +295,34 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     paddingVertical: spacing.md,
   },
+  loginButtonDisabled: {
+    opacity: 0.7,
+  },
   loginButtonText: {
     ...textStyles.button,
     color: colors.white,
   },
+  forgotLink: {
+    marginTop: spacing.md,
+    alignItems: "center",
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  forgotLinkCompact: {
+    marginTop: spacing.sm,
+  },
+  forgotText: {
+    ...textStyles.caption,
+    color: colors.textMuted,
+  },
   registerLink: {
-    marginTop: spacing.xl,
+    marginTop: spacing.md,
     alignItems: "center",
     minHeight: 44,
     justifyContent: "center",
   },
   registerLinkCompact: {
-    marginTop: spacing.md,
+    marginTop: spacing.sm,
   },
   registerText: {
     ...textStyles.body,
