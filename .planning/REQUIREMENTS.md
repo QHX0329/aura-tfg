@@ -80,7 +80,7 @@
 
 - [ ] **NFR-01**: API responde en <500ms p95 para CRUD estándar; optimizador <5s (RNF-001)
 - [ ] **NFR-02**: Cobertura de tests backend ≥80% (RNF-006)
-- [ ] **NFR-03**: App móvil funciona en iOS 15+ y Android 10+ (RNF-007)
+- [x] **NFR-03**: App móvil funciona en iOS 15+ y Android 10+ (RNF-007)
 - [ ] **NFR-04**: RGPD: consentimiento ubicación, derecho al olvido, minimización de datos (RNF-008)
 - [ ] **NFR-05**: Rate limiting: 100 req/h anónimo, 1000 req/h autenticado (RNF-003)
 
@@ -124,7 +124,7 @@
 | LIST-01 – LIST-04 | Phase 1: Core Backend | Pending |
 | BIZ-01 – BIZ-03 | Phase 2: Business & Notifications | Pending |
 | NOTIF-01 | Phase 2: Business & Notifications | Complete |
-| NFR-03 | Phase 3: Frontend | Pending |
+| NFR-03 | Phase 3: Frontend | Complete |
 | OPT-01 – OPT-04 | Phase 4: Optimizer & Scraping | Pending |
 | SCRAP-01 | Phase 4: Optimizer & Scraping | Pending |
 | NFR-01 | Phase 4: Optimizer & Scraping | Pending |
