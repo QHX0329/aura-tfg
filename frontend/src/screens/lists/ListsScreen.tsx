@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
+  Platform,
   RefreshControl,
   StyleSheet,
   Text,
@@ -59,12 +60,12 @@ const ListCard: React.FC<ListCardProps> = ({ item, onPress, onDelete }) => {
     );
   }, [item.id, item.name, onDelete]);
 
-  const itemCount = item.items.length;
+  const itemCount = item.items?.length ?? 0;
   const itemLabel = itemCount === 1 ? "1 producto" : `${itemCount} productos`;
-  const updatedDate = new Date(item.updatedAt).toLocaleDateString("es-ES", {
-    day: "numeric",
-    month: "short",
-  });
+  const rawDate = item.updated_at ?? item.updatedAt ?? "";
+  const updatedDate = rawDate
+    ? new Date(rawDate).toLocaleDateString("es-ES", { day: "numeric", month: "short" })
+    : "";
 
   return (
     <TouchableOpacity
@@ -143,22 +144,33 @@ export const ListsScreen: React.FC = () => {
 
   // ─── Create list ─────────────────────────────────────────────────────────
   const handleCreateList = useCallback(() => {
+    const doCreate = async (name: string) => {
+      if (!name?.trim()) return;
+      try {
+        const newList = await listService.createList(name.trim());
+        addList(newList);
+        navigation.navigate("ListDetail", {
+          listId: newList.id,
+          listName: newList.name,
+        });
+      } catch {
+        Alert.alert("Error", "No se pudo crear la lista.");
+      }
+    };
+
+    if (Platform.OS === "web") {
+      // Alert.prompt is iOS-only; use browser prompt on web
+      const name = typeof window !== "undefined"
+        ? window.prompt("Nueva lista", "")
+        : null;
+      if (name !== null) void doCreate(name);
+      return;
+    }
+
     Alert.prompt(
       "Nueva lista",
       "Nombre de la lista",
-      async (name: string) => {
-        if (!name?.trim()) return;
-        try {
-          const newList = await listService.createList(name.trim());
-          addList(newList);
-          navigation.navigate("ListDetail", {
-            listId: newList.id,
-            listName: newList.name,
-          });
-        } catch {
-          Alert.alert("Error", "No se pudo crear la lista.");
-        }
-      },
+      (name: string) => void doCreate(name),
       "plain-text",
     );
   }, [addList, navigation]);

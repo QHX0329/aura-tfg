@@ -158,7 +158,7 @@ const RecentListCard: React.FC<{ list: ShoppingList; onPress: () => void }> = ({
           {list.name}
         </Text>
         <Text style={recentListStyles.meta}>
-          {list.items.length} producto{list.items.length !== 1 ? "s" : ""}
+          {(list.items?.length ?? 0)} producto{(list.items?.length ?? 0) !== 1 ? "s" : ""}
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
