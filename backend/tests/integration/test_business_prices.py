@@ -47,6 +47,36 @@ class TestBusinessPrices:
 
         assert response.status_code == 403
 
+    def test_cannot_post_price_for_other_business_store(
+        self, api_client, verified_business_user, product
+    ):
+        """Un negocio verificado no puede crear precios para tiendas de otro negocio."""
+        from django.contrib.gis.geos import Point
+
+        from apps.business.models import BusinessProfile
+        from apps.stores.models import Store
+        from apps.users.models import User
+
+        other_user = User.objects.create_user(
+            username="other_biz", email="other@test.com", password="pass1234", role=User.Role.BUSINESS
+        )
+        other_profile = BusinessProfile.objects.create(
+            user=other_user, business_name="Otro Negocio", tax_id="Z99887766", address="Otra Calle", is_verified=True
+        )
+        other_store = Store.objects.create(
+            name="Tienda Ajena",
+            address="Calle Ajena 1",
+            location=Point(-5.98, 37.39, srid=4326),
+            business_profile=other_profile,
+        )
+        api_client.force_authenticate(user=verified_business_user)
+        response = api_client.post(
+            "/api/v1/business/prices/",
+            data={"product": product.id, "store": other_store.id, "price": "1.00"},
+            format="json",
+        )
+        assert response.status_code == 400
+
     def test_business_price_is_stale_never_true(
         self, api_client, verified_business_user, business_store, product
     ):

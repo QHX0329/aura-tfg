@@ -4,7 +4,8 @@ from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.http import Http404
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
+from rest_framework import serializers as drf_serializers
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -93,6 +94,11 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
             return StoreDetailSerializer
         return StoreListSerializer
 
+    @extend_schema(
+        request=None,
+        responses={200: inline_serializer("FavoriteResponse", fields={"is_favorite": drf_serializers.BooleanField()})},
+        description="Alterna el estado de favorito de una tienda. Devuelve `is_favorite: true` si se añadió, `false` si se eliminó.",
+    )
     @action(
         detail=True,
         methods=["post"],

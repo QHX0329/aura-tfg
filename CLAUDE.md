@@ -368,6 +368,7 @@ Mantener ambos conjuntos sincronizados cuando cambie el flujo del proyecto.
 - `id`, `user` (OneToOne), `business_name`, `tax_id` (CIF/NIF único)
 - `address`, `website`, `is_verified`, `rejection_reason`
 - `price_alert_threshold_pct` (umbral alertas competidor, %), `last_competitor_alert_at`
+- API: `POST /api/v1/business/profiles/` · `profiles/{id}/approve/` · `profiles/{id}/reject/`
 
 ### Promotion (Promoción de PYME)
 - `id`, `product` (FK), `store` (FK), `discount_type` (flat|percentage), `discount_value`

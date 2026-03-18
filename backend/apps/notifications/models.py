@@ -61,7 +61,7 @@ class Notification(models.Model):
     title = models.CharField(max_length=200, verbose_name="Título")
     body = models.TextField(verbose_name="Cuerpo")
     is_read = models.BooleanField(default=False, verbose_name="Leída")
-    data = models.JSONField(default=dict, verbose_name="Datos adicionales")
+    data = models.JSONField(default=dict, blank=True, verbose_name="Datos adicionales")
     action_url = models.CharField(
         max_length=500,
         blank=True,

@@ -2,6 +2,8 @@
 
 import structlog
 from django.db import IntegrityError, transaction
+from drf_spectacular.utils import OpenApiResponse, extend_schema, inline_serializer
+from rest_framework import serializers as drf_serializers
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -67,6 +69,11 @@ class BusinessProfileViewSet(viewsets.ModelViewSet):
         serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(
+        request=None,
+        responses={200: inline_serializer("ApproveResponse", fields={"id": drf_serializers.IntegerField(), "is_verified": drf_serializers.BooleanField()})},
+        description="Aprueba un BusinessProfile pendiente. Solo admins. Envía email de notificación al negocio.",
+    )
     @action(detail=True, methods=["post"], url_path="approve")
     def approve(self, request, pk=None):
         """Aprueba un BusinessProfile (solo admin)."""
@@ -81,6 +88,11 @@ class BusinessProfileViewSet(viewsets.ModelViewSet):
         logger.info("business_profile_approved", profile_id=profile.id)
         return success_response({"id": profile.id, "is_verified": True})
 
+    @extend_schema(
+        request=inline_serializer("RejectRequest", fields={"reason": drf_serializers.CharField(required=False, default="")}),
+        responses={200: inline_serializer("RejectResponse", fields={"id": drf_serializers.IntegerField(), "is_verified": drf_serializers.BooleanField(), "rejection_reason": drf_serializers.CharField()})},
+        description="Rechaza un BusinessProfile con motivo opcional. Solo admins. Envía email de notificación al negocio.",
+    )
     @action(detail=True, methods=["post"], url_path="reject")
     def reject(self, request, pk=None):
         """Rechaza un BusinessProfile con motivo (solo admin)."""
@@ -132,6 +144,11 @@ class PromotionViewSet(viewsets.ModelViewSet):
             raise PromotionConflictError()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(
+        request=None,
+        responses={200: inline_serializer("DeactivateResponse", fields={"id": drf_serializers.IntegerField(), "is_active": drf_serializers.BooleanField()})},
+        description="Desactiva una promoción activa. Solo el negocio propietario.",
+    )
     @action(detail=True, methods=["post"], url_path="deactivate")
     def deactivate(self, request, pk=None):
         """Desactiva una promoción activa."""

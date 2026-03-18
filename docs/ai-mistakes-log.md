@@ -117,6 +117,16 @@
 
 ---
 
+### [2026-03-17] — ERR-006 — Claude (claude-sonnet-4-6)
+
+**Contexto:** Phase 2 UAT — Test 5 Business Price Management
+**Error:** `BusinessPriceViewSet` permitía crear precios para tiendas de otros negocios. El `perform_create` solo forzaba `source='business'` e `is_stale=False`, pero no validaba que `store.business_profile == perfil del usuario autenticado`.
+**Causa raíz:** `PromotionSerializer` tenía la validación de ownership correctamente implementada, pero `BusinessPriceSerializer` no la tenía.
+**Fix:** Añadido método `validate()` en `BusinessPriceSerializer` que verifica `store.business_profile == BusinessProfile.objects.get(user=request.user, is_verified=True)`. Añadido test `test_cannot_post_price_for_other_business_store`.
+**REGLA derivada:** En cualquier ViewSet donde el modelo referencia una tienda (`store` FK), verificar siempre que `store.business_profile` pertenece al usuario autenticado si el ViewSet usa `IsVerifiedBusiness`.
+
+---
+
 ## Instrucciones para agentes
 
 - **Claude:** Actualiza este archivo al final de cada sesión donde hayas cometido un error, aunque sea menor. Usa el formato estándar. Revisa las REGLAS derivadas al inicio de cada sesión.

@@ -15,6 +15,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
+    role = serializers.ChoiceField(
+        choices=["consumer", "business"],
+        default="consumer",
+        required=False,
+        help_text="Rol del usuario: 'consumer' (por defecto) o 'business' (PYME).",
+    )
 
     class Meta:
         model = User
@@ -25,6 +31,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             "password_confirm",
             "first_name",
             "last_name",
+            "role",
         ]
 
     def validate_email(self, value: str) -> str:
@@ -70,6 +77,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "optimization_preference",
             "push_notifications_enabled",
             "email_notifications_enabled",
+            "notify_price_alerts",
+            "notify_new_promos",
+            "notify_shared_list_changes",
             "created_at",
         ]
         read_only_fields = ["id", "role", "created_at"]

@@ -609,14 +609,13 @@ La tienda (`Store`) se asocia al `BusinessProfile` a través de un FK nullable `
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| `POST` | `/api/v1/business/register/` | Registro de PYME (crea `BusinessProfile` en estado pendiente) |
-| `GET/PATCH` | `/api/v1/business/profile/` | Ver y editar perfil de negocio |
-| `POST` | `/api/v1/business/admin/verify/{id}/` | Aprobar perfil (admin only) |
-| `POST` | `/api/v1/business/admin/reject/{id}/` | Rechazar perfil con motivo (admin only) |
+| `POST` | `/api/v1/business/profiles/` | Registro de PYME (crea `BusinessProfile` en estado pendiente) |
+| `GET/PATCH` | `/api/v1/business/profiles/{id}/` | Ver y editar perfil de negocio |
+| `POST` | `/api/v1/business/profiles/{id}/approve/` | Aprobar perfil (admin only) |
+| `POST` | `/api/v1/business/profiles/{id}/reject/` | Rechazar perfil con motivo (admin only) |
 | `GET/POST` | `/api/v1/business/prices/` | Listar y crear/actualizar precios propios |
-| `POST` | `/api/v1/business/prices/bulk-update/` | Actualización masiva de precios (CSV) |
 | `GET/POST` | `/api/v1/business/promotions/` | Gestionar promociones activas |
-| `GET` | `/api/v1/business/stats/` | Estadísticas de visibilidad (views de promociones, comparaciones) |
+| `POST` | `/api/v1/business/promotions/{id}/deactivate/` | Desactivar una promoción activa |
 
 #### Alerta de competidor (Celery)
 

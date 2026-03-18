@@ -110,3 +110,20 @@ class BusinessPriceSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = ["id", "source", "is_stale", "verified_at", "created_at"]
+
+    def validate(self, attrs):
+        """Verifica que la tienda pertenece al perfil de negocio del usuario."""
+        request = self.context.get("request")
+        store = attrs.get("store")
+        if request and store:
+            from apps.business.models import BusinessProfile
+
+            try:
+                profile = BusinessProfile.objects.get(user=request.user, is_verified=True)
+                if store.business_profile != profile:
+                    raise serializers.ValidationError(
+                        {"store": "Solo puedes gestionar precios de tus propias tiendas."}
+                    )
+            except BusinessProfile.DoesNotExist:
+                raise serializers.ValidationError("Perfil de negocio verificado no encontrado.")
+        return attrs
