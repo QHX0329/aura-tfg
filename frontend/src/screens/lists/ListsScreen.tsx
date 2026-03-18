@@ -18,7 +18,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { colors, spacing, textStyles, borderRadius } from "@/theme";
@@ -43,12 +43,28 @@ interface ListCardProps {
   onPress: (id: string, name: string) => void;
   /** Solicita al padre que muestre el modal de confirmación */
   onDeleteRequest: (id: string, name: string) => void;
+  onRenameRequest: (id: string, name: string) => void;
+  onSaveTemplateRequest: (id: string, name: string) => void;
 }
 
-const ListCard: React.FC<ListCardProps> = ({ item, onPress, onDeleteRequest }) => {
+const ListCard: React.FC<ListCardProps> = ({
+  item,
+  onPress,
+  onDeleteRequest,
+  onRenameRequest,
+  onSaveTemplateRequest,
+}) => {
   const handleDeletePress = useCallback(() => {
     onDeleteRequest(item.id, item.name);
   }, [item.id, item.name, onDeleteRequest]);
+
+  const handleRenamePress = useCallback(() => {
+    onRenameRequest(item.id, item.name);
+  }, [item.id, item.name, onRenameRequest]);
+
+  const handleSaveTemplatePress = useCallback(() => {
+    onSaveTemplateRequest(item.id, item.name);
+  }, [item.id, item.name, onSaveTemplateRequest]);
 
   const itemCount = item.items?.length ?? 0;
   const itemLabel = itemCount === 1 ? "1 producto" : `${itemCount} productos`;
@@ -71,16 +87,40 @@ const ListCard: React.FC<ListCardProps> = ({ item, onPress, onDeleteRequest }) =
           {itemLabel} · {updatedDate}
         </Text>
       </View>
-      <TouchableOpacity
-        testID={`delete-list-${item.id}`}
-        onPress={handleDeletePress}
-        style={styles.deleteButton}
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        accessibilityRole="button"
-        accessibilityLabel={`Eliminar ${item.name}`}
-      >
-        <Ionicons name="trash-outline" size={18} color={colors.error} />
-      </TouchableOpacity>
+      <View style={styles.cardActions}>
+        <TouchableOpacity
+          testID={`rename-list-${item.id}`}
+          onPress={handleRenamePress}
+          style={styles.iconActionButton}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={`Renombrar ${item.name}`}
+        >
+          <Ionicons name="create-outline" size={18} color={colors.primary} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          testID={`save-template-list-${item.id}`}
+          onPress={handleSaveTemplatePress}
+          style={styles.iconActionButton}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={`Guardar ${item.name} como plantilla`}
+        >
+          <Ionicons name="document-text-outline" size={18} color={colors.secondary} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          testID={`delete-list-${item.id}`}
+          onPress={handleDeletePress}
+          style={styles.iconActionButton}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={`Eliminar ${item.name}`}
+        >
+          <Ionicons name="trash-outline" size={18} color={colors.error} />
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -89,9 +129,19 @@ const ListCard: React.FC<ListCardProps> = ({ item, onPress, onDeleteRequest }) =
 function makeRenderItem(
   onPress: (id: string, name: string) => void,
   onDeleteRequest: (id: string, name: string) => void,
+  onRenameRequest: (id: string, name: string) => void,
+  onSaveTemplateRequest: (id: string, name: string) => void,
 ): ListRenderItem<ShoppingList> {
   function renderListCard({ item }: { item: ShoppingList }) {
-    return <ListCard item={item} onPress={onPress} onDeleteRequest={onDeleteRequest} />;
+    return (
+      <ListCard
+        item={item}
+        onPress={onPress}
+        onDeleteRequest={onDeleteRequest}
+        onRenameRequest={onRenameRequest}
+        onSaveTemplateRequest={onSaveTemplateRequest}
+      />
+    );
   }
   return renderListCard;
 }
@@ -100,7 +150,7 @@ function makeRenderItem(
 
 export const ListsScreen: React.FC = () => {
   const navigation = useNavigation<ListsScreenNavigationProp>();
-  const { lists, isLoading, setLists, addList, removeList } = useListStore();
+  const { lists, isLoading, setLists, addList, removeList, updateList } = useListStore();
   const [refreshing, setRefreshing] = useState(false);
 
   // ─── Modal: crear lista ──────────────────────────────────────────────────
@@ -110,22 +160,33 @@ export const ListsScreen: React.FC = () => {
   // ─── Modal: confirmar eliminación ────────────────────────────────────────
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [renameTarget, setRenameTarget] = useState<{ id: string; name: string } | null>(null);
+  const [renameLoading, setRenameLoading] = useState(false);
+  const [templateTarget, setTemplateTarget] = useState<{ id: string; name: string } | null>(null);
+  const [templateLoading, setTemplateLoading] = useState(false);
 
   // ─── Fetch on mount ──────────────────────────────────────────────────────
-  useEffect(() => {
-    const load = async () => {
-      useListStore.setState({ isLoading: true });
-      try {
-        const data = await listService.getLists();
-        setLists(data);
-      } catch {
-        Alert.alert("Error", "No se pudieron cargar las listas.");
-      } finally {
-        useListStore.setState({ isLoading: false });
-      }
-    };
-    void load();
+  const loadLists = useCallback(async () => {
+    useListStore.setState({ isLoading: true });
+    try {
+      const data = await listService.getLists();
+      setLists(data);
+    } catch {
+      Alert.alert("Error", "No se pudieron cargar las listas.");
+    } finally {
+      useListStore.setState({ isLoading: false });
+    }
   }, [setLists]);
+
+  useEffect(() => {
+    void loadLists();
+  }, [loadLists]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadLists();
+    }, [loadLists]),
+  );
 
   // ─── Pull-to-refresh ─────────────────────────────────────────────────────
   const handleRefresh = useCallback(async () => {
@@ -178,6 +239,48 @@ export const ListsScreen: React.FC = () => {
     }
   }, [deleteTarget, removeList]);
 
+  const handleRenameRequest = useCallback((id: string, name: string) => {
+    setRenameTarget({ id, name });
+  }, []);
+
+  const handleRenameConfirm = useCallback(async (name?: string) => {
+    if (!renameTarget || !name?.trim()) {
+      return;
+    }
+
+    setRenameLoading(true);
+    try {
+      const updated = await listService.updateList(renameTarget.id, { name: name.trim() });
+      updateList(updated);
+      setRenameTarget(null);
+    } catch {
+      Alert.alert("Error", "No se pudo renombrar la lista.");
+    } finally {
+      setRenameLoading(false);
+    }
+  }, [renameTarget, updateList]);
+
+  const handleSaveTemplateRequest = useCallback((id: string, name: string) => {
+    setTemplateTarget({ id, name: `${name} (plantilla)` });
+  }, []);
+
+  const handleSaveTemplateConfirm = useCallback(async (name?: string) => {
+    if (!templateTarget || !name?.trim()) {
+      return;
+    }
+
+    setTemplateLoading(true);
+    try {
+      await listService.saveAsTemplate(templateTarget.id, name.trim());
+      setTemplateTarget(null);
+      Alert.alert("Plantilla creada", "La plantilla se ha guardado correctamente.");
+    } catch {
+      Alert.alert("Error", "No se pudo guardar la plantilla.");
+    } finally {
+      setTemplateLoading(false);
+    }
+  }, [templateTarget]);
+
   // ─── Navigate to detail ───────────────────────────────────────────────────
   const handlePressItem = useCallback(
     (id: string, name: string) => {
@@ -187,7 +290,12 @@ export const ListsScreen: React.FC = () => {
   );
 
   // ─── Render helpers ───────────────────────────────────────────────────────
-  const renderItem = makeRenderItem(handlePressItem, handleDeleteRequest);
+  const renderItem = makeRenderItem(
+    handlePressItem,
+    handleDeleteRequest,
+    handleRenameRequest,
+    handleSaveTemplateRequest,
+  );
 
   // ─── Loading skeleton ────────────────────────────────────────────────────
   if (isLoading) {
@@ -299,6 +407,36 @@ export const ListsScreen: React.FC = () => {
         onCancel={() => setDeleteTarget(null)}
         testID="modal-delete-list"
       />
+
+      <AppModal
+        visible={renameTarget !== null}
+        type="input"
+        title="Renombrar lista"
+        message="Introduce el nuevo nombre de la lista"
+        placeholder="Nuevo nombre"
+        defaultValue={renameTarget?.name ?? ""}
+        confirmLabel="Guardar"
+        cancelLabel="Cancelar"
+        loading={renameLoading}
+        onConfirm={handleRenameConfirm}
+        onCancel={() => setRenameTarget(null)}
+        testID="modal-rename-list"
+      />
+
+      <AppModal
+        visible={templateTarget !== null}
+        type="input"
+        title="Guardar como plantilla"
+        message="Nombre para la plantilla"
+        placeholder="Ej. Compra mensual"
+        defaultValue={templateTarget?.name ?? ""}
+        confirmLabel="Guardar"
+        cancelLabel="Cancelar"
+        loading={templateLoading}
+        onConfirm={handleSaveTemplateConfirm}
+        onCancel={() => setTemplateTarget(null)}
+        testID="modal-save-template"
+      />
     </SafeAreaView>
   );
 };
@@ -358,6 +496,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: spacing.md,
   },
+  cardActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
   cardName: {
     ...textStyles.bodyLarge,
     color: colors.text,
@@ -368,7 +511,7 @@ const styles = StyleSheet.create({
     ...textStyles.bodySmall,
     color: colors.textMuted,
   },
-  deleteButton: {
+  iconActionButton: {
     width: 40,
     height: 40,
     alignItems: "center",

@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-18 (F4-25 completada — alertas de precio, perfil de tienda en mapa y colaboradores de listas)
+> Última sincronización: 2026-03-18 (F4-26 completada — CRUD de alertas con edición/eliminación, mejoras de listas/plantillas, paginación de catálogo y refresco en vivo; validación backend + frontend ejecutada)
 
 ---
 
@@ -158,7 +158,7 @@
 | F4-23 | Pulido UX catálogo/listas (cantidad + suma duplicados + simplificación detalle) | Products/Shopping Lists | 🟠 Alta | ✅ | 4 | 4 | Selector de cantidad al añadir producto, backend suma cantidades para duplicados, toast UX en catálogo y eliminación del buscador en detalle de lista |
 | F4-24 | Ajuste interacción cantidad y acciones rápidas (quick-add + control item + SearchBar Home) | Products/Shopping Lists | 🟠 Alta | ✅ | 3 | 3 | Quick-add con cantidad desde tarjeta en catálogo; botones +/- por ítem en detalle (si llega a 0 se elimina); eliminación de botón de filtros en SearchBar de Home |
 | F4-25 | Alertas de precio + perfil de tienda en mapa + colaboradores de listas | Prices/Stores/Shopping Lists | 🔴 Crítica | ✅ | 8 | 8 | Crear alertas desde pantalla dedicada; abrir perfil de tienda desde mapa (info, favoritos y productos); gestión de colaboradores en detalle de lista |
-| F4-26 | CRUD completo alertas + listas renombrables/plantillas + paginación catálogo + refresco en vivo | Prices/Notifications/Shopping Lists/Products | 🔴 Crítica | 🔄 <!-- 2026-03-18 --> | 10 | - | Mostrar nombre de producto y modal editable en alertas; botón eliminar de notificaciones funcional; renombrar listas y crear plantilla desde listas; paginación real en catálogo; refresco automático sin recarga manual |
+| F4-26 | CRUD completo alertas + listas renombrables/plantillas + paginación catálogo + refresco en vivo | Prices/Notifications/Shopping Lists/Products | 🔴 Crítica | ✅ | 10 | 10 | Mostrar nombre de producto y modal editable en alertas; botón eliminar de notificaciones funcional; renombrar listas y crear plantilla desde listas; paginación real en catálogo; refresco automático sin recarga manual |
 
 ---
 

@@ -25,11 +25,11 @@ interface NotificationState {
   /** Añadir notificaciones al final (scroll infinito) */
   appendNotifications: (notifications: Notification[]) => void;
   /** Marcar una notificación como leída */
-  markRead: (id: string) => void;
+  markRead: (id: string | number) => void;
   /** Marcar todas las notificaciones como leídas */
   markAllRead: () => void;
   /** Eliminar notificación del estado local */
-  removeNotification: (id: string) => void;
+  removeNotification: (id: string | number) => void;
 }
 
 function countUnread(notifications: Notification[]): number {
@@ -63,7 +63,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
   markRead: (id) =>
     set((state) => {
       const updated = state.notifications.map((n) =>
-        n.id === id ? { ...n, is_read: true } : n,
+        String(n.id) === String(id) ? { ...n, is_read: true } : n,
       );
       return {
         notifications: updated,
@@ -79,7 +79,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
 
   removeNotification: (id) =>
     set((state) => {
-      const updated = state.notifications.filter((n) => n.id !== id);
+      const updated = state.notifications.filter((n) => String(n.id) !== String(id));
       return {
         notifications: updated,
         unreadCount: countUnread(updated),

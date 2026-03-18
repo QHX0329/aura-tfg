@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   FlatList,
   Modal,
+  Pressable,
   TextInput,
   RefreshControl,
   StyleSheet,
@@ -11,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { colors, spacing, fontFamilies, fontSize, borderRadius, shadows } from '@/theme';
@@ -29,12 +31,22 @@ function getAlertProduct(alert: PriceAlert): Product | null {
   return null;
 }
 
+function getAlertProductName(alert: PriceAlert): string {
+  const product = getAlertProduct(alert);
+  if (product?.name) {
+    return product.name;
+  }
+  if (alert.product_name?.trim()) {
+    return alert.product_name;
+  }
+  return `Producto #${String(alert.product)}`;
+}
+
 const PriceAlertRow: React.FC<{
   alert: PriceAlert;
   onPress: (alert: PriceAlert) => void;
 }> = ({ alert, onPress }) => {
-  const product = getAlertProduct(alert);
-  const productName = product?.name ?? `Producto #${String(alert.product)}`;
+  const productName = getAlertProductName(alert);
 
   return (
     <TouchableOpacity
@@ -74,6 +86,10 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [targetPrice, setTargetPrice] = useState('');
   const [isCreatingAlert, setIsCreatingAlert] = useState(false);
+  const [selectedAlert, setSelectedAlert] = useState<PriceAlert | null>(null);
+  const [editTargetPrice, setEditTargetPrice] = useState('');
+  const [isUpdatingAlert, setIsUpdatingAlert] = useState(false);
+  const [isDeletingAlert, setIsDeletingAlert] = useState(false);
 
   const loadAlerts = useCallback(async () => {
     setIsLoading(true);
@@ -88,6 +104,12 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     void loadAlerts();
   }, [loadAlerts]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadAlerts();
+    }, [loadAlerts]),
+  );
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -122,20 +144,72 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [productQuery]);
 
-  const handleOpenCompare = useCallback(
+  const handleOpenAlertModal = useCallback(
     (alert: PriceAlert) => {
-      const product = getAlertProduct(alert);
-      if (!product?.id || !product?.name) {
-        return;
-      }
-
-      navigation.navigate('PriceCompare', {
-        productId: String(product.id),
-        productName: product.name,
-      });
+      setSelectedAlert(alert);
+      setEditTargetPrice(Number(alert.target_price ?? 0).toFixed(2));
     },
-    [navigation],
+    [],
   );
+
+  const handleOpenCompare = useCallback(() => {
+    if (!selectedAlert) {
+      return;
+    }
+
+    const product = getAlertProduct(selectedAlert);
+    const productId = product?.id ?? String(selectedAlert.product);
+    const productName = getAlertProductName(selectedAlert);
+
+    setSelectedAlert(null);
+    navigation.navigate('PriceCompare', {
+      productId: String(productId),
+      productName,
+    });
+  }, [navigation, selectedAlert]);
+
+  const handleUpdateAlert = useCallback(async () => {
+    if (!selectedAlert) {
+      return;
+    }
+
+    const parsedPrice = parseFloat(editTargetPrice.replace(',', '.'));
+    if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
+      return;
+    }
+
+    setIsUpdatingAlert(true);
+    try {
+      const updated = await priceService.updatePriceAlert(String(selectedAlert.id), {
+        target_price: parsedPrice.toFixed(2),
+      });
+      setAlerts((prev) =>
+        prev.map((alert) =>
+          String(alert.id) === String(updated.id) ? updated : alert,
+        ),
+      );
+      setSelectedAlert(updated);
+    } finally {
+      setIsUpdatingAlert(false);
+    }
+  }, [editTargetPrice, selectedAlert]);
+
+  const handleDeleteAlert = useCallback(async () => {
+    if (!selectedAlert) {
+      return;
+    }
+
+    setIsDeletingAlert(true);
+    try {
+      await priceService.deletePriceAlert(String(selectedAlert.id));
+      setAlerts((prev) =>
+        prev.filter((alert) => String(alert.id) !== String(selectedAlert.id)),
+      );
+      setSelectedAlert(null);
+    } finally {
+      setIsDeletingAlert(false);
+    }
+  }, [selectedAlert]);
 
   const resetCreateForm = useCallback(() => {
     setProductQuery('');
@@ -181,9 +255,9 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       <FlatList
         data={activeAlerts}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         contentContainerStyle={activeAlerts.length === 0 ? styles.emptyContainer : styles.listContent}
-        renderItem={({ item }) => <PriceAlertRow alert={item} onPress={handleOpenCompare} />}
+        renderItem={({ item }) => <PriceAlertRow alert={item} onPress={handleOpenAlertModal} />}
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
         ListEmptyComponent={
           <View style={styles.emptyState}>
@@ -282,6 +356,73 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
         </View>
+      </Modal>
+
+      <Modal
+        visible={selectedAlert !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedAlert(null)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setSelectedAlert(null)}>
+          <Pressable style={styles.modalCard} onPress={(event) => event.stopPropagation()}>
+            <Text style={styles.modalTitle}>Detalle de alerta</Text>
+
+            {selectedAlert ? (
+              <>
+                <Text style={styles.detailLabel}>Producto</Text>
+                <Text style={styles.detailValue}>{getAlertProductName(selectedAlert)}</Text>
+
+                <Text style={styles.detailLabel}>Precio actual</Text>
+                <Text style={styles.detailValue}>
+                  {selectedAlert.current_price != null
+                    ? `€${Number(selectedAlert.current_price).toFixed(2)}`
+                    : 'Sin precio disponible'}
+                </Text>
+
+                <Text style={styles.detailLabel}>Precio objetivo</Text>
+                <TextInput
+                  value={editTargetPrice}
+                  onChangeText={setEditTargetPrice}
+                  placeholder="Precio objetivo (ej: 1.99)"
+                  placeholderTextColor={colors.textMuted}
+                  keyboardType="decimal-pad"
+                  style={styles.modalInput}
+                />
+
+                <View style={styles.modalActionsBetween}>
+                  <TouchableOpacity
+                    style={styles.modalDangerButton}
+                    onPress={handleDeleteAlert}
+                    disabled={isDeletingAlert || isUpdatingAlert}
+                  >
+                    {isDeletingAlert ? (
+                      <ActivityIndicator size="small" color={colors.white} />
+                    ) : (
+                      <Text style={styles.modalDangerText}>Eliminar</Text>
+                    )}
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.modalConfirmButton}
+                    onPress={handleUpdateAlert}
+                    disabled={isDeletingAlert || isUpdatingAlert}
+                  >
+                    {isUpdatingAlert ? (
+                      <ActivityIndicator size="small" color={colors.white} />
+                    ) : (
+                      <Text style={styles.modalConfirmText}>Guardar</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={styles.modalSecondaryLink} onPress={handleOpenCompare}>
+                  <Text style={styles.modalSecondaryLinkText}>Ver comparación de precios</Text>
+                </TouchableOpacity>
+              </>
+            ) : null}
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );
@@ -419,6 +560,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: spacing.sm,
   },
+  modalActionsBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   modalCancelButton: {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
@@ -439,6 +586,40 @@ const styles = StyleSheet.create({
   modalConfirmText: {
     fontFamily: fontFamilies.bodySemiBold,
     color: colors.white,
+  },
+  detailLabel: {
+    fontFamily: fontFamilies.bodySemiBold,
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    marginBottom: spacing.xs,
+  },
+  detailValue: {
+    fontFamily: fontFamilies.body,
+    fontSize: fontSize.sm,
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  modalDangerButton: {
+    minWidth: 92,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.pill,
+    backgroundColor: colors.error,
+  },
+  modalDangerText: {
+    fontFamily: fontFamilies.bodySemiBold,
+    color: colors.white,
+  },
+  modalSecondaryLink: {
+    marginTop: spacing.sm,
+    alignSelf: 'flex-end',
+    paddingVertical: spacing.xs,
+  },
+  modalSecondaryLinkText: {
+    fontFamily: fontFamilies.bodyMedium,
+    color: colors.primary,
   },
 });
 

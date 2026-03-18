@@ -17,6 +17,21 @@ from rest_framework import status
 class TestProductSearch:
     """Tests para la búsqueda y filtrado de productos."""
 
+    def test_list_without_filters_returns_paginated_products(self, api_client):
+        """GET /api/v1/products/ sin filtros devuelve catálogo paginado."""
+        from tests.factories import ProductFactory
+
+        ProductFactory(name="Leche test A", normalized_name="leche test a")
+        ProductFactory(name="Leche test B", normalized_name="leche test b")
+
+        response = api_client.get("/api/v1/products/")
+
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert "results" in data
+        assert isinstance(data["results"], list)
+        assert len(data["results"]) >= 1
+
     def test_search_by_name_returns_matching_products(self, api_client):
         """GET /api/v1/products/?q=leche retorna productos con similitud trigram >= 0.3."""
         from tests.factories import CategoryFactory, ProductFactory
@@ -37,8 +52,8 @@ class TestProductSearch:
         names = [r["name"].lower() for r in results]
         assert any("leche" in name for name in names)
 
-    def test_search_empty_q_returns_empty_list(self, api_client):
-        """GET /api/v1/products/?q= (vacío) retorna lista vacía."""
+    def test_search_empty_q_returns_catalog(self, api_client):
+        """GET /api/v1/products/?q= (vacío) retorna catálogo paginado."""
         from tests.factories import ProductFactory
 
         ProductFactory(name="Leche entera", normalized_name="leche entera")
@@ -47,7 +62,7 @@ class TestProductSearch:
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         results = data.get("results", data.get("data", {}).get("results", []))
-        assert results == []
+        assert len(results) >= 1
 
     def test_search_short_q_returns_empty_list(self, api_client):
         """GET /api/v1/products/?q=l (1 char) retorna lista vacía."""

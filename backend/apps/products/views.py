@@ -83,14 +83,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if has_q and len(q) < 2:
             return Response({"count": 0, "next": None, "previous": None, "results": []})
 
-        # Si no hay q pero tampoco hay ningún otro filtro activo, devolver vacío
-        has_other_filters = any(
-            request.query_params.get(f)
-            for f in ["category", "brand", "is_active"]
-        )
-        if not has_q and not has_other_filters:
-            return Response({"count": 0, "next": None, "previous": None, "results": []})
-
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:

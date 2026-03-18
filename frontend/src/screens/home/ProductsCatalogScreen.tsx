@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 
 import {
   borderRadius,
@@ -196,6 +196,9 @@ export const ProductsCatalogScreen: React.FC = () => {
   const [storeScopedProductIds, setStoreScopedProductIds] = useState<Set<string>>(new Set());
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMoreProducts, setIsLoadingMoreProducts] = useState(false);
+  const [productsPage, setProductsPage] = useState(1);
+  const [hasMoreProducts, setHasMoreProducts] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isStoreFiltering, setIsStoreFiltering] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
@@ -272,30 +275,39 @@ export const ProductsCatalogScreen: React.FC = () => {
     }
   }, [profile]);
 
-  const loadProducts = useCallback(async () => {
-    setIsLoading(true);
+  const loadCategories = useCallback(async () => {
+    const categoryTree = await productService.getCategories();
+    const leaves = flattenLeafCategories(categoryTree);
+    setAllCategories(leaves);
+  }, []);
+
+  const loadProductsPage = useCallback(async (page: number, reset = false) => {
+    if (reset) {
+      setIsLoading(true);
+    } else {
+      setIsLoadingMoreProducts(true);
+    }
+
     try {
-      const categoryTree = await productService.getCategories();
-      const leaves = flattenLeafCategories(categoryTree);
-      setAllCategories(leaves);
-
-      const byId = new Map<string, Product>();
-      for (const category of leaves) {
-        let page = 1;
-        let hasNext = true;
-        while (hasNext) {
-          const response = await productService.list({ category: category.id, page });
-          response.results.forEach((product) => {
-            byId.set(product.id, product);
-          });
-          hasNext = Boolean(response.next);
-          page += 1;
+      const response = await productService.list({ page });
+      setAllProducts((prev) => {
+        if (reset) {
+          return response.results;
         }
-      }
 
-      setAllProducts(Array.from(byId.values()));
+        const byId = new Map<string, Product>();
+        prev.forEach((product) => byId.set(product.id, product));
+        response.results.forEach((product) => byId.set(product.id, product));
+        return Array.from(byId.values());
+      });
+      setProductsPage(page);
+      setHasMoreProducts(Boolean(response.next));
     } finally {
-      setIsLoading(false);
+      if (reset) {
+        setIsLoading(false);
+      } else {
+        setIsLoadingMoreProducts(false);
+      }
     }
   }, []);
 
@@ -309,17 +321,41 @@ export const ProductsCatalogScreen: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    void Promise.all([loadProducts(), loadNearbyStores(), loadUserLists()]);
-  }, [loadProducts, loadNearbyStores, loadUserLists]);
+    void Promise.all([
+      loadCategories(),
+      loadProductsPage(1, true),
+      loadNearbyStores(),
+      loadUserLists(),
+    ]);
+  }, [loadCategories, loadProductsPage, loadNearbyStores, loadUserLists]);
 
   const refreshAll = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      await Promise.all([loadProducts(), loadNearbyStores(), loadUserLists()]);
+      setPriceByProductId({});
+      setLoadingPriceIds(new Set());
+      await Promise.all([
+        loadProductsPage(1, true),
+        loadNearbyStores(),
+        loadUserLists(),
+      ]);
     } finally {
       setIsRefreshing(false);
     }
-  }, [loadProducts, loadNearbyStores, loadUserLists]);
+  }, [loadProductsPage, loadNearbyStores, loadUserLists]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshAll();
+    }, [refreshAll]),
+  );
+
+  const handleLoadMoreProducts = useCallback(async () => {
+    if (isLoading || isRefreshing || isLoadingMoreProducts || !hasMoreProducts) {
+      return;
+    }
+    await loadProductsPage(productsPage + 1, false);
+  }, [hasMoreProducts, isLoading, isLoadingMoreProducts, isRefreshing, loadProductsPage, productsPage]);
 
   const fetchLowestPrice = useCallback(async (productId: string) => {
     if (loadingPriceIds.has(productId) || Object.prototype.hasOwnProperty.call(priceByProductId, productId)) {
@@ -628,6 +664,15 @@ export const ProductsCatalogScreen: React.FC = () => {
             contentContainerStyle={
               filteredProducts.length === 0 ? styles.emptyContent : styles.listContent
             }
+            onEndReached={handleLoadMoreProducts}
+            onEndReachedThreshold={0.4}
+            ListFooterComponent={
+              isLoadingMoreProducts ? (
+                <View style={styles.loadMoreFooter}>
+                  <ActivityIndicator size="small" color={colors.primary} />
+                </View>
+              ) : null
+            }
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Ionicons name="search-outline" size={24} color={colors.textDisabled} />
@@ -809,6 +854,11 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: spacing.xxl,
+  },
+  loadMoreFooter: {
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   productRow: {
     backgroundColor: colors.surface,

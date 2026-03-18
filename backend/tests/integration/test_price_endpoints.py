@@ -360,6 +360,28 @@ class TestPriceAlerts:
         ids = [a["id"] for a in response.json()["results"]]
         assert len(ids) == 1
 
+    def test_patch_alert_updates_target_price(self, authenticated_client, consumer_user, product):
+        """PATCH permite actualizar target_price de una alerta activa."""
+        alert = PriceAlert.objects.create(
+            user=consumer_user,
+            product=product,
+            target_price="1.50",
+            is_active=True,
+        )
+
+        response = authenticated_client.patch(
+            f"/api/v1/prices/alerts/{alert.id}/",
+            {"target_price": "1.20"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert float(body["target_price"]) == 1.20
+
+        alert.refresh_from_db()
+        assert float(alert.target_price) == 1.20
+
 
 # ── TestCrowdsource ───────────────────────────────────────────────────────────
 

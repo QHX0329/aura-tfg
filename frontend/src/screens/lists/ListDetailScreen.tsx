@@ -26,6 +26,7 @@ import {
   type ListRenderItem,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { colors, spacing, textStyles, borderRadius } from "@/theme";
@@ -275,21 +276,27 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   }, [listId, loadCollaborators]);
 
-  // ─── Fetch list on mount ──────────────────────────────────────────────────
-  useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      try {
-        const list = await listService.getList(listId);
-        setActiveList(list);
-      } catch {
-        Alert.alert("Error", "No se pudo cargar la lista.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    void load();
+  const loadList = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const list = await listService.getList(listId);
+      setActiveList(list);
+    } catch {
+      Alert.alert("Error", "No se pudo cargar la lista.");
+    } finally {
+      setIsLoading(false);
+    }
   }, [listId, setActiveList]);
+
+  useEffect(() => {
+    void loadList();
+  }, [loadList]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadList();
+    }, [loadList]),
+  );
 
   // ─── Toggle item checked (optimistic update) ──────────────────────────────
   const handleToggleItem = useCallback(

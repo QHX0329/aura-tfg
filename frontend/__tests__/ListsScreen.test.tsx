@@ -12,7 +12,9 @@ jest.mock("../src/api/listService", () => ({
     getLists: jest.fn(),
     getList: jest.fn(),
     createList: jest.fn(),
+    updateList: jest.fn(),
     deleteList: jest.fn(),
+    saveAsTemplate: jest.fn(),
     addItem: jest.fn(),
     updateItem: jest.fn(),
     deleteItem: jest.fn(),
@@ -31,6 +33,7 @@ jest.mock("@react-navigation/native", () => ({
     navigate: jest.fn(),
     setOptions: jest.fn(),
   }),
+  useFocusEffect: () => undefined,
 }));
 
 jest.mock("react-native-reanimated", () => {
@@ -151,8 +154,8 @@ describe("ListsScreen", () => {
     });
   });
 
-  // Test 4: tapping FAB calls listService.createList
-  it("Test 4: tapping the FAB shows prompt and calls listService.createList on confirm", async () => {
+  // Test 4: tapping FAB opens create modal and confirms createList
+  it("Test 4: tapping FAB opens create modal and confirm calls createList", async () => {
     (listService.getLists as jest.Mock).mockResolvedValue([]);
     (listService.createList as jest.Mock).mockResolvedValue(mockList);
 
@@ -166,13 +169,15 @@ describe("ListsScreen", () => {
     const fab = getByTestId("fab-create-list");
     fireEvent.press(fab);
 
-    // Alert.prompt should be called
-    expect(alertPromptSpy).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.any(String),
-      expect.any(Function),
-      expect.any(String),
-    );
+    const input = getByTestId("modal-create-list-input");
+    fireEvent.changeText(input, "Compra finde");
+
+    const confirm = getByTestId("modal-create-list-confirm");
+    fireEvent.press(confirm);
+
+    await waitFor(() => {
+      expect(listService.createList).toHaveBeenCalledWith("Compra finde");
+    });
   });
 
   // Test 5: each list card shows name and item count
@@ -187,16 +192,10 @@ describe("ListsScreen", () => {
     });
   });
 
-  // Test 6: pressing delete button calls listService.deleteList
+  // Test 6: pressing delete button opens modal and confirm calls deleteList
   it("Test 6: pressing delete button calls listService.deleteList", async () => {
     useListStore.setState({ lists: [mockList], isLoading: false });
     (listService.deleteList as jest.Mock).mockResolvedValue(undefined);
-    // Simulate pressing the "Eliminar" button (index 1)
-    alertAlertSpy.mockImplementation(
-      (_title: string, _msg: string, buttons?: Array<{ onPress?: () => void }>) => {
-        buttons?.[1]?.onPress?.();
-      },
-    );
 
     const { getByTestId } = render(<ListsScreen />);
 
@@ -204,6 +203,9 @@ describe("ListsScreen", () => {
       const deleteBtn = getByTestId(`delete-list-${mockList.id}`);
       fireEvent.press(deleteBtn);
     });
+
+    const confirm = getByTestId("modal-delete-list-confirm");
+    fireEvent.press(confirm);
 
     await waitFor(() => {
       expect(listService.deleteList).toHaveBeenCalledWith(mockList.id);
@@ -282,59 +284,46 @@ describe("ListDetailScreen", () => {
     });
   });
 
-  // Test 9: search input calls productService.autocomplete with debounce
-  it("Test 9: search input calls productService.autocomplete with 300ms debounce", async () => {
-    jest.useFakeTimers();
-
+  // Test 9: increase quantity triggers updateItem with +1 quantity
+  it("Test 9: pressing increase quantity calls listService.updateItem", async () => {
+    (listService.updateItem as jest.Mock).mockResolvedValue({
+      ...mockItem,
+      quantity: 3,
+    });
     const { getByTestId } = render(
       <ListDetailScreen route={mockRoute} navigation={mockNavigation as never} />,
     );
 
-    const searchInput = getByTestId("autocomplete-search-input");
-    fireEvent.changeText(searchInput, "lech");
-
-    // Should not be called immediately
-    expect(productService.autocomplete).not.toHaveBeenCalled();
-
-    // Advance timers by 300ms
-    act(() => {
-      jest.advanceTimersByTime(300);
+    await waitFor(() => {
+      expect(listService.getList).toHaveBeenCalled();
     });
+
+    const increaseButton = getByTestId(`increase-item-${mockItem.id}`);
+    fireEvent.press(increaseButton);
 
     await waitFor(() => {
-      expect(productService.autocomplete).toHaveBeenCalledWith("lech");
+      expect(listService.updateItem).toHaveBeenCalledWith("list1", mockItem.id, {
+        quantity: 3,
+      });
     });
-
-    jest.useRealTimers();
   });
 
-  // Test 10: selecting product from autocomplete calls listService.addItem
-  it("Test 10: selecting product from autocomplete calls listService.addItem", async () => {
-    jest.useFakeTimers();
-    (listService.addItem as jest.Mock).mockResolvedValue(mockItem);
-
+  // Test 10: catalog FAB navigates to ProductsCatalog for current list
+  it("Test 10: pressing catalog FAB navigates to ProductsCatalog", async () => {
     const { getByTestId } = render(
       <ListDetailScreen route={mockRoute} navigation={mockNavigation as never} />,
     );
-
-    const searchInput = getByTestId("autocomplete-search-input");
-    fireEvent.changeText(searchInput, "lech");
-
-    act(() => {
-      jest.advanceTimersByTime(300);
+    await waitFor(() => {
+      expect(listService.getList).toHaveBeenCalled();
     });
 
-    await waitFor(() => {
-      const suggestion = getByTestId(`autocomplete-item-${mockProduct.id}`);
-      fireEvent.press(suggestion);
-    });
-
-    jest.useRealTimers();
+    const openCatalogFab = getByTestId("fab-open-product-catalog");
+    fireEvent.press(openCatalogFab);
 
     await waitFor(() => {
-      expect(listService.addItem).toHaveBeenCalledWith("list1", {
-        product: mockProduct.id,
-        quantity: 1,
+      expect(mockNavigation.navigate).toHaveBeenCalledWith("ProductsCatalog", {
+        listId: "list1",
+        listName: "Compra semanal",
       });
     });
   });

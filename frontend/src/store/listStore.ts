@@ -25,6 +25,8 @@ interface ListState {
   addList: (list: ShoppingList) => void;
   /** Eliminar lista del estado local */
   removeList: (id: string) => void;
+  /** Actualizar una lista existente en memoria */
+  updateList: (list: ShoppingList) => void;
   /** Actualizar un ítem dentro de la lista activa */
   updateListItem: (listId: string, item: ShoppingListItem) => void;
 }
@@ -45,6 +47,17 @@ export const useListStore = create<ListState>((set) => ({
     set((state) => ({
       lists: state.lists.filter((l) => l.id !== id),
       activeList: state.activeList?.id === id ? null : state.activeList,
+    })),
+
+  updateList: (updatedList) =>
+    set((state) => ({
+      lists: state.lists.map((list) =>
+        list.id === updatedList.id ? { ...list, ...updatedList } : list,
+      ),
+      activeList:
+        state.activeList?.id === updatedList.id
+          ? { ...state.activeList, ...updatedList }
+          : state.activeList,
     })),
 
   updateListItem: (listId, updatedItem) =>

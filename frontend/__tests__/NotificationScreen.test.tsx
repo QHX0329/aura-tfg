@@ -45,6 +45,7 @@ jest.mock("@react-navigation/native", () => ({
     navigate: jest.fn(),
     setOptions: jest.fn(),
   }),
+  useFocusEffect: () => undefined,
 }));
 
 jest.mock("react-native-reanimated", () => {

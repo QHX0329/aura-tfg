@@ -25,6 +25,11 @@ export interface CreatePriceAlertPayload {
   target_price: string;
 }
 
+export interface UpdatePriceAlertPayload {
+  target_price?: string;
+  store?: number | null;
+}
+
 export const priceService = {
   /** GET /prices/alerts/ — alertas de precio activas del usuario */
   getPriceAlerts: async (): Promise<PriceAlert[]> => {
@@ -42,6 +47,10 @@ export const priceService = {
   /** DELETE /prices/alerts/{id}/ — eliminar alerta */
   deletePriceAlert: (id: string): Promise<void> =>
     apiClient.delete<never, void>(`/prices/alerts/${id}/`),
+
+  /** PATCH /prices/alerts/{id}/ — actualizar alerta */
+  updatePriceAlert: (id: string, data: UpdatePriceAlertPayload): Promise<PriceAlert> =>
+    apiClient.patch<never, PriceAlert>(`/prices/alerts/${id}/`, data),
 
   /**
    * GET /prices/compare/?product=<id>[&lat=<lat>&lng=<lng>&radius=<km>]

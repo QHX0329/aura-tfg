@@ -24,6 +24,7 @@ import {
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useFocusEffect } from "@react-navigation/native";
 
 import {
   borderRadius,
@@ -123,7 +124,7 @@ const NotificationRow: React.FC<NotificationRowProps> = ({
 
   const renderRightActions = () => (
     <TouchableOpacity
-      testID={`delete-notification-${notification.id}`}
+      testID={`delete-notification-${String(notification.id)}`}
       style={rowStyles.deleteAction}
       onPress={() => {
         swipeableRef.current?.close();
@@ -138,7 +139,7 @@ const NotificationRow: React.FC<NotificationRowProps> = ({
   return (
     <Swipeable ref={swipeableRef} renderRightActions={renderRightActions}>
       <TouchableOpacity
-        testID={`notification-row-${notification.id}`}
+        testID={`notification-row-${String(notification.id)}`}
         style={[
           rowStyles.container,
           !notification.is_read && rowStyles.unreadBorder,
@@ -206,6 +207,18 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
   const [selectedNotif, setSelectedNotif] = useState<Notification | null>(null);
   const currentPage = useRef(1);
 
+  const loadFirstPage = useCallback(async () => {
+    setInitialLoading(true);
+    try {
+      const result = await notificationService.getNotifications(1);
+      setNotifications(result.results);
+      currentPage.current = 1;
+      useNotificationStore.setState({ hasMore: result.next !== null });
+    } finally {
+      setInitialLoading(false);
+    }
+  }, [setNotifications]);
+
   const handleMarkAllRead = useCallback(async () => {
     try {
       await notificationService.markAllAsRead();
@@ -230,26 +243,15 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
     });
   }, [navigation, handleMarkAllRead]);
 
-  // Initial load
   useEffect(() => {
-    const load = async () => {
-      setInitialLoading(true);
-      try {
-        const result = await notificationService.getNotifications(1);
-        setNotifications(result.results);
-        currentPage.current = 1;
-        // Update hasMore in store by checking
-        if (result.next === null) {
-          useNotificationStore.setState({ hasMore: false });
-        } else {
-          useNotificationStore.setState({ hasMore: true });
-        }
-      } finally {
-        setInitialLoading(false);
-      }
-    };
-    load();
-  }, [setNotifications]);
+    void loadFirstPage();
+  }, [loadFirstPage]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadFirstPage();
+    }, [loadFirstPage]),
+  );
 
   const handleTap = useCallback(
     async (notification: Notification) => {
@@ -280,6 +282,12 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
               try {
                 await notificationService.deleteNotification(notification.id);
                 removeNotification(notification.id);
+                if (
+                  selectedNotif &&
+                  String(selectedNotif.id) === String(notification.id)
+                ) {
+                  setSelectedNotif(null);
+                }
               } catch {
                 Alert.alert("Error", "No se pudo eliminar la notificación");
               }
@@ -288,7 +296,7 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
         ],
       );
     },
-    [removeNotification],
+    [removeNotification, selectedNotif],
   );
 
   const handleLoadMore = useCallback(async () => {
@@ -341,7 +349,7 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
       <SectionList
         testID="notifications-list"
         sections={sections}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <NotificationRow
             notification={item}
@@ -397,6 +405,16 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
               onPress={() => setSelectedNotif(null)}
             >
               <Text style={modalStyles.closeText}>Cerrar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={modalStyles.deleteButton}
+              onPress={() => {
+                if (selectedNotif) {
+                  handleDelete(selectedNotif);
+                }
+              }}
+            >
+              <Text style={modalStyles.deleteText}>Eliminar</Text>
             </TouchableOpacity>
           </Pressable>
         </Pressable>
@@ -578,6 +596,20 @@ const modalStyles = StyleSheet.create({
     fontFamily: fontFamilies.bodyMedium,
     fontSize: fontSize.sm,
     color: colors.primary,
+  },
+  deleteButton: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    alignSelf: "flex-end",
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.error,
+    borderRadius: borderRadius.md,
+  },
+  deleteText: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.white,
   },
 });
 

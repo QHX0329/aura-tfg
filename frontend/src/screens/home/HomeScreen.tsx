@@ -52,7 +52,7 @@ import { listService } from "@/api/listService";
 import { storeService } from "@/api/storeService";
 import { notificationService } from "@/api/notificationService";
 import { priceService } from "@/api/priceService";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type {
   Store,
   Product,
@@ -377,6 +377,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
   useEffect(() => {
     loadAll();
   }, [loadAll]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadAll();
+    }, [loadAll]),
+  );
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
