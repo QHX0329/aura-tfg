@@ -62,12 +62,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 03-01: Navigation system, global theme, reusable component library (F4-01 to F4-03)
-- [ ] 03-02: Auth screens — login, register, profile, JWT refresh interceptor (F4-04 to F4-06)
-- [ ] 03-03: Shopping list screens — list management, item search, autocomplete (F4-07 to F4-09)
-- [ ] 03-04: Price comparison screen + store map with real data (F4-10 to F4-11)
-- [ ] 03-05: Business PYME dashboard web screen (F4-19)
-- [ ] 03-06: Frontend tests — Jest + React Native Testing Library (F4-20)
+- [ ] 03-01-PLAN.md — Foundation: install packages, upgrade JWT Axios interceptor (refresh+retry queue), authStore hydration, 6 API service modules, 3 Zustand stores, SkeletonBox component, nav types (NFR-03)
+- [ ] 03-02-PLAN.md — Auth screens: LoginScreen + RegisterScreen connected to API, App.tsx hydration, JWT persist in SecureStore (NFR-03)
+- [ ] 03-03-PLAN.md — Shopping list screens: ListsScreen + ListDetailScreen with real CRUD, item management, product autocomplete (NFR-03)
+- [ ] 03-04-PLAN.md — Home dashboard + Notifications: HomeScreen 4 live widgets, NotificationScreen with day grouping, swipe-delete, mark-all-read (NFR-03)
+- [ ] 03-05-PLAN.md — Map + Profile: MapScreen with react-native-maps + real stores, ProfileScreen with weight sliders + debounced save + logout, ChangePasswordScreen (NFR-03)
+- [ ] 03-06-PLAN.md — PYME web portal: Vite + React + Ant Design portal at frontend/web/, login, 4 pages (Dashboard, Prices, Promotions, Business Profile), verification guard (NFR-03)
 
 ### Phase 4: Optimizer & Scraping
 **Goal**: Users can request an optimized multi-store route and see real scraped prices — the application's core value is fully operational
