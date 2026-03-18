@@ -14,8 +14,7 @@ Tests:
 import pytest
 from django.db import IntegrityError
 
-from tests.factories import UserFactory, ProductFactory
-
+from tests.factories import ProductFactory, UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -98,7 +97,7 @@ class TestListCollaboratorModel:
     """Test ListCollaborator constraints."""
 
     def test_create_collaborator(self):
-        from apps.shopping_lists.models import ShoppingList, ListCollaborator
+        from apps.shopping_lists.models import ListCollaborator, ShoppingList
 
         owner = UserFactory()
         collaborator = UserFactory()
@@ -110,7 +109,7 @@ class TestListCollaboratorModel:
 
     def test_collaborator_unique_together(self):
         """Same user cannot be added as collaborator twice."""
-        from apps.shopping_lists.models import ShoppingList, ListCollaborator
+        from apps.shopping_lists.models import ListCollaborator, ShoppingList
 
         owner = UserFactory()
         collaborator = UserFactory()
@@ -126,7 +125,7 @@ class TestListTemplateModel:
     """Test ListTemplate and ListTemplateItem."""
 
     def test_create_template(self):
-        from apps.shopping_lists.models import ShoppingList, ListTemplate
+        from apps.shopping_lists.models import ListTemplate, ShoppingList
 
         user = UserFactory()
         sl = ShoppingList.objects.create(owner=user, name="Lista fuente")
@@ -161,10 +160,10 @@ class TestIsOwnerOrCollaboratorPermission:
     """Test IsOwnerOrCollaborator permission class."""
 
     def test_owner_has_permission(self):
+        from unittest.mock import MagicMock
+
         from apps.shopping_lists.models import ShoppingList
         from apps.shopping_lists.permissions import IsOwnerOrCollaborator
-
-        from unittest.mock import MagicMock
 
         user = UserFactory()
         sl = ShoppingList.objects.create(owner=user, name="Lista")
@@ -174,10 +173,10 @@ class TestIsOwnerOrCollaboratorPermission:
         assert perm.has_object_permission(request, None, sl) is True
 
     def test_collaborator_has_permission(self):
-        from apps.shopping_lists.models import ShoppingList, ListCollaborator
-        from apps.shopping_lists.permissions import IsOwnerOrCollaborator
-
         from unittest.mock import MagicMock
+
+        from apps.shopping_lists.models import ListCollaborator, ShoppingList
+        from apps.shopping_lists.permissions import IsOwnerOrCollaborator
 
         owner = UserFactory()
         collaborator = UserFactory()
@@ -190,10 +189,10 @@ class TestIsOwnerOrCollaboratorPermission:
         assert perm.has_object_permission(request, None, sl) is True
 
     def test_stranger_has_no_permission(self):
+        from unittest.mock import MagicMock
+
         from apps.shopping_lists.models import ShoppingList
         from apps.shopping_lists.permissions import IsOwnerOrCollaborator
-
-        from unittest.mock import MagicMock
 
         owner = UserFactory()
         stranger = UserFactory()
@@ -206,10 +205,10 @@ class TestIsOwnerOrCollaboratorPermission:
 
     def test_permission_via_item(self):
         """IsOwnerOrCollaborator also works for ShoppingListItem (has shopping_list attr)."""
+        from unittest.mock import MagicMock
+
         from apps.shopping_lists.models import ShoppingList, ShoppingListItem
         from apps.shopping_lists.permissions import IsOwnerOrCollaborator
-
-        from unittest.mock import MagicMock
 
         owner = UserFactory()
         product = ProductFactory()
@@ -280,7 +279,12 @@ class TestTemplateCopyRule:
         ShoppingListItem.is_checked and quantity verification applies when
         creating a list from template.
         """
-        from apps.shopping_lists.models import ShoppingList, ShoppingListItem, ListTemplate, ListTemplateItem
+        from apps.shopping_lists.models import (
+            ListTemplate,
+            ListTemplateItem,
+            ShoppingList,
+            ShoppingListItem,
+        )
 
         owner = UserFactory()
         product1 = ProductFactory()

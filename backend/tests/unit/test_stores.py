@@ -1,11 +1,10 @@
 """Tests unitarios del módulo de tiendas."""
 
 import pytest
-from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import Distance
 
 from apps.stores.models import Store, StoreChain
-from apps.stores.serializers import StoreDetailSerializer, StoreListSerializer
+from apps.stores.serializers import StoreListSerializer
 
 
 @pytest.fixture

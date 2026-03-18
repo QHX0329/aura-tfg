@@ -147,7 +147,7 @@ class TestSharedListNotificationTrigger:
         self, authenticated_client, consumer_user
     ):
         """Añadir ítem a lista compartida programa send_shared_list_notification con countdown=900."""
-        from apps.shopping_lists.models import ListCollaborator, ShoppingList
+        from apps.shopping_lists.models import ListCollaborator
 
         product = ProductFactory()
         shopping_list = ShoppingListFactory(owner=consumer_user)
@@ -179,7 +179,7 @@ class TestSharedListNotificationTrigger:
 
     def test_trigger_skips_if_lock_already_set(self, authenticated_client, consumer_user):
         """Si la clave lock ya existe en Redis, no se reprograma la notificación."""
-        from apps.shopping_lists.models import ListCollaborator, ShoppingList
+        from apps.shopping_lists.models import ListCollaborator
 
         product = ProductFactory()
         shopping_list = ShoppingListFactory(owner=consumer_user)

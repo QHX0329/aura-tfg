@@ -29,8 +29,11 @@ export interface RegisterData {
 
 export const authService = {
   /** POST /auth/token/ — obtener par de tokens JWT */
-  login: (email: string, password: string): Promise<LoginResponse> =>
-    apiClient.post<never, LoginResponse>("/auth/token/", { email, password }),
+  login: (username: string, password: string): Promise<LoginResponse> =>
+    apiClient.post<never, LoginResponse>("/auth/token/", {
+      username,
+      password,
+    }),
 
   /** POST /auth/register/ — crear nueva cuenta */
   register: (data: RegisterData): Promise<LoginResponse> =>
@@ -49,6 +52,18 @@ export const authService = {
   /** GET /auth/profile/me/ — obtener perfil del usuario autenticado */
   getProfile: (): Promise<UserProfile> =>
     apiClient.get<never, UserProfile>("/auth/profile/me/"),
+
+  /**
+   * GET /auth/profile/me/ usando un access token explicito.
+   * Se usa en el bootstrap inmediatamente despues del login/register,
+   * antes de que el token este en el store/interceptor global.
+   */
+  getProfileWithToken: (accessToken: string): Promise<UserProfile> =>
+    apiClient.get<never, UserProfile>("/auth/profile/me/", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }),
 
   /** PATCH /auth/profile/me/ — actualizar datos del perfil */
   updateProfile: (data: Partial<UserProfile>): Promise<UserProfile> =>

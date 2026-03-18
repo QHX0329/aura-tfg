@@ -2,7 +2,7 @@
  * Pantalla de inicio de sesión.
  *
  * Conectada a POST /auth/token/ a través de authService.login.
- * Tras obtener los tokens, llama a authService.getProfile() para recuperar
+ * Tras obtener los tokens, llama a authService.getProfileWithToken() para recuperar
  * el objeto User completo y lo persiste en authStore + SecureStore.
  */
 
@@ -39,15 +39,15 @@ export const LoginScreen: React.FC = () => {
   const { height } = useWindowDimensions();
   const isCompact = height <= 650;
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetMessage, setResetMessage] = useState<string | null>(null);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      setError("Email o contraseña incorrectos");
+    if (!username.trim() || !password.trim()) {
+      setError("Usuario o contraseña incorrectos");
       return;
     }
 
@@ -56,8 +56,8 @@ export const LoginScreen: React.FC = () => {
     setResetMessage(null);
 
     try {
-      const tokens = await authService.login(email.trim(), password);
-      const profile = await authService.getProfile();
+      const tokens = await authService.login(username.trim(), password);
+      const profile = await authService.getProfileWithToken(tokens.access);
 
       const user = {
         id: profile.id,
@@ -67,20 +67,20 @@ export const LoginScreen: React.FC = () => {
 
       await useAuthStore.getState().login(tokens.access, tokens.refresh, user);
     } catch {
-      setError("Email o contraseña incorrectos");
+      setError("Usuario o contraseña incorrectos");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleForgotPassword = async () => {
-    if (!email.trim()) {
+    if (!username.trim()) {
       setError("Introduce tu email para recuperar la contraseña");
       return;
     }
 
     try {
-      await authService.requestPasswordReset(email.trim());
+      await authService.requestPasswordReset(username.trim());
       setResetMessage("Si el email existe, recibirás instrucciones.");
       setError(null);
     } catch {
@@ -116,14 +116,13 @@ export const LoginScreen: React.FC = () => {
             <View
               style={[styles.inputGroup, isCompact && styles.inputGroupCompact]}
             >
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>Usuario</Text>
               <TextInput
                 style={[styles.input, isCompact && styles.inputCompact]}
-                placeholder="tu@email.com"
+                placeholder="tu_usuario"
                 placeholderTextColor={colors.textMuted}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
+                value={username}
+                onChangeText={setUsername}
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!isLoading}

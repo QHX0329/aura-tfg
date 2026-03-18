@@ -70,16 +70,15 @@ export const RegisterScreen: React.FC = () => {
     setFieldErrors({});
 
     try {
-      await authService.register({
+      const tokens = await authService.register({
         email: email.trim(),
         password,
         first_name: firstName.trim(),
         last_name: lastName.trim(),
       });
 
-      // Auto-login tras registro exitoso
-      const tokens = await authService.login(email.trim(), password);
-      const profile = await authService.getProfile();
+      // El endpoint de registro ya devuelve tokens; evitamos un segundo login.
+      const profile = await authService.getProfileWithToken(tokens.access);
 
       const user = {
         id: profile.id,

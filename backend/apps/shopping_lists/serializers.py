@@ -5,17 +5,22 @@ Incluye enriquecimiento de ítems con nombre de producto, categoría y precio m�
 """
 
 from decimal import Decimal
-from typing import Optional
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import ListCollaborator, ListTemplate, ListTemplateItem, ShoppingList, ShoppingListItem
+from .models import (
+    ListCollaborator,
+    ListTemplate,
+    ListTemplateItem,
+    ShoppingList,
+    ShoppingListItem,
+)
 
 User = get_user_model()
 
 
-def _get_latest_price(product) -> Optional[tuple[Optional[Decimal], Optional[bool]]]:
+def _get_latest_price(product) -> tuple[Decimal | None, bool | None] | None:
     """
     Obtiene el precio más reciente y si está obsoleto para un producto.
 
@@ -55,23 +60,23 @@ class ShoppingListItemEnrichedSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id"]
 
-    def get_product_name(self, obj) -> Optional[str]:
+    def get_product_name(self, obj) -> str | None:
         if obj.product_id and hasattr(obj, "product"):
             return obj.product.name
         return None
 
-    def get_category_name(self, obj) -> Optional[str]:
+    def get_category_name(self, obj) -> str | None:
         if obj.product_id and hasattr(obj, "product") and obj.product.category_id:
             return obj.product.category.name
         return None
 
-    def get_latest_price(self, obj) -> Optional[Decimal]:
+    def get_latest_price(self, obj) -> Decimal | None:
         if not obj.product_id:
             return None
         price, _ = _get_latest_price(obj.product)
         return price
 
-    def get_is_stale(self, obj) -> Optional[bool]:
+    def get_is_stale(self, obj) -> bool | None:
         if not obj.product_id:
             return None
         _, is_stale = _get_latest_price(obj.product)

@@ -34,7 +34,7 @@ export const useListStore = create<ListState>((set) => ({
   activeList: null,
   isLoading: false,
 
-  setLists: (lists) => set({ lists }),
+  setLists: (lists) => set({ lists: Array.isArray(lists) ? lists : [] }),
 
   setActiveList: (list) => set({ activeList: list }),
 

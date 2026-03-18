@@ -13,7 +13,10 @@
 
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
-import * as SecureStore from "expo-secure-store";
+import {
+  getItem as getStoredItem,
+  setItem as setStoredItem,
+} from "@/utils/secureStorage";
 
 import { useAuthStore } from "@/store/authStore";
 
@@ -150,7 +153,7 @@ apiClient.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const storedRefresh = await SecureStore.getItemAsync("refresh_token");
+      const storedRefresh = await getStoredItem("refresh_token");
       if (!storedRefresh) {
         throw new Error("No refresh token stored");
       }
@@ -165,9 +168,9 @@ apiClient.interceptors.response.use(
       const newRefreshToken = refreshResponse.data.refresh ?? storedRefresh;
 
       // Persist new tokens
-      await SecureStore.setItemAsync("access_token", newAccessToken);
+      await setStoredItem("access_token", newAccessToken);
       if (newRefreshToken !== storedRefresh) {
-        await SecureStore.setItemAsync("refresh_token", newRefreshToken);
+        await setStoredItem("refresh_token", newRefreshToken);
         useAuthStore.getState().setRefreshToken(newRefreshToken);
       }
       useAuthStore.getState().setToken(newAccessToken);

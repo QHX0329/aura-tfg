@@ -2,14 +2,14 @@
 
 import structlog
 from django.db import IntegrityError, transaction
-from drf_spectacular.utils import OpenApiResponse, extend_schema, inline_serializer
+from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import serializers as drf_serializers
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from apps.core.exceptions import BusinessNotVerifiedError, PromotionConflictError
+from apps.core.exceptions import PromotionConflictError
 from apps.core.responses import success_response
 from apps.prices.models import Price
 

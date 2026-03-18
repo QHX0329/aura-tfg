@@ -10,7 +10,7 @@ ViewSets:
 
 from django.contrib.postgres.search import TrigramSimilarity
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import generics, status, viewsets
+from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -19,7 +19,7 @@ from rest_framework.response import Response
 from apps.core.exceptions import ProductNotFoundError
 from apps.core.responses import created_response, success_response
 from apps.products.filters import ProductFilter
-from apps.products.models import Category, Product, ProductProposal
+from apps.products.models import Category, Product
 from apps.products.serializers import (
     CategorySerializer,
     ProductDetailSerializer,

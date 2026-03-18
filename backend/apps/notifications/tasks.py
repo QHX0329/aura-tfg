@@ -44,7 +44,7 @@ def dispatch_push_notification(
         action_url: Deep link, p.ej. 'bargain://lists/42'.
         notification_type: Valor de NotificationType.
     """
-    from apps.notifications.models import Notification, UserPushToken
+    from apps.notifications.models import UserPushToken
 
     # ── Rate limiting ──────────────────────────────────────────────────────────
     r = redis_lib.from_url(settings.CELERY_BROKER_URL)
@@ -185,7 +185,7 @@ def send_shared_list_notification(self, list_id: int, actor_id: int) -> None:
         list_id: ID de la ShoppingList modificada.
         actor_id: ID del usuario que realizó el cambio (excluido de notificaciones).
     """
-    from apps.shopping_lists.models import ListCollaborator, ShoppingList
+    from apps.shopping_lists.models import ShoppingList
 
     try:
         shopping_list = ShoppingList.objects.prefetch_related(

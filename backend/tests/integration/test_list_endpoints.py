@@ -13,7 +13,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
-from tests.factories import UserFactory, ProductFactory
+from tests.factories import ProductFactory, UserFactory
 
 User = get_user_model()
 pytestmark = pytest.mark.django_db

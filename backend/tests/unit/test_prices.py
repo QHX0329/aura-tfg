@@ -14,7 +14,6 @@ from django.utils import timezone
 from apps.prices.models import Price, PriceAlert
 from apps.prices.tasks import check_price_alerts, expire_stale_prices, purge_old_price_history
 
-
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
 

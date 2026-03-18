@@ -5,7 +5,6 @@ TDD Wave 0 RED — estos tests fallan hasta que las vistas estén implementadas.
 """
 
 import pytest
-from django.urls import reverse
 from rest_framework.test import APIClient
 
 pytestmark = pytest.mark.django_db

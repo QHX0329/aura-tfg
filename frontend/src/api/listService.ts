@@ -5,6 +5,27 @@
 import { apiClient } from "./client";
 import type { ShoppingList, ShoppingListItem } from "@/types/domain";
 
+interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+function normalizeListCollection(
+  payload: ShoppingList[] | PaginatedResponse<ShoppingList>,
+): ShoppingList[] {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (payload && Array.isArray(payload.results)) {
+    return payload.results;
+  }
+
+  return [];
+}
+
 export interface AddItemPayload {
   product_id: string;
   quantity: number;
@@ -18,8 +39,13 @@ export interface UpdateItemPayload {
 
 export const listService = {
   /** GET /lists/ — listar todas las listas del usuario */
-  getLists: (): Promise<ShoppingList[]> =>
-    apiClient.get<never, ShoppingList[]>("/lists/"),
+  getLists: async (): Promise<ShoppingList[]> => {
+    const payload = await apiClient.get<
+      never,
+      ShoppingList[] | PaginatedResponse<ShoppingList>
+    >("/lists/");
+    return normalizeListCollection(payload);
+  },
 
   /** GET /lists/{id}/ — detalle de una lista */
   getList: (id: string): Promise<ShoppingList> =>

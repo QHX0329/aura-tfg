@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from django.db.models import Avg, Min, Max
+from django.db.models import Avg, Max, Min
 from django.db.models.functions import TruncDay
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema

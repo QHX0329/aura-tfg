@@ -7,7 +7,6 @@ Cubre: compare, list-total, history, alerts, crowdsource.
 import pytest
 from django.contrib.gis.geos import Point
 from rest_framework import status
-from rest_framework.test import APIClient
 
 from apps.prices.models import Price, PriceAlert
 from apps.products.models import Product

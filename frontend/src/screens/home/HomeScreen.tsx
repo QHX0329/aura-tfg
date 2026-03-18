@@ -413,6 +413,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
   // Recent unread notifications: 3 most recent
   const recentNotifs = notifications.filter((n) => !n.is_read).slice(0, 3);
+  const safePriceAlerts = Array.isArray(priceAlerts) ? priceAlerts : [];
 
   // Bell badge display
   const badgeCount = unreadCount > 99 ? "99+" : String(unreadCount);
@@ -604,7 +605,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
         >
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Alertas de precio</Text>
-            {priceAlerts.length > 0 && (
+            {safePriceAlerts.length > 0 && (
               <TouchableOpacity
                 onPress={() => navigation.navigate("PriceAlerts" as never)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -613,10 +614,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
               </TouchableOpacity>
             )}
           </View>
-          {priceAlerts.length === 0 ? (
+          {safePriceAlerts.length === 0 ? (
             <Text style={styles.emptyText}>Sin alertas activas</Text>
           ) : (
-            priceAlerts.slice(0, 3).map((alert) => (
+            safePriceAlerts.slice(0, 3).map((alert) => (
               <PriceAlertCard
                 key={alert.id}
                 alert={alert}

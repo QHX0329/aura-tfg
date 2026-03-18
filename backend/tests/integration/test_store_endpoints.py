@@ -3,7 +3,6 @@
 import pytest
 from django.contrib.gis.geos import Point
 from rest_framework import status
-from rest_framework.test import APIClient
 
 from apps.stores.models import Store, StoreChain, UserFavoriteStore
 

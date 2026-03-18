@@ -10,7 +10,11 @@
  */
 
 import { create } from "zustand";
-import * as SecureStore from "expo-secure-store";
+import {
+  deleteItem as deleteStoredItem,
+  getItem as getStoredItem,
+  setItem as setStoredItem,
+} from "@/utils/secureStorage";
 
 /** Información básica del usuario autenticado */
 export interface User {
@@ -57,9 +61,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   memberSince: null,
 
   login: async (token: string, refreshToken: string, user: User) => {
-    await SecureStore.setItemAsync("access_token", token);
-    await SecureStore.setItemAsync("refresh_token", refreshToken);
-    await SecureStore.setItemAsync("auth_user", JSON.stringify(user));
+    await setStoredItem("access_token", token);
+    await setStoredItem("refresh_token", refreshToken);
+    await setStoredItem("auth_user", JSON.stringify(user));
     set({
       isAuthenticated: true,
       token,
@@ -69,9 +73,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
-    await SecureStore.deleteItemAsync("access_token");
-    await SecureStore.deleteItemAsync("refresh_token");
-    await SecureStore.deleteItemAsync("auth_user");
+    await deleteStoredItem("access_token");
+    await deleteStoredItem("refresh_token");
+    await deleteStoredItem("auth_user");
     set({
       isAuthenticated: false,
       token: null,
@@ -87,9 +91,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   hydrate: async () => {
     const [accessToken, refreshToken, userJson] = await Promise.all([
-      SecureStore.getItemAsync("access_token"),
-      SecureStore.getItemAsync("refresh_token"),
-      SecureStore.getItemAsync("auth_user"),
+      getStoredItem("access_token"),
+      getStoredItem("refresh_token"),
+      getStoredItem("auth_user"),
     ]);
 
     if (accessToken && refreshToken) {
