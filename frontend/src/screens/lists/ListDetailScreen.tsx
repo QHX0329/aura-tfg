@@ -48,10 +48,25 @@ interface ItemRowProps {
 }
 
 const ItemRow: React.FC<ItemRowProps> = ({ item, onToggle, onDelete }) => {
+  // Backend enriched GET returns product_name; POST returns product as integer FK.
+  // Support both shapes.
+  const productName =
+    item.product_name ??
+    (typeof item.product === "object" && item.product !== null
+      ? (item.product as { name?: string }).name
+      : undefined) ??
+    "Producto";
+  const productUnit =
+    typeof item.product === "object" && item.product !== null
+      ? (item.product as { unit?: string }).unit
+      : undefined;
+  // Backend uses is_checked (snake_case); domain type alias is isChecked.
+  const isChecked = item.isChecked ?? item.is_checked ?? false;
+
   const handleLongPress = useCallback(() => {
     Alert.alert(
       "¿Eliminar producto?",
-      `¿Eliminar "${item.product.name}" de la lista?`,
+      `¿Eliminar "${productName}" de la lista?`,
       [
         { text: "Cancelar", style: "cancel" },
         {
@@ -61,7 +76,7 @@ const ItemRow: React.FC<ItemRowProps> = ({ item, onToggle, onDelete }) => {
         },
       ],
     );
-  }, [item, onDelete]);
+  }, [item, onDelete, productName]);
 
   return (
     <TouchableOpacity
@@ -76,25 +91,25 @@ const ItemRow: React.FC<ItemRowProps> = ({ item, onToggle, onDelete }) => {
         style={styles.checkbox}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         accessibilityRole="checkbox"
-        accessibilityState={{ checked: item.isChecked }}
-        accessibilityLabel={`Marcar ${item.product.name}`}
+        accessibilityState={{ checked: isChecked }}
+        accessibilityLabel={`Marcar ${productName}`}
       >
         <Ionicons
-          name={item.isChecked ? "checkbox" : "square-outline"}
+          name={isChecked ? "checkbox" : "square-outline"}
           size={22}
-          color={item.isChecked ? colors.primary : colors.textMuted}
+          color={isChecked ? colors.primary : colors.textMuted}
         />
       </TouchableOpacity>
 
       <View style={styles.itemContent}>
         <Text
-          style={[styles.itemName, item.isChecked && styles.itemNameChecked]}
+          style={[styles.itemName, isChecked && styles.itemNameChecked]}
           numberOfLines={1}
         >
-          {item.product.name}
+          {productName}
         </Text>
         <Text style={styles.itemMeta}>
-          {item.quantity > 1 ? `×${item.quantity}` : item.product.unit}
+          {item.quantity > 1 ? `×${item.quantity}` : (productUnit ?? "")}
           {item.note ? ` · ${item.note}` : ""}
         </Text>
       </View>
@@ -222,15 +237,22 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       setSuggestions([]);
       try {
         const newItem = await listService.addItem(listId, {
-          product_id: product.id,
+          product: product.id,
           quantity: 1,
         });
+        // Enrich the response with product metadata the POST endpoint doesn't return
+        const enrichedItem: ShoppingListItem = {
+          ...newItem,
+          product_name: product.name,
+          category_name: typeof product.category === "string" ? product.category : undefined,
+          isChecked: newItem.is_checked ?? false,
+        };
         // Update activeList in store
         const currentList = useListStore.getState().activeList;
         if (currentList) {
           setActiveList({
             ...currentList,
-            items: [...currentList.items, newItem],
+            items: [...(currentList.items ?? []), enrichedItem],
           });
         }
       } catch {
@@ -243,18 +265,30 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   // ─── Toggle item checked (optimistic update) ──────────────────────────────
   const handleToggleItem = useCallback(
     async (item: ShoppingListItem) => {
+      // Resolve current checked state from either field name
+      const currentChecked = item.isChecked ?? item.is_checked ?? false;
       // Optimistic update
       const updatedItem: ShoppingListItem = {
         ...item,
-        isChecked: !item.isChecked,
+        isChecked: !currentChecked,
+        is_checked: !currentChecked,
       };
       updateListItem(listId, updatedItem);
 
       try {
         const serverItem = await listService.updateItem(listId, item.id, {
-          is_checked: !item.isChecked,
+          is_checked: !currentChecked,
         });
-        updateListItem(listId, serverItem);
+        // Merge: keep enriched fields (product_name, etc.) from the local item;
+        // take is_checked and quantity from the server response.
+        updateListItem(listId, {
+          ...item,
+          ...serverItem,
+          product_name: item.product_name ?? serverItem.product_name,
+          category_name: item.category_name ?? serverItem.category_name,
+          isChecked: serverItem.is_checked ?? !currentChecked,
+          is_checked: serverItem.is_checked ?? !currentChecked,
+        });
       } catch {
         // Rollback optimistic update
         updateListItem(listId, item);
