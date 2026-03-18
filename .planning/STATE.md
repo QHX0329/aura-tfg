@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 03-frontend-03-06-PLAN.md
-last_updated: "2026-03-18T08:21:33.825Z"
+stopped_at: Completed 03-frontend-03-04-PLAN.md
+last_updated: "2026-03-18T08:33:41.349Z"
 last_activity: 2026-03-17 — Phase 1 complete. 179 tests green, UAT 15/15, Nyquist compliant. Starting Phase 2.
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 ---
@@ -77,6 +77,7 @@ Progress: [████████░░░░░░░░░░░░] ~40% (F
 | Phase 03-frontend P02 | 7 | 2 tasks | 4 files |
 | Phase 03-frontend P03 | 9 | 2 tasks | 3 files |
 | Phase 03-frontend P06 | 11 | 3 tasks | 16 files |
+| Phase 03-frontend P04 | 546 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Key decisions affecting 
 - [Phase 03-frontend]: Alert mocked via jest.spyOn in beforeEach — jest.mock react-native breaks jest-expo preset
 - [Phase 03-frontend]: RNTL pull-to-refresh: access refreshControl.props.onRefresh() directly (not fireEvent on FlatList)
 - [Phase 03-frontend]: vite.config.ts uses defineConfig from vitest/config; apiClient creation guarded for test mocking; tsconfig.app.json excludes test files; handleLogin accepts axiosInstance for testability
+- [Phase 03-frontend]: HomeScreen always re-fetches on mount (no empty-guard); mark-all-read rendered in ListHeaderComponent for testability; __DEV__ GPS fallback to Seville coords
 
 ### Pending Todos
 
@@ -127,6 +129,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T08:21:33.822Z
-Stopped at: Completed 03-frontend-03-06-PLAN.md
+Last session: 2026-03-18T08:33:20.959Z
+Stopped at: Completed 03-frontend-03-04-PLAN.md
 Resume file: None
