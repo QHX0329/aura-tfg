@@ -26,21 +26,6 @@ jest.mock("../src/api/productService", () => ({
   },
 }));
 
-jest.mock("../src/store/listStore", () => {
-  const { create } = jest.requireActual("zustand");
-  const store = create(() => ({
-    lists: [],
-    activeList: null,
-    isLoading: false,
-    setLists: jest.fn(),
-    setActiveList: jest.fn(),
-    addList: jest.fn(),
-    removeList: jest.fn(),
-    updateListItem: jest.fn(),
-  }));
-  return { useListStore: store };
-});
-
 jest.mock("@react-navigation/native", () => ({
   useNavigation: () => ({
     navigate: jest.fn(),
@@ -58,10 +43,6 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
-jest.mock("react-native/Libraries/Alert/Alert", () => ({
-  alert: jest.fn(),
-  prompt: jest.fn(),
-}));
 
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
@@ -114,32 +95,29 @@ const mockList2: ShoppingList = {
   isFavorite: false,
 };
 
-// Helper to reset store between tests
-function resetStore(overrides: Partial<ReturnType<typeof useListStore.getState>> = {}) {
-  useListStore.setState({
-    lists: [],
-    activeList: null,
-    isLoading: false,
-    setLists: useListStore.getState().setLists,
-    setActiveList: useListStore.getState().setActiveList,
-    addList: useListStore.getState().addList,
-    removeList: useListStore.getState().removeList,
-    updateListItem: useListStore.getState().updateListItem,
-    ...overrides,
-  });
-}
-
 // ─── ListsScreen Tests ────────────────────────────────────────────────────────
 
 describe("ListsScreen", () => {
+  let alertAlertSpy: jest.SpyInstance;
+  let alertPromptSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    resetStore();
+    alertAlertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    alertPromptSpy = jest.spyOn(Alert, "prompt").mockImplementation(() => {});
+    // Reset store to clean state
+    useListStore.setState({ lists: [], activeList: null, isLoading: false });
     (listService.getLists as jest.Mock).mockResolvedValue([mockList, mockList2]);
+  });
+
+  afterEach(() => {
+    alertAlertSpy.mockRestore();
+    alertPromptSpy.mockRestore();
   });
 
   // Test 1: renders FlatList with list items when lists are present
   it("Test 1: renders list items from store when lists are present", async () => {
+    // Pre-seed the store so component renders with data immediately
     useListStore.setState({ lists: [mockList, mockList2], isLoading: false });
 
     const { getByText } = render(<ListsScreen />);
@@ -162,7 +140,6 @@ describe("ListsScreen", () => {
 
   // Test 3: shows empty state text when lists array is empty
   it("Test 3: shows empty state when lists array is empty and not loading", async () => {
-    useListStore.setState({ lists: [], isLoading: false });
     (listService.getLists as jest.Mock).mockResolvedValue([]);
 
     const { getByText } = render(<ListsScreen />);
@@ -176,17 +153,21 @@ describe("ListsScreen", () => {
 
   // Test 4: tapping FAB calls listService.createList
   it("Test 4: tapping the FAB shows prompt and calls listService.createList on confirm", async () => {
-    useListStore.setState({ lists: [], isLoading: false });
     (listService.getLists as jest.Mock).mockResolvedValue([]);
     (listService.createList as jest.Mock).mockResolvedValue(mockList);
 
     const { getByTestId } = render(<ListsScreen />);
 
+    // Wait for initial load to complete so skeleton is gone
+    await waitFor(() => {
+      expect(listService.getLists).toHaveBeenCalled();
+    });
+
     const fab = getByTestId("fab-create-list");
     fireEvent.press(fab);
 
-    // Alert.prompt should be called with the creation callback
-    expect(Alert.prompt).toHaveBeenCalledWith(
+    // Alert.prompt should be called
+    expect(alertPromptSpy).toHaveBeenCalledWith(
       expect.any(String),
       expect.any(String),
       expect.any(Function),
@@ -210,7 +191,8 @@ describe("ListsScreen", () => {
   it("Test 6: pressing delete button calls listService.deleteList", async () => {
     useListStore.setState({ lists: [mockList], isLoading: false });
     (listService.deleteList as jest.Mock).mockResolvedValue(undefined);
-    (Alert.alert as jest.Mock).mockImplementation(
+    // Simulate pressing the "Eliminar" button (index 1)
+    alertAlertSpy.mockImplementation(
       (_title: string, _msg: string, buttons?: Array<{ onPress?: () => void }>) => {
         buttons?.[1]?.onPress?.();
       },
@@ -235,11 +217,22 @@ describe("ListsScreen", () => {
 
     const { getByTestId } = render(<ListsScreen />);
 
+    // Wait for initial load (from useEffect on mount)
+    await waitFor(() => {
+      expect(listService.getLists).toHaveBeenCalledTimes(1);
+    });
+
+    // Trigger the onRefresh handler on the FlatList's refreshControl
     const flatList = getByTestId("lists-flatlist");
-    fireEvent(flatList, "refresh");
+    const { refreshControl } = flatList.props as { refreshControl?: { props: { onRefresh: () => void } } };
+    if (refreshControl?.props?.onRefresh) {
+      await act(async () => {
+        refreshControl.props.onRefresh();
+      });
+    }
 
     await waitFor(() => {
-      expect(listService.getLists).toHaveBeenCalledTimes(2); // once on mount, once on refresh
+      expect(listService.getLists).toHaveBeenCalledTimes(2);
     });
   });
 });
@@ -259,11 +252,18 @@ const mockNavigation = {
 };
 
 describe("ListDetailScreen", () => {
+  let alertAlertSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    resetStore();
+    alertAlertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    useListStore.setState({ lists: [], activeList: null, isLoading: false });
     (listService.getList as jest.Mock).mockResolvedValue(mockList);
     (productService.autocomplete as jest.Mock).mockResolvedValue([mockProduct]);
+  });
+
+  afterEach(() => {
+    alertAlertSpy.mockRestore();
   });
 
   // Test 8: fetches and renders items
@@ -274,6 +274,10 @@ describe("ListDetailScreen", () => {
 
     await waitFor(() => {
       expect(listService.getList).toHaveBeenCalledWith("list1");
+    });
+
+    // The store should have activeList set after getList resolves
+    await waitFor(() => {
       expect(getByText("Leche entera")).toBeTruthy();
     });
   });
@@ -325,14 +329,14 @@ describe("ListDetailScreen", () => {
       fireEvent.press(suggestion);
     });
 
+    jest.useRealTimers();
+
     await waitFor(() => {
       expect(listService.addItem).toHaveBeenCalledWith("list1", {
         product_id: mockProduct.id,
         quantity: 1,
       });
     });
-
-    jest.useRealTimers();
   });
 
   // Test 11: tapping checkbox calls listService.updateItem
@@ -345,6 +349,11 @@ describe("ListDetailScreen", () => {
     const { getByTestId } = render(
       <ListDetailScreen route={mockRoute} navigation={mockNavigation as never} />,
     );
+
+    // Wait for items to load
+    await waitFor(() => {
+      expect(listService.getList).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       const checkbox = getByTestId(`checkbox-item-${mockItem.id}`);
@@ -361,7 +370,7 @@ describe("ListDetailScreen", () => {
   // Test 12: long-pressing item calls listService.deleteItem after confirmation
   it("Test 12: long-pressing item shows delete confirmation and calls listService.deleteItem", async () => {
     (listService.deleteItem as jest.Mock).mockResolvedValue(undefined);
-    (Alert.alert as jest.Mock).mockImplementation(
+    alertAlertSpy.mockImplementation(
       (_title: string, _msg: string, buttons?: Array<{ onPress?: () => void }>) => {
         buttons?.[1]?.onPress?.();
       },
@@ -370,6 +379,10 @@ describe("ListDetailScreen", () => {
     const { getByTestId } = render(
       <ListDetailScreen route={mockRoute} navigation={mockNavigation as never} />,
     );
+
+    await waitFor(() => {
+      expect(listService.getList).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       const itemRow = getByTestId(`item-row-${mockItem.id}`);
