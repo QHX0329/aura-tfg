@@ -95,9 +95,17 @@ export interface ProductPriceSummary {
 
 export interface ShoppingListItem {
   id: string;
-  product: Product;
+  /** FK al producto (ID) — backend devuelve el ID numérico */
+  product: string | Product;
+  product_name?: string;
+  category_name?: string;
   quantity: number;
-  isChecked: boolean;
+  /** Backend devuelve is_checked (snake_case) */
+  is_checked?: boolean;
+  /** Alias camelCase para compatibilidad local */
+  isChecked?: boolean;
+  latest_price?: number | null;
+  is_stale?: boolean | null;
   /** Tienda asignada tras optimización */
   assignedStore?: Store;
   /** Precio asignado en la optimización */
@@ -108,14 +116,19 @@ export interface ShoppingListItem {
 export interface ShoppingList {
   id: string;
   name: string;
+  owner?: string;
   items: ShoppingListItem[];
-  /** Total estimado sin optimizar */
-  totalEstimated: number;
-  /** Total optimizado (post-ruta) */
+  is_archived?: boolean;
+  /** Backend snake_case date fields */
+  created_at?: string;
+  updated_at?: string;
+  /** Aliases camelCase (por si algún layer los mapea) */
+  createdAt?: string;
+  updatedAt?: string;
+  /** Total estimado (no existe en backend — calculado localmente) */
+  totalEstimated?: number;
   totalOptimized?: number;
-  createdAt: string;
-  updatedAt: string;
-  isFavorite: boolean;
+  isFavorite?: boolean;
 }
 
 // ─── Resultado de optimización ────────────────────────────────────────────────
@@ -158,14 +171,30 @@ export interface WeeklySavings {
 
 export interface UserProfile {
   id: string;
+  username: string;
   email: string;
+  first_name: string;
+  last_name: string;
+  /** Nombre compuesto generado localmente: `${first_name} ${last_name}`.trim() */
   name: string;
-  avatarUrl?: string;
-  /** Radio de búsqueda en km */
+  phone?: string;
+  avatar?: string | null;
+  role?: string;
+  /** Radio de búsqueda en km — campo real del backend */
+  max_search_radius_km: number;
+  /** Máx. paradas — campo real del backend */
+  max_stops: number;
+  /** Preferencia de optimización del perfil */
+  optimization_preference?: string;
+  push_notifications_enabled?: boolean;
+  email_notifications_enabled?: boolean;
+  notify_price_alerts?: boolean | null;
+  notify_new_promos?: boolean | null;
+  notify_shared_list_changes?: boolean | null;
+  created_at?: string;
+  // Campos locales para compatibilidad con profileStore (no existen en el backend)
   searchRadiusKm: number;
-  /** Máximo de paradas por ruta */
   maxStops: number;
-  /** Pesos del scoring (0-100, deben sumar 100) */
   weightPrice: number;
   weightDistance: number;
   weightTime: number;
