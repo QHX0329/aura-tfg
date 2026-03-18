@@ -19,10 +19,34 @@ export interface LoginResponse {
 }
 
 export interface RegisterData {
+  username: string;
   email: string;
   password: string;
+  password_confirm: string;
   first_name: string;
   last_name: string;
+}
+
+// ─── Helpers de normalización ─────────────────────────────────────────────────
+
+/**
+ * Normaliza la respuesta del backend (/auth/profile/me/) al tipo UserProfile.
+ * El backend devuelve first_name + last_name y campos snake_case; añadimos
+ * los campos camelCase de conveniencia que usa el store local.
+ */
+function normalizeProfile(raw: UserProfile): UserProfile {
+  const name = [raw.first_name, raw.last_name].filter(Boolean).join(" ").trim() || raw.username;
+  return {
+    ...raw,
+    name,
+    // Alias camelCase para compatibilidad con profileStore
+    searchRadiusKm: raw.max_search_radius_km,
+    maxStops: raw.max_stops,
+    // El backend no persiste pesos individuales; usar valores por defecto
+    weightPrice: raw.weightPrice ?? 50,
+    weightDistance: raw.weightDistance ?? 30,
+    weightTime: raw.weightTime ?? 20,
+  };
 }
 
 // ─── authService ──────────────────────────────────────────────────────────────
@@ -50,29 +74,33 @@ export const authService = {
     ),
 
   /** GET /auth/profile/me/ — obtener perfil del usuario autenticado */
-  getProfile: (): Promise<UserProfile> =>
-    apiClient.get<never, UserProfile>("/auth/profile/me/"),
+  getProfile: async (): Promise<UserProfile> => {
+    const raw = await apiClient.get<never, UserProfile>("/auth/profile/me/");
+    return normalizeProfile(raw);
+  },
 
   /**
    * GET /auth/profile/me/ usando un access token explicito.
    * Se usa en el bootstrap inmediatamente despues del login/register,
    * antes de que el token este en el store/interceptor global.
    */
-  getProfileWithToken: (accessToken: string): Promise<UserProfile> =>
-    apiClient.get<never, UserProfile>("/auth/profile/me/", {
+  getProfileWithToken: async (accessToken: string): Promise<UserProfile> => {
+    const raw = await apiClient.get<never, UserProfile>("/auth/profile/me/", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }),
+    });
+    return normalizeProfile(raw);
+  },
 
   /** PATCH /auth/profile/me/ — actualizar datos del perfil */
   updateProfile: (data: Partial<UserProfile>): Promise<UserProfile> =>
     apiClient.patch<never, UserProfile>("/auth/profile/me/", data),
 
-  /** PATCH /auth/profile/me/preferences/ — actualizar preferencias */
+  /** PATCH /auth/profile/me/ — actualizar preferencias del usuario */
   updatePreferences: (prefs: Partial<UserPreferences>): Promise<UserPreferences> =>
     apiClient.patch<never, UserPreferences>(
-      "/auth/profile/me/preferences/",
+      "/auth/profile/me/",
       prefs,
     ),
 

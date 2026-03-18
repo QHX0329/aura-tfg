@@ -23,9 +23,9 @@ export const notificationService = {
   markAsRead: (id: string): Promise<Notification> =>
     apiClient.patch<never, Notification>(`/notifications/${id}/read/`),
 
-  /** PATCH /notifications/ con {mark_all_read: true} — marcar todas como leídas */
+  /** POST /notifications/read-all/ — marcar todas como leídas */
   markAllAsRead: (): Promise<void> =>
-    apiClient.patch<never, void>("/notifications/", { mark_all_read: true }),
+    apiClient.post<never, void>("/notifications/read-all/"),
 
   /** DELETE /notifications/{id}/ — eliminar (soft-delete) notificación */
   deleteNotification: (id: string): Promise<void> =>

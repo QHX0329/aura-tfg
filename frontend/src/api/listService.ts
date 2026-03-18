@@ -27,7 +27,7 @@ function normalizeListCollection(
 }
 
 export interface AddItemPayload {
-  product_id: string;
+  product: string;
   quantity: number;
 }
 
@@ -55,8 +55,8 @@ export const listService = {
   createList: (name: string): Promise<ShoppingList> =>
     apiClient.post<never, ShoppingList>("/lists/", { name }),
 
-  /** PATCH /lists/{id}/ — actualizar nombre u otros campos */
-  updateList: (id: string, data: Partial<Pick<ShoppingList, "name" | "isFavorite">>): Promise<ShoppingList> =>
+  /** PATCH /lists/{id}/ — actualizar nombre o estado de archivado */
+  updateList: (id: string, data: Partial<Pick<ShoppingList, "name" | "is_archived">>): Promise<ShoppingList> =>
     apiClient.patch<never, ShoppingList>(`/lists/${id}/`, data),
 
   /** DELETE /lists/{id}/ — eliminar lista */
