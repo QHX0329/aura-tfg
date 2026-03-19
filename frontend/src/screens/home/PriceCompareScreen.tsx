@@ -41,6 +41,7 @@ import {
 } from "@/theme";
 import { priceService } from "@/api/priceService";
 import type { PriceCompare, Product } from "@/types/domain";
+import { blurActiveElementOnWeb } from "@/utils/webA11y";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -350,7 +351,10 @@ export const PriceCompareScreen: React.FC = () => {
           </Text>
         </View>
         <TouchableOpacity
-          onPress={() => setAlertVisible(true)}
+          onPress={() => {
+            blurActiveElementOnWeb();
+            setAlertVisible(true);
+          }}
           style={styles.alertBtn}
         >
           <Ionicons name="notifications-outline" size={22} color={colors.primary} />

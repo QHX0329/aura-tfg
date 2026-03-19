@@ -32,6 +32,7 @@ import { priceService } from '@/api/priceService';
 import { listService } from '@/api/listService';
 import { useProfileStore } from '@/store/profileStore';
 import type { Product, ShoppingList, Store } from '@/types/domain';
+import { blurActiveElementOnWeb } from '@/utils/webA11y';
 
 const STORE_FILTER_CONCURRENCY = 6;
 
@@ -420,6 +421,7 @@ export const ProductsCatalogScreen: React.FC = () => {
       setToastMessage('Primero crea una lista para poder añadir productos.');
       return;
     }
+    blurActiveElementOnWeb();
     setPendingProduct(product);
     setSelectedQuantity(1);
     setPickerVisible(true);

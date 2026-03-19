@@ -103,10 +103,8 @@ const QuickActionTile: React.FC<{ action: QuickAction; delay: number }> = ({
   }));
 
   return (
-    <Animated.View
-      entering={FadeInDown.delay(delay).springify().damping(18)}
-      style={[quickStyles.tileWrap, animStyle]}
-    >
+    <Animated.View entering={FadeInDown.delay(delay).duration(250)} style={quickStyles.tileWrap}>
+    <Animated.View style={animStyle}>
       <Pressable
         onPressIn={() => {
           scale.value = withSpring(0.95, { damping: 12, stiffness: 300 });
@@ -135,6 +133,7 @@ const QuickActionTile: React.FC<{ action: QuickAction; delay: number }> = ({
           {action.label}
         </Text>
       </Pressable>
+    </Animated.View>
     </Animated.View>
   );
 };
@@ -490,7 +489,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
       >
         {/* ── Header ─────────────────────────────────────────────────── */}
         <Animated.View
-          entering={FadeInDown.delay(0).springify().damping(20)}
+          entering={FadeInDown.delay(0).duration(250)}
           style={styles.header}
         >
           <View style={styles.headerLeft}>
@@ -516,7 +515,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
         {/* ── SearchBar ──────────────────────────────────────────────── */}
         <Animated.View
-          entering={FadeInDown.delay(60).springify().damping(20)}
+          entering={FadeInDown.delay(60).duration(250)}
           style={styles.searchWrap}
         >
           <SearchBar
@@ -528,7 +527,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
         {/* ── Acciones rápidas ───────────────────────────────────────── */}
         <Animated.View
-          entering={FadeInDown.delay(120).springify().damping(20)}
+          entering={FadeInDown.delay(120).duration(250)}
           style={styles.section}
         >
           <Text style={styles.sectionTitle}>Acciones rápidas</Text>
@@ -546,7 +545,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
         {/* ── Widget 1: Notificaciones recientes ─────────────────────── */}
         {(recentNotifs.length > 0 || widgetLoading.notifications) && (
           <Animated.View
-            entering={FadeInDown.delay(200).springify().damping(20)}
+            entering={FadeInDown.delay(200).duration(250)}
             style={styles.section}
           >
             <View style={styles.sectionHeader}>
@@ -570,7 +569,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
         {/* ── Widget 2: Listas recientes ─────────────────────────────── */}
         <Animated.View
-          entering={FadeInDown.delay(260).springify().damping(20)}
+          entering={FadeInDown.delay(260).duration(250)}
           style={styles.section}
         >
           <View style={styles.sectionHeader}>
@@ -603,7 +602,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
         {/* ── Widget 3: Tiendas cercanas ─────────────────────────────── */}
         <Animated.View
-          entering={FadeInDown.delay(320).springify().damping(20)}
+          entering={FadeInDown.delay(320).duration(250)}
           style={styles.section}
         >
           <Text style={styles.sectionTitle}>Cerca de ti</Text>
@@ -617,7 +616,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
         {/* ── Widget 4: Alertas de precio ────────────────────────────── */}
         <Animated.View
-          entering={FadeInDown.delay(380).springify().damping(20)}
+          entering={FadeInDown.delay(380).duration(250)}
           style={styles.section}
         >
           <View style={styles.sectionHeader}>
@@ -657,7 +656,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
         {/* ── Optimizer teaser ───────────────────────────────────────── */}
         <Animated.View
-          entering={FadeInDown.delay(440).springify().damping(20)}
+          entering={FadeInDown.delay(440).duration(250)}
           style={styles.section}
         >
           <TouchableOpacity
