@@ -91,7 +91,9 @@ const OPT_PRESETS: OptPreset[] = [
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function normalizeWeights(
-  p: number, d: number, t: number,
+  p: number,
+  d: number,
+  t: number,
 ): { price: number; distance: number; time: number } {
   const sum = p + d + t;
   if (sum === 0) return { price: 34, distance: 33, time: 33 };
@@ -108,7 +110,12 @@ interface SectionProps {
   children: React.ReactNode;
   delay?: number;
 }
-const Section: React.FC<SectionProps> = ({ title, icon, children, delay = 0 }) => (
+const Section: React.FC<SectionProps> = ({
+  title,
+  icon,
+  children,
+  delay = 0,
+}) => (
   <Animated.View entering={FadeInDown.delay(delay).springify()}>
     <View style={sectionStyles.wrapper}>
       <View style={sectionStyles.titleRow}>
@@ -133,12 +140,21 @@ interface SliderRowProps {
   accentColor?: string;
 }
 const SliderRow: React.FC<SliderRowProps> = ({
-  label, value, min, max, step = 1, formatValue, onValueChange, accentColor,
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  formatValue,
+  onValueChange,
+  accentColor,
 }) => (
   <View style={sliderStyles.row}>
     <View style={sliderStyles.header}>
       <Text style={sliderStyles.label}>{label}</Text>
-      <Text style={[sliderStyles.value, accentColor ? { color: accentColor } : {}]}>
+      <Text
+        style={[sliderStyles.value, accentColor ? { color: accentColor } : {}]}
+      >
         {formatValue ? formatValue(value) : String(value)}
       </Text>
     </View>
@@ -205,22 +221,43 @@ export const OptimizerConfigScreen: React.FC = () => {
         weight_distance: w.distance,
         weight_time: w.time,
       });
-      Alert.alert("Guardado", "Tu configuración del optimizador ha sido actualizada.");
+      Alert.alert(
+        "Guardado",
+        "Tu configuración del optimizador ha sido actualizada.",
+      );
       navigation.goBack();
     } catch {
-      Alert.alert("Error", "No se pudo guardar la configuración. Intenta de nuevo.");
+      Alert.alert(
+        "Error",
+        "No se pudo guardar la configuración. Intenta de nuevo.",
+      );
     } finally {
       setSaving(false);
     }
-  }, [radius, maxStops, weightPrice, weightDist, weightTime, profile, navigation]);
+  }, [
+    radius,
+    maxStops,
+    weightPrice,
+    weightDist,
+    weightTime,
+    profile,
+    navigation,
+  ]);
 
-  const normalizedWeights = normalizeWeights(weightPrice, weightDist, weightTime);
+  const normalizedWeights = normalizeWeights(
+    weightPrice,
+    weightDist,
+    weightTime,
+  );
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.back}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Optimizador</Text>
@@ -264,29 +301,48 @@ export const OptimizerConfigScreen: React.FC = () => {
             <Text style={stepperStyles.label}>Máximo de paradas</Text>
             <View style={stepperStyles.controls}>
               <TouchableOpacity
-                style={[stepperStyles.btn, maxStops <= 1 && stepperStyles.btnDisabled]}
+                style={[
+                  stepperStyles.btn,
+                  maxStops <= 1 && stepperStyles.btnDisabled,
+                ]}
                 onPress={() => setMaxStops((v) => Math.max(1, v - 1))}
                 disabled={maxStops <= 1}
               >
-                <Ionicons name="remove" size={18} color={maxStops <= 1 ? colors.textDisabled : colors.primary} />
+                <Ionicons
+                  name="remove"
+                  size={18}
+                  color={maxStops <= 1 ? colors.textDisabled : colors.primary}
+                />
               </TouchableOpacity>
               <Text style={stepperStyles.value}>{maxStops}</Text>
               <TouchableOpacity
-                style={[stepperStyles.btn, maxStops >= 5 && stepperStyles.btnDisabled]}
+                style={[
+                  stepperStyles.btn,
+                  maxStops >= 5 && stepperStyles.btnDisabled,
+                ]}
                 onPress={() => setMaxStops((v) => Math.min(5, v + 1))}
                 disabled={maxStops >= 5}
               >
-                <Ionicons name="add" size={18} color={maxStops >= 5 ? colors.textDisabled : colors.primary} />
+                <Ionicons
+                  name="add"
+                  size={18}
+                  color={maxStops >= 5 ? colors.textDisabled : colors.primary}
+                />
               </TouchableOpacity>
             </View>
           </View>
           <Text style={styles.hint}>
-            Más paradas aumenta el ahorro potencial pero también el tiempo de desplazamiento.
+            Más paradas aumenta el ahorro potencial pero también el tiempo de
+            desplazamiento.
           </Text>
         </Section>
 
         {/* Presets de optimización */}
-        <Section title="Modo de optimización" icon="options-outline" delay={160}>
+        <Section
+          title="Modo de optimización"
+          icon="options-outline"
+          delay={160}
+        >
           <Text style={styles.hint}>
             Selecciona un modo o ajusta los pesos manualmente abajo.
           </Text>
@@ -309,7 +365,12 @@ export const OptimizerConfigScreen: React.FC = () => {
                     size={20}
                     color={isActive ? colors.white : colors.primary}
                   />
-                  <Text style={[prefStyles.chipLabel, isActive && prefStyles.chipLabelActive]}>
+                  <Text
+                    style={[
+                      prefStyles.chipLabel,
+                      isActive && prefStyles.chipLabelActive,
+                    ]}
+                  >
                     {preset.label}
                   </Text>
                   {isActive && (
@@ -322,9 +383,14 @@ export const OptimizerConfigScreen: React.FC = () => {
         </Section>
 
         {/* Pesos personalizados — siempre visible */}
-        <Section title="Pesos de criterios" icon="bar-chart-outline" delay={240}>
+        <Section
+          title="Pesos de criterios"
+          icon="bar-chart-outline"
+          delay={240}
+        >
           <Text style={styles.hint}>
-            Ajusta cuánto importa cada criterio. Los valores se normalizan automáticamente al guardar.
+            Ajusta cuánto importa cada criterio. Los valores se normalizan
+            automáticamente al guardar.
           </Text>
 
           <SliderRow
@@ -333,7 +399,9 @@ export const OptimizerConfigScreen: React.FC = () => {
             min={0}
             max={100}
             step={5}
-            formatValue={(v) => `${normalizeWeights(v, weightDist, weightTime).price}%`}
+            formatValue={(v) =>
+              `${normalizeWeights(v, weightDist, weightTime).price}%`
+            }
             onValueChange={setWeightPrice}
             accentColor={colors.success}
           />
@@ -343,7 +411,9 @@ export const OptimizerConfigScreen: React.FC = () => {
             min={0}
             max={100}
             step={5}
-            formatValue={(v) => `${normalizeWeights(weightPrice, v, weightTime).distance}%`}
+            formatValue={(v) =>
+              `${normalizeWeights(weightPrice, v, weightTime).distance}%`
+            }
             onValueChange={setWeightDist}
             accentColor={colors.info}
           />
@@ -353,26 +423,68 @@ export const OptimizerConfigScreen: React.FC = () => {
             min={0}
             max={100}
             step={5}
-            formatValue={(v) => `${normalizeWeights(weightPrice, weightDist, v).time}%`}
+            formatValue={(v) =>
+              `${normalizeWeights(weightPrice, weightDist, v).time}%`
+            }
             onValueChange={setWeightTime}
             accentColor={colors.accent}
           />
 
           {/* Resumen visual de pesos normalizados */}
           <View style={weightsStyles.bar}>
-            <View style={[weightsStyles.segment, { flex: normalizedWeights.price, backgroundColor: colors.success }]} />
-            <View style={[weightsStyles.segment, { flex: normalizedWeights.distance, backgroundColor: colors.info }]} />
-            <View style={[weightsStyles.segment, { flex: normalizedWeights.time, backgroundColor: colors.accentDark }]} />
+            <View
+              style={[
+                weightsStyles.segment,
+                {
+                  flex: normalizedWeights.price,
+                  backgroundColor: colors.success,
+                },
+              ]}
+            />
+            <View
+              style={[
+                weightsStyles.segment,
+                {
+                  flex: normalizedWeights.distance,
+                  backgroundColor: colors.info,
+                },
+              ]}
+            />
+            <View
+              style={[
+                weightsStyles.segment,
+                {
+                  flex: normalizedWeights.time,
+                  backgroundColor: colors.accentDark,
+                },
+              ]}
+            />
           </View>
           <View style={weightsStyles.legend}>
             {[
-              { label: "Precio", value: normalizedWeights.price, color: colors.success },
-              { label: "Distancia", value: normalizedWeights.distance, color: colors.info },
-              { label: "Tiempo", value: normalizedWeights.time, color: colors.accentDark },
+              {
+                label: "Precio",
+                value: normalizedWeights.price,
+                color: colors.success,
+              },
+              {
+                label: "Distancia",
+                value: normalizedWeights.distance,
+                color: colors.info,
+              },
+              {
+                label: "Tiempo",
+                value: normalizedWeights.time,
+                color: colors.accentDark,
+              },
             ].map((w) => (
               <View key={w.label} style={weightsStyles.legendItem}>
-                <View style={[weightsStyles.dot, { backgroundColor: w.color }]} />
-                <Text style={weightsStyles.legendText}>{w.label} {w.value}%</Text>
+                <View
+                  style={[weightsStyles.dot, { backgroundColor: w.color }]}
+                />
+                <Text style={weightsStyles.legendText}>
+                  {w.label} {w.value}%
+                </Text>
               </View>
             ))}
           </View>

@@ -33,7 +33,9 @@ interface EditProfileScreenProps {
   navigation: NativeStackNavigationProp<ProfileStackParamList, "EditProfile">;
 }
 
-export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => {
+export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({
+  navigation,
+}) => {
   const profile = useProfileStore((s) => s.profile);
   const setProfile = useProfileStore((s) => s.setProfile);
   const authUser = useAuthStore((s) => s.user);
@@ -43,7 +45,8 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
     [profile?.first_name, authUser?.name],
   );
   const initialLastName = useMemo(
-    () => profile?.last_name ?? authUser?.name?.split(" ").slice(1).join(" ") ?? "",
+    () =>
+      profile?.last_name ?? authUser?.name?.split(" ").slice(1).join(" ") ?? "",
     [profile?.last_name, authUser?.name],
   );
   const initialEmail = profile?.email ?? authUser?.email ?? "";
@@ -51,10 +54,16 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
   const [firstName, setFirstName] = useState(initialFirstName);
   const [lastName, setLastName] = useState(initialLastName);
   const [email, setEmail] = useState(initialEmail);
-  const [avatarUri, setAvatarUri] = useState<string | null>(profile?.avatar ?? null);
+  const [avatarUri, setAvatarUri] = useState<string | null>(
+    profile?.avatar ?? null,
+  );
   const [isSaving, setIsSaving] = useState(false);
 
-  const userInitial = (firstName.charAt(0) || authUser?.name?.charAt(0) || "U").toUpperCase();
+  const userInitial = (
+    firstName.charAt(0) ||
+    authUser?.name?.charAt(0) ||
+    "U"
+  ).toUpperCase();
 
   const handlePickAvatar = useCallback(async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -109,7 +118,11 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
         const mimeType = ext === "png" ? "image/png" : "image/jpeg";
         // React Native / Expo acepta este shape en FormData
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        formData.append("avatar", { uri: avatarUri, name: fileName, type: mimeType } as any);
+        formData.append("avatar", {
+          uri: avatarUri,
+          name: fileName,
+          type: mimeType,
+        } as any);
         updated = await authService.updateProfile(formData);
       } else {
         updated = await authService.updateProfile({
@@ -123,7 +136,11 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
         user: state.user
           ? {
               ...state.user,
-              name: [updated.first_name, updated.last_name].filter(Boolean).join(" ").trim() || state.user.name,
+              name:
+                [updated.first_name, updated.last_name]
+                  .filter(Boolean)
+                  .join(" ")
+                  .trim() || state.user.name,
               email: updated.email,
             }
           : state.user,
@@ -138,7 +155,6 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}

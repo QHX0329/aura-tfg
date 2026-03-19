@@ -35,7 +35,9 @@ export interface RegisterData {
  * los campos camelCase de conveniencia que usa el store local.
  */
 function normalizeProfile(raw: UserProfile): UserProfile {
-  const name = [raw.first_name, raw.last_name].filter(Boolean).join(" ").trim() || raw.username;
+  const name =
+    [raw.first_name, raw.last_name].filter(Boolean).join(" ").trim() ||
+    raw.username;
   return {
     ...raw,
     name,
@@ -66,7 +68,9 @@ export const authService = {
    * POST /auth/token/refresh/ — renovar access token.
    * Sólo usado internamente por el interceptor de client.ts.
    */
-  refreshToken: (refresh: string): Promise<{ access: string; refresh?: string }> =>
+  refreshToken: (
+    refresh: string,
+  ): Promise<{ access: string; refresh?: string }> =>
     apiClient.post<never, { access: string; refresh?: string }>(
       "/auth/token/refresh/",
       { refresh },
@@ -93,19 +97,22 @@ export const authService = {
   },
 
   /** PATCH /auth/profile/me/ — actualizar datos del perfil */
-  updateProfile: (data: Partial<UserProfile> | FormData): Promise<UserProfile> => {
+  updateProfile: (
+    data: Partial<UserProfile> | FormData,
+  ): Promise<UserProfile> => {
     const isFormData = data instanceof FormData;
     return apiClient.patch<never, UserProfile>("/auth/profile/me/", data, {
-      headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
+      headers: isFormData
+        ? { "Content-Type": "multipart/form-data" }
+        : undefined,
     });
   },
 
   /** PATCH /auth/profile/me/ — actualizar preferencias del usuario */
-  updatePreferences: (prefs: Partial<UserPreferences>): Promise<UserPreferences> =>
-    apiClient.patch<never, UserPreferences>(
-      "/auth/profile/me/",
-      prefs,
-    ),
+  updatePreferences: (
+    prefs: Partial<UserPreferences>,
+  ): Promise<UserPreferences> =>
+    apiClient.patch<never, UserPreferences>("/auth/profile/me/", prefs),
 
   /** PATCH /auth/profile/me/ con old_password + new_password */
   changePassword: (oldPassword: string, newPassword: string): Promise<void> =>

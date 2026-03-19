@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Animated,
   ActivityIndicator,
@@ -12,11 +18,15 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import * as Location from 'expo-location';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import * as Location from "expo-location";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 
 import {
   borderRadius,
@@ -25,20 +35,23 @@ import {
   fontSize,
   shadows,
   spacing,
-} from '@/theme';
-import { SearchBar } from '@/components/ui/SearchBar';
-import { SkeletonBox } from '@/components/ui/SkeletonBox';
-import { productService, type ProductCategory } from '@/api/productService';
-import { storeService } from '@/api/storeService';
-import { priceService } from '@/api/priceService';
-import { listService } from '@/api/listService';
-import { useProfileStore } from '@/store/profileStore';
-import type { Product, ShoppingList, Store } from '@/types/domain';
-import { blurActiveElementOnWeb } from '@/utils/webA11y';
+} from "@/theme";
+import { SearchBar } from "@/components/ui/SearchBar";
+import { SkeletonBox } from "@/components/ui/SkeletonBox";
+import { productService, type ProductCategory } from "@/api/productService";
+import { storeService } from "@/api/storeService";
+import { priceService } from "@/api/priceService";
+import { listService } from "@/api/listService";
+import { useProfileStore } from "@/store/profileStore";
+import type { Product, ShoppingList, Store } from "@/types/domain";
+import { blurActiveElementOnWeb } from "@/utils/webA11y";
 
 const STORE_FILTER_CONCURRENCY = 6;
 
-async function runWithConcurrency<T>(tasks: (() => Promise<T>)[], limit: number): Promise<T[]> {
+async function runWithConcurrency<T>(
+  tasks: (() => Promise<T>)[],
+  limit: number,
+): Promise<T[]> {
   if (tasks.length === 0) return [];
 
   const results: T[] = [];
@@ -52,9 +65,8 @@ async function runWithConcurrency<T>(tasks: (() => Promise<T>)[], limit: number)
     }
   }
 
-  const workers = Array.from(
-    { length: Math.min(limit, tasks.length) },
-    () => worker(),
+  const workers = Array.from({ length: Math.min(limit, tasks.length) }, () =>
+    worker(),
   );
   await Promise.all(workers);
 
@@ -85,7 +97,9 @@ const FilterChip: React.FC<FilterChipProps> = ({ label, active, onPress }) => (
     style={[styles.chip, active && styles.chipActive]}
     onPress={onPress}
   >
-    <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+    <Text style={[styles.chipText, active && styles.chipTextActive]}>
+      {label}
+    </Text>
   </TouchableOpacity>
 );
 
@@ -126,15 +140,15 @@ const ProductRow: React.FC<ProductRowProps> = ({
       </Text>
       <Text style={styles.productMeta} numberOfLines={1}>
         {product.category}
-        {product.brand ? ` · ${product.brand}` : ''}
+        {product.brand ? ` · ${product.brand}` : ""}
         {` · ${product.unit}`}
       </Text>
       <Text style={styles.productPriceMeta}>
         {isPriceLoading
-          ? 'Consultando mejor precio…'
+          ? "Consultando mejor precio…"
           : lowestPrice !== null && lowestPrice !== undefined
             ? `Desde ${lowestPrice.toFixed(2)} €`
-            : 'Sin precios disponibles'}
+            : "Sin precios disponibles"}
       </Text>
     </View>
     {quickMode ? (
@@ -191,12 +205,16 @@ export const ProductsCatalogScreen: React.FC = () => {
   const [nearbyStores, setNearbyStores] = useState<Store[]>([]);
   const [userLists, setUserLists] = useState<ShoppingList[]>([]);
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | 'all'>('all');
-  const [selectedBrand, setSelectedBrand] = useState<string>('all');
-  const [selectedStoreId, setSelectedStoreId] = useState<string>('all');
-  const [nameQuery, setNameQuery] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | "all">(
+    "all",
+  );
+  const [selectedBrand, setSelectedBrand] = useState<string>("all");
+  const [selectedStoreId, setSelectedStoreId] = useState<string>("all");
+  const [nameQuery, setNameQuery] = useState("");
 
-  const [storeScopedProductIds, setStoreScopedProductIds] = useState<Set<string>>(new Set());
+  const [storeScopedProductIds, setStoreScopedProductIds] = useState<
+    Set<string>
+  >(new Set());
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMoreProducts, setIsLoadingMoreProducts] = useState(false);
@@ -205,14 +223,20 @@ export const ProductsCatalogScreen: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isStoreFiltering, setIsStoreFiltering] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
-  const [priceByProductId, setPriceByProductId] = useState<Record<string, number | null>>({});
-  const [loadingPriceIds, setLoadingPriceIds] = useState<Set<string>>(new Set());
+  const [priceByProductId, setPriceByProductId] = useState<
+    Record<string, number | null>
+  >({});
+  const [loadingPriceIds, setLoadingPriceIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [pickerVisible, setPickerVisible] = useState(false);
   const [pendingProduct, setPendingProduct] = useState<Product | null>(null);
   const [addingToListId, setAddingToListId] = useState<string | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [quickQuantityByProductId, setQuickQuantityByProductId] = useState<Record<string, number>>({});
+  const [quickQuantityByProductId, setQuickQuantityByProductId] = useState<
+    Record<string, number>
+  >({});
 
   // ── Filter panel animation ────────────────────────────────────────────────
   const FILTER_ANIM_MAX_HEIGHT = 320;
@@ -260,9 +284,13 @@ export const ProductsCatalogScreen: React.FC = () => {
       },
       onPanResponderMove: (_, gs) => {
         const adjustedDy = gs.dy - filterGestureOffsetRef.current;
-        const newVal = Math.max(0, Math.min(1,
-          filterBaseValueRef.current + adjustedDy / FILTER_ANIM_MAX_HEIGHT,
-        ));
+        const newVal = Math.max(
+          0,
+          Math.min(
+            1,
+            filterBaseValueRef.current + adjustedDy / FILTER_ANIM_MAX_HEIGHT,
+          ),
+        );
         filterAnim.setValue(newVal);
       },
       onPanResponderRelease: (_, gs) => {
@@ -296,7 +324,7 @@ export const ProductsCatalogScreen: React.FC = () => {
   });
 
   const selectedCategoryName = useMemo(() => {
-    if (selectedCategoryId === 'all') return null;
+    if (selectedCategoryId === "all") return null;
     const category = allCategories.find((c) => c.id === selectedCategoryId);
     return category?.name ?? null;
   }, [selectedCategoryId, allCategories]);
@@ -305,20 +333,22 @@ export const ProductsCatalogScreen: React.FC = () => {
     const q = nameQuery.trim().toLowerCase();
     return allProducts.filter((product) => {
       const matchesCategory =
-        selectedCategoryName == null || product.category === selectedCategoryName;
-      const matchesBrand = selectedBrand === 'all' || product.brand === selectedBrand;
+        selectedCategoryName == null ||
+        product.category === selectedCategoryName;
+      const matchesBrand =
+        selectedBrand === "all" || product.brand === selectedBrand;
       const matchesName =
         q.length === 0 ||
         product.name.toLowerCase().includes(q) ||
         product.category.toLowerCase().includes(q) ||
-        (product.brand ?? '').toLowerCase().includes(q);
+        (product.brand ?? "").toLowerCase().includes(q);
 
       return matchesCategory && matchesBrand && matchesName;
     });
   }, [allProducts, selectedCategoryName, selectedBrand, nameQuery]);
 
   const filteredProducts = useMemo(() => {
-    if (selectedStoreId === 'all') return baseFilteredProducts;
+    if (selectedStoreId === "all") return baseFilteredProducts;
     return baseFilteredProducts.filter((p) => storeScopedProductIds.has(p.id));
   }, [baseFilteredProducts, selectedStoreId, storeScopedProductIds]);
 
@@ -331,13 +361,16 @@ export const ProductsCatalogScreen: React.FC = () => {
     allProducts.forEach((p) => {
       if (p.brand?.trim()) brands.add(p.brand.trim());
     });
-    return ['all', ...Array.from(brands).sort((a, b) => a.localeCompare(b, 'es'))];
+    return [
+      "all",
+      ...Array.from(brands).sort((a, b) => a.localeCompare(b, "es")),
+    ];
   }, [allProducts]);
 
   const loadNearbyStores = useCallback(async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      if (status !== "granted") {
         setLocationDenied(true);
         setNearbyStores([]);
         return;
@@ -347,7 +380,8 @@ export const ProductsCatalogScreen: React.FC = () => {
       const pos = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       });
-      const radius = profile?.searchRadiusKm ?? profile?.max_search_radius_km ?? 5;
+      const radius =
+        profile?.searchRadiusKm ?? profile?.max_search_radius_km ?? 5;
       const stores = await storeService.getNearby(
         pos.coords.latitude,
         pos.coords.longitude,
@@ -435,43 +469,63 @@ export const ProductsCatalogScreen: React.FC = () => {
   );
 
   const handleLoadMoreProducts = useCallback(async () => {
-    if (isLoading || isRefreshing || isLoadingMoreProducts || !hasMoreProducts) {
+    if (
+      isLoading ||
+      isRefreshing ||
+      isLoadingMoreProducts ||
+      !hasMoreProducts
+    ) {
       return;
     }
     await loadProductsPage(productsPage + 1, false);
-  }, [hasMoreProducts, isLoading, isLoadingMoreProducts, isRefreshing, loadProductsPage, productsPage]);
+  }, [
+    hasMoreProducts,
+    isLoading,
+    isLoadingMoreProducts,
+    isRefreshing,
+    loadProductsPage,
+    productsPage,
+  ]);
 
-  const fetchLowestPrice = useCallback(async (productId: string) => {
-    if (loadingPriceIds.has(productId) || Object.prototype.hasOwnProperty.call(priceByProductId, productId)) {
-      return;
-    }
+  const fetchLowestPrice = useCallback(
+    async (productId: string) => {
+      if (
+        loadingPriceIds.has(productId) ||
+        Object.prototype.hasOwnProperty.call(priceByProductId, productId)
+      ) {
+        return;
+      }
 
-    setLoadingPriceIds((prev) => new Set(prev).add(productId));
-    try {
-      const rows = await priceService.getPriceComparison(productId);
-      const prices = rows
-        .map((row) => {
-          const candidate = [row.promo_price, row.offer_price, row.price]
-            .filter(Boolean)
-            .map((value) => parseFloat(String(value)));
-          return candidate.length > 0 ? Math.min(...candidate) : null;
-        })
-        .filter((value): value is number => value !== null);
-      const minPrice = prices.length > 0 ? Math.min(...prices) : null;
-      setPriceByProductId((prev) => ({ ...prev, [productId]: minPrice }));
-    } catch {
-      setPriceByProductId((prev) => ({ ...prev, [productId]: null }));
-    } finally {
-      setLoadingPriceIds((prev) => {
-        const next = new Set(prev);
-        next.delete(productId);
-        return next;
-      });
-    }
-  }, [loadingPriceIds, priceByProductId]);
+      setLoadingPriceIds((prev) => new Set(prev).add(productId));
+      try {
+        const rows = await priceService.getPriceComparison(productId);
+        const prices = rows
+          .map((row) => {
+            const candidate = [row.promo_price, row.offer_price, row.price]
+              .filter(Boolean)
+              .map((value) => parseFloat(String(value)));
+            return candidate.length > 0 ? Math.min(...candidate) : null;
+          })
+          .filter((value): value is number => value !== null);
+        const minPrice = prices.length > 0 ? Math.min(...prices) : null;
+        setPriceByProductId((prev) => ({ ...prev, [productId]: minPrice }));
+      } catch {
+        setPriceByProductId((prev) => ({ ...prev, [productId]: null }));
+      } finally {
+        setLoadingPriceIds((prev) => {
+          const next = new Set(prev);
+          next.delete(productId);
+          return next;
+        });
+      }
+    },
+    [loadingPriceIds, priceByProductId],
+  );
 
   useEffect(() => {
-    const visibleIds = filteredProducts.slice(0, 20).map((product) => product.id);
+    const visibleIds = filteredProducts
+      .slice(0, 20)
+      .map((product) => product.id);
     visibleIds.forEach((id) => {
       void fetchLowestPrice(id);
     });
@@ -479,7 +533,7 @@ export const ProductsCatalogScreen: React.FC = () => {
 
   const handleOpenProduct = useCallback(
     (product: Product) => {
-      (navigation as any).navigate('PriceCompare', {
+      (navigation as any).navigate("PriceCompare", {
         productId: product.id,
         productName: product.name,
         product,
@@ -495,20 +549,23 @@ export const ProductsCatalogScreen: React.FC = () => {
     return [...userLists].sort((a, b) => {
       if (a.id === preferredListId) return -1;
       if (b.id === preferredListId) return 1;
-      return a.name.localeCompare(b.name, 'es');
+      return a.name.localeCompare(b.name, "es");
     });
   }, [preferredListId, userLists]);
 
-  const handleOpenListPicker = useCallback((product: Product) => {
-    if (userLists.length === 0) {
-      setToastMessage('Primero crea una lista para poder añadir productos.');
-      return;
-    }
-    blurActiveElementOnWeb();
-    setPendingProduct(product);
-    setSelectedQuantity(1);
-    setPickerVisible(true);
-  }, [userLists.length]);
+  const handleOpenListPicker = useCallback(
+    (product: Product) => {
+      if (userLists.length === 0) {
+        setToastMessage("Primero crea una lista para poder añadir productos.");
+        return;
+      }
+      blurActiveElementOnWeb();
+      setPendingProduct(product);
+      setSelectedQuantity(1);
+      setPickerVisible(true);
+    },
+    [userLists.length],
+  );
 
   const getQuickQuantity = useCallback(
     (productId: string): number => quickQuantityByProductId[productId] ?? 1,
@@ -529,48 +586,56 @@ export const ProductsCatalogScreen: React.FC = () => {
     }));
   }, []);
 
-  const handleQuickAddToPreferredList = useCallback(async (
-    product: Product,
-    listId: string,
-  ) => {
-    const quantity = getQuickQuantity(product.id);
-    try {
-      await listService.addItem(listId, { product: product.id, quantity });
-      setToastMessage(`${product.name} añadido (x${quantity}) a la lista actual.`);
-    } catch {
-      setToastMessage('No se pudo añadir el producto a la lista.');
-    }
-  }, [getQuickQuantity]);
+  const handleQuickAddToPreferredList = useCallback(
+    async (product: Product, listId: string) => {
+      const quantity = getQuickQuantity(product.id);
+      try {
+        await listService.addItem(listId, { product: product.id, quantity });
+        setToastMessage(
+          `${product.name} añadido (x${quantity}) a la lista actual.`,
+        );
+      } catch {
+        setToastMessage("No se pudo añadir el producto a la lista.");
+      }
+    },
+    [getQuickQuantity],
+  );
 
-  const handleAddFromCard = useCallback((product: Product) => {
-    if (preferredListId) {
-      void handleQuickAddToPreferredList(product, preferredListId);
-      return;
-    }
-    handleOpenListPicker(product);
-  }, [handleOpenListPicker, handleQuickAddToPreferredList, preferredListId]);
+  const handleAddFromCard = useCallback(
+    (product: Product) => {
+      if (preferredListId) {
+        void handleQuickAddToPreferredList(product, preferredListId);
+        return;
+      }
+      handleOpenListPicker(product);
+    },
+    [handleOpenListPicker, handleQuickAddToPreferredList, preferredListId],
+  );
 
-  const handleAddToList = useCallback(async (listId: string) => {
-    if (!pendingProduct) {
-      return;
-    }
+  const handleAddToList = useCallback(
+    async (listId: string) => {
+      if (!pendingProduct) {
+        return;
+      }
 
-    setAddingToListId(listId);
-    try {
-      await listService.addItem(listId, {
-        product: pendingProduct.id,
-        quantity: selectedQuantity,
-      });
-      setPickerVisible(false);
-      setToastMessage(
-        `${pendingProduct.name} añadido (x${selectedQuantity}) a tu lista.`,
-      );
-    } catch {
-      setToastMessage('No se pudo añadir el producto a la lista.');
-    } finally {
-      setAddingToListId(null);
-    }
-  }, [pendingProduct, selectedQuantity]);
+      setAddingToListId(listId);
+      try {
+        await listService.addItem(listId, {
+          product: pendingProduct.id,
+          quantity: selectedQuantity,
+        });
+        setPickerVisible(false);
+        setToastMessage(
+          `${pendingProduct.name} añadido (x${selectedQuantity}) a tu lista.`,
+        );
+      } catch {
+        setToastMessage("No se pudo añadir el producto a la lista.");
+      } finally {
+        setAddingToListId(null);
+      }
+    },
+    [pendingProduct, selectedQuantity],
+  );
 
   useEffect(() => {
     if (!toastMessage) {
@@ -590,7 +655,7 @@ export const ProductsCatalogScreen: React.FC = () => {
     let cancelled = false;
 
     const runStoreFilter = async () => {
-      if (selectedStoreId === 'all') {
+      if (selectedStoreId === "all") {
         setStoreScopedProductIds(new Set());
         setIsStoreFiltering(false);
         return;
@@ -608,7 +673,9 @@ export const ProductsCatalogScreen: React.FC = () => {
       const tasks = baseFilteredProducts.map((product) => async () => {
         try {
           const compareRows = await priceService.getPriceComparison(product.id);
-          const existsInStore = compareRows.some((row) => row.store_id === targetStoreId);
+          const existsInStore = compareRows.some(
+            (row) => row.store_id === targetStoreId,
+          );
           return existsInStore ? product.id : null;
         } catch {
           return null;
@@ -649,12 +716,18 @@ export const ProductsCatalogScreen: React.FC = () => {
           <View style={styles.filtersHeaderButton}>
             <Text style={styles.filtersHeaderTitle}>Filtros</Text>
             <View style={styles.filtersHeaderRight}>
-              <Text style={styles.filtersHeaderCount}>{filteredProducts.length}</Text>
+              <Text style={styles.filtersHeaderCount}>
+                {filteredProducts.length}
+              </Text>
             </View>
           </View>
 
           <Animated.View
-            style={{ maxHeight: filterContentMaxHeight, opacity: filterContentOpacity, overflow: 'hidden' }}
+            style={{
+              maxHeight: filterContentMaxHeight,
+              opacity: filterContentOpacity,
+              overflow: "hidden",
+            }}
           >
             <Text style={styles.filterTitle}>Categoría</Text>
             <ScrollView
@@ -664,8 +737,8 @@ export const ProductsCatalogScreen: React.FC = () => {
             >
               <FilterChip
                 label="Todas"
-                active={selectedCategoryId === 'all'}
-                onPress={() => setSelectedCategoryId('all')}
+                active={selectedCategoryId === "all"}
+                onPress={() => setSelectedCategoryId("all")}
               />
               {allCategories.map((category) => (
                 <FilterChip
@@ -686,7 +759,7 @@ export const ProductsCatalogScreen: React.FC = () => {
               {brandOptions.map((brand) => (
                 <FilterChip
                   key={brand}
-                  label={brand === 'all' ? 'Todas' : brand}
+                  label={brand === "all" ? "Todas" : brand}
                   active={selectedBrand === brand}
                   onPress={() => setSelectedBrand(brand)}
                 />
@@ -701,8 +774,8 @@ export const ProductsCatalogScreen: React.FC = () => {
             >
               <FilterChip
                 label="Todas"
-                active={selectedStoreId === 'all'}
-                onPress={() => setSelectedStoreId('all')}
+                active={selectedStoreId === "all"}
+                onPress={() => setSelectedStoreId("all")}
               />
               {safeNearbyStores.map((store) => (
                 <FilterChip
@@ -722,7 +795,11 @@ export const ProductsCatalogScreen: React.FC = () => {
           </Animated.View>
 
           <Animated.View
-            style={{ maxHeight: filterHintMaxHeight, opacity: filterHintOpacity, overflow: 'hidden' }}
+            style={{
+              maxHeight: filterHintMaxHeight,
+              opacity: filterHintOpacity,
+              overflow: "hidden",
+            }}
           >
             <Text style={styles.filtersCollapsedHint}>
               Pulsa para mostrar categoría, marca y tienda.
@@ -741,8 +818,18 @@ export const ProductsCatalogScreen: React.FC = () => {
 
         {isLoading ? (
           <View style={styles.skeletonWrap}>
-            <SkeletonBox width="100%" height={64} borderRadius={12} style={styles.skeletonRow} />
-            <SkeletonBox width="100%" height={64} borderRadius={12} style={styles.skeletonRow} />
+            <SkeletonBox
+              width="100%"
+              height={64}
+              borderRadius={12}
+              style={styles.skeletonRow}
+            />
+            <SkeletonBox
+              width="100%"
+              height={64}
+              borderRadius={12}
+              style={styles.skeletonRow}
+            />
             <SkeletonBox width="100%" height={64} borderRadius={12} />
           </View>
         ) : (
@@ -763,10 +850,15 @@ export const ProductsCatalogScreen: React.FC = () => {
               />
             )}
             refreshControl={
-              <RefreshControl refreshing={isRefreshing} onRefresh={refreshAll} />
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={refreshAll}
+              />
             }
             contentContainerStyle={
-              filteredProducts.length === 0 ? styles.emptyContent : styles.listContent
+              filteredProducts.length === 0
+                ? styles.emptyContent
+                : styles.listContent
             }
             onScrollBeginDrag={() => {
               if (filterExpandedRef.current) {
@@ -784,7 +876,11 @@ export const ProductsCatalogScreen: React.FC = () => {
             }
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
-                <Ionicons name="search-outline" size={24} color={colors.textDisabled} />
+                <Ionicons
+                  name="search-outline"
+                  size={24}
+                  color={colors.textDisabled}
+                />
                 <Text style={styles.emptyTitle}>Sin resultados</Text>
                 <Text style={styles.emptySubtitle}>
                   Prueba otra combinación de filtros.
@@ -800,11 +896,14 @@ export const ProductsCatalogScreen: React.FC = () => {
           animationType="fade"
           onRequestClose={() => setPickerVisible(false)}
         >
-          <Pressable style={styles.pickerOverlay} onPress={() => setPickerVisible(false)} />
+          <Pressable
+            style={styles.pickerOverlay}
+            onPress={() => setPickerVisible(false)}
+          />
           <View style={styles.pickerSheet}>
             <Text style={styles.pickerTitle}>Añadir a lista</Text>
             <Text style={styles.pickerSubtitle} numberOfLines={2}>
-              {pendingProduct ? pendingProduct.name : 'Selecciona una lista'}
+              {pendingProduct ? pendingProduct.name : "Selecciona una lista"}
             </Text>
 
             <View style={styles.quantityRow}>
@@ -820,7 +919,9 @@ export const ProductsCatalogScreen: React.FC = () => {
                 <Text style={styles.qtyValue}>{selectedQuantity}</Text>
                 <TouchableOpacity
                   style={styles.qtyButton}
-                  onPress={() => setSelectedQuantity((q) => Math.min(99, q + 1))}
+                  onPress={() =>
+                    setSelectedQuantity((q) => Math.min(99, q + 1))
+                  }
                   accessibilityLabel="Aumentar cantidad"
                 >
                   <Ionicons name="add" size={16} color={colors.text} />
@@ -848,22 +949,31 @@ export const ProductsCatalogScreen: React.FC = () => {
                       <Text style={styles.pickerRowTitle}>{item.name}</Text>
                       {preferredListId === item.id ? (
                         <View style={styles.preferredBadge}>
-                          <Text style={styles.preferredBadgeText}>Lista actual</Text>
+                          <Text style={styles.preferredBadgeText}>
+                            Lista actual
+                          </Text>
                         </View>
                       ) : null}
                     </View>
                     <Text style={styles.pickerRowMeta}>
-                      {(item.items?.length ?? 0)} producto{(item.items?.length ?? 0) !== 1 ? 's' : ''}
+                      {item.items?.length ?? 0} producto
+                      {(item.items?.length ?? 0) !== 1 ? "s" : ""}
                     </Text>
                   </View>
                   {addingToListId === item.id ? (
                     <ActivityIndicator size="small" color={colors.primary} />
                   ) : (
-                    <Ionicons name="add-circle-outline" size={22} color={colors.primary} />
+                    <Ionicons
+                      name="add-circle-outline"
+                      size={22}
+                      color={colors.primary}
+                    />
                   )}
                 </TouchableOpacity>
               )}
-              ItemSeparatorComponent={() => <View style={styles.pickerSeparator} />}
+              ItemSeparatorComponent={() => (
+                <View style={styles.pickerSeparator} />
+              )}
             />
 
             <TouchableOpacity
@@ -909,9 +1019,9 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   filtersHeaderButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   filtersHeaderTitle: {
     fontFamily: fontFamilies.bodySemiBold,
@@ -919,8 +1029,8 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   filtersHeaderRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
   },
   filtersHeaderCount: {
@@ -971,8 +1081,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   storeFilterLoadingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
     marginBottom: spacing.xs,
   },
@@ -992,8 +1102,8 @@ const styles = StyleSheet.create({
   },
   loadMoreFooter: {
     paddingVertical: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   productRow: {
     backgroundColor: colors.surface,
@@ -1002,8 +1112,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.md,
     marginBottom: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
   },
   productIconWrap: {
@@ -1011,8 +1121,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: colors.primaryTint,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   productBody: {
     flex: 1,
@@ -1039,16 +1149,16 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   quickAddContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     gap: spacing.xs,
   },
   quickQtyControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
   },
   quickQtyButton: {
@@ -1058,22 +1168,22 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
     backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   quickQtyValue: {
     minWidth: 18,
-    textAlign: 'center',
+    textAlign: "center",
     fontFamily: fontFamilies.bodySemiBold,
     fontSize: fontSize.xs,
     color: colors.text,
   },
   emptyContent: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   emptyWrap: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.xs,
     paddingHorizontal: spacing.xl,
   },
@@ -1086,18 +1196,18 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.body,
     fontSize: fontSize.sm,
     color: colors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
   },
   pickerOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
   },
   pickerSheet: {
-    position: 'absolute',
+    position: "absolute",
     left: spacing.md,
     right: spacing.md,
-    top: '20%',
-    bottom: '20%',
+    top: "20%",
+    bottom: "20%",
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
@@ -1116,9 +1226,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   quantityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: spacing.sm,
   },
   quantityLabel: {
@@ -1127,8 +1237,8 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   quantityControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
   },
   qtyButton: {
@@ -1138,12 +1248,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   qtyValue: {
     minWidth: 24,
-    textAlign: 'center',
+    textAlign: "center",
     fontFamily: fontFamilies.bodySemiBold,
     fontSize: fontSize.sm,
     color: colors.text,
@@ -1152,9 +1262,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   pickerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: spacing.sm,
   },
   pickerRowPreferred: {
@@ -1167,8 +1277,8 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   pickerRowTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
   },
   pickerRowTitle: {
@@ -1199,7 +1309,7 @@ const styles = StyleSheet.create({
   },
   pickerCancelButton: {
     marginTop: spacing.sm,
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
@@ -1209,14 +1319,14 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   toast: {
-    position: 'absolute',
+    position: "absolute",
     bottom: spacing.xl,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: colors.text,
     borderRadius: borderRadius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    maxWidth: '92%',
+    maxWidth: "92%",
   },
   toastText: {
     fontFamily: fontFamilies.body,

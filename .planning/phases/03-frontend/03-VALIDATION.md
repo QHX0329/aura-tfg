@@ -20,7 +20,7 @@ created: 2026-03-18
 | **Framework** | Jest (jest-expo preset) + React Native Testing Library 13.3.3 |
 | **Config file** | `jest` block in `frontend/package.json` |
 | **Quick run command** | `cd frontend && npx jest App.test.tsx --bail` |
-| **Full suite command** | `cd frontend && npx jest --coverage` |
+| **Full suite command** | `cd frontend && npx jest --coverage --watchAll=false --testPathIgnorePatterns=web/` + `cd frontend/web && npx vitest run` |
 | **Estimated runtime** | ~30 seconds (quick) / ~120 seconds (full) |
 
 ---
@@ -38,15 +38,15 @@ created: 2026-03-18
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 3-01-01 | 03-01 | 1 | NFR-03 | smoke | `cd frontend && npx jest App.test.tsx --bail` | ✅ | ⬜ pending |
-| 3-01-02 | 03-01 | 1 | NFR-03 | unit | `cd frontend && npx jest __tests__/SkeletonBox.test.tsx` | ❌ W0 | ⬜ pending |
-| 3-02-01 | 03-02 | 1 | NFR-03 | unit | `cd frontend && npx jest __tests__/apiClient.test.ts` | ❌ W0 | ⬜ pending |
-| 3-02-02 | 03-02 | 1 | NFR-03 | unit | `cd frontend && npx jest __tests__/LoginScreen.test.tsx` | ❌ W0 | ⬜ pending |
-| 3-03-01 | 03-03 | 2 | NFR-03 | unit | `cd frontend && npx jest __tests__/ListsScreen.test.tsx` | ❌ W0 | ⬜ pending |
+| 3-01-01 | 03-01 | 1 | NFR-03 | smoke | `cd frontend && npx jest App.test.tsx --bail` | ✅ | ✅ green |
+| 3-01-02 | 03-01 | 1 | NFR-03 | unit | `cd frontend && npx jest __tests__/SkeletonBox.test.tsx` | ✅ | ✅ green |
+| 3-02-01 | 03-02 | 1 | NFR-03 | unit | `cd frontend && npx jest __tests__/apiClient.test.ts` | ✅ | ✅ green |
+| 3-02-02 | 03-02 | 1 | NFR-03 | unit | `cd frontend && npx jest __tests__/LoginScreen.test.tsx` | ✅ | ✅ green |
+| 3-03-01 | 03-03 | 2 | NFR-03 | unit | `cd frontend && npx jest __tests__/ListsScreen.test.tsx` | ✅ | ✅ green |
 | 3-04-01 | 03-04 | 2 | NFR-03 | manual | See Manual-Only Verifications | N/A | ⬜ pending |
-| 3-05-01 | 03-05 | 3 | NFR-03 | unit | `cd frontend/web && npx vitest run` | ❌ W0 | ⬜ pending |
-| 3-06-01 | 03-06 | 3 | NFR-03 | unit | `cd frontend && npx jest __tests__/NotificationScreen.test.tsx` | ❌ W0 | ⬜ pending |
-| 3-06-02 | 03-06 | 3 | NFR-03 | unit | `cd frontend && npx jest __tests__/ProfileScreen.test.tsx` | ❌ W0 | ⬜ pending |
+| 3-05-01 | 03-05 | 3 | NFR-03 | unit | `cd frontend/web && npx vitest run` | ✅ | ✅ green |
+| 3-06-01 | 03-06 | 3 | NFR-03 | unit | `cd frontend && npx jest __tests__/NotificationScreen.test.tsx` | ✅ | ✅ green |
+| 3-06-02 | 03-06 | 3 | NFR-03 | unit | `cd frontend && npx jest __tests__/ProfileScreen.test.tsx` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -54,13 +54,13 @@ created: 2026-03-18
 
 ## Wave 0 Requirements
 
-- [ ] `frontend/__tests__/apiClient.test.ts` — JWT interceptor refresh + retry queue (NFR-03)
-- [ ] `frontend/__tests__/LoginScreen.test.tsx` — form submission + store update (NFR-03)
-- [ ] `frontend/__tests__/ListsScreen.test.tsx` — list rendering from Zustand store (NFR-03)
-- [ ] `frontend/__tests__/NotificationScreen.test.tsx` — badge, group by day, mark read (NFR-03)
-- [ ] `frontend/__tests__/ProfileScreen.test.tsx` — slider constraint (sum=100), debounce (NFR-03)
-- [ ] `frontend/__tests__/SkeletonBox.test.tsx` — renders loading placeholders (NFR-03)
-- [ ] `frontend/web/` — vitest + @testing-library/react installed (Plan 03-05 Wave 0)
+- [x] `frontend/__tests__/apiClient.test.ts` — JWT interceptor refresh + retry queue (NFR-03)
+- [x] `frontend/__tests__/LoginScreen.test.tsx` — form submission + store update (NFR-03)
+- [x] `frontend/__tests__/ListsScreen.test.tsx` — list rendering from Zustand store (NFR-03)
+- [x] `frontend/__tests__/NotificationScreen.test.tsx` — badge, group by day, mark read (NFR-03)
+- [x] `frontend/__tests__/ProfileScreen.test.tsx` — perfil muestra resumen de optimización y navega a `OptimizerConfig` para edición (NFR-03)
+- [x] `frontend/__tests__/SkeletonBox.test.tsx` — renders loading placeholders (NFR-03)
+- [x] `frontend/web/` — vitest + @testing-library/react installed (Plan 03-05 Wave 0)
 
 *All Wave 0 stubs must exist before Wave 1 tasks begin.*
 
@@ -79,11 +79,19 @@ created: 2026-03-18
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
 - [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
+- [x] No watch-mode flags
 - [ ] Feedback latency < 30s
 - [ ] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending
+
+---
+
+## Audit Run 2026-03-19
+
+- Automated mobile checks passed for: `App.test.tsx`, `apiClient.test.ts`, `SkeletonBox.test.tsx`, `LoginScreen.test.tsx`, `ListsScreen.test.tsx`, `NotificationScreen.test.tsx`.
+- Automated web checks passed for: `frontend/web/src/__tests__/LoginPage.test.tsx`, `frontend/web/src/__tests__/UnverifiedGuard.test.tsx`.
+- Contract realigned (2026-03-19): optimization editing is validated via navigation from `ProfileScreen` to `OptimizerConfig`; `ProfileScreen` assertions cover read-only summary + CTA navigation.

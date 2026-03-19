@@ -89,7 +89,6 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -133,11 +132,16 @@ export const LoginScreen: React.FC = () => {
             </View>
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
-            {resetMessage ? <Text style={styles.successText}>{resetMessage}</Text> : null}
+            {resetMessage ? (
+              <Text style={styles.successText}>{resetMessage}</Text>
+            ) : null}
 
             <TouchableOpacity
               testID="login-submit-button"
-              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+              style={[
+                styles.loginButton,
+                isLoading && styles.loginButtonDisabled,
+              ]}
               onPress={handleLogin}
               disabled={isLoading}
               accessibilityState={{ disabled: isLoading }}

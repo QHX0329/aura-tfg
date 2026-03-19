@@ -72,7 +72,9 @@ function normalizeStore(raw: RawStore): Store {
   };
 }
 
-function normalizeCollection(payload: RawStore[] | PaginatedResponse<RawStore>): Store[] {
+function normalizeCollection(
+  payload: RawStore[] | PaginatedResponse<RawStore>,
+): Store[] {
   if (Array.isArray(payload)) {
     return payload.map(normalizeStore);
   }
@@ -89,8 +91,15 @@ export const storeService = {
    * GET /stores/?lat={lat}&lng={lng}&radius={radius}
    * Devuelve tiendas cercanas a la ubicación del usuario.
    */
-  getNearby: async (lat: number, lng: number, radius_km = 10): Promise<Store[]> => {
-    const payload = await apiClient.get<never, RawStore[] | PaginatedResponse<RawStore>>('/stores/', {
+  getNearby: async (
+    lat: number,
+    lng: number,
+    radius_km = 10,
+  ): Promise<Store[]> => {
+    const payload = await apiClient.get<
+      never,
+      RawStore[] | PaginatedResponse<RawStore>
+    >("/stores/", {
       params: { lat, lng, radius_km },
     });
 
@@ -104,19 +113,22 @@ export const storeService = {
     lng: number,
     radius_km = 10,
   ): Promise<Store> => {
-    const payload = await apiClient.get<never, RawStore>(`/stores/${storeId}/`, {
-      params: { lat, lng, radius_km },
-    });
+    const payload = await apiClient.get<never, RawStore>(
+      `/stores/${storeId}/`,
+      {
+        params: { lat, lng, radius_km },
+      },
+    );
 
     return normalizeStore(payload);
   },
 
   /** GET /stores/?favorites=true — tiendas marcadas como favoritas por el usuario */
   getFavorites: async (): Promise<Store[]> => {
-    const payload = await apiClient.get<never, RawStore[] | PaginatedResponse<RawStore>>(
-      '/stores/',
-      { params: { favorites: 'true' } },
-    );
+    const payload = await apiClient.get<
+      never,
+      RawStore[] | PaginatedResponse<RawStore>
+    >("/stores/", { params: { favorites: "true" } });
     return normalizeCollection(payload);
   },
 

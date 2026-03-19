@@ -103,7 +103,10 @@ const QuickActionTile: React.FC<{ action: QuickAction; delay: number }> = ({
   }));
 
   return (
-    <Animated.View entering={FadeInDown.delay(delay).duration(200)} style={quickStyles.tileWrap}>
+    <Animated.View
+      entering={FadeInDown.delay(delay).duration(200)}
+      style={quickStyles.tileWrap}
+    >
       <Animated.View style={animStyle}>
         <Pressable
           onPressIn={() => {
@@ -160,7 +163,8 @@ const RecentListCard: React.FC<{ list: ShoppingList; onPress: () => void }> = ({
           {list.name}
         </Text>
         <Text style={recentListStyles.meta}>
-          {(list.items?.length ?? 0)} producto{(list.items?.length ?? 0) !== 1 ? "s" : ""}
+          {list.items?.length ?? 0} producto
+          {(list.items?.length ?? 0) !== 1 ? "s" : ""}
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
@@ -185,7 +189,12 @@ const NearbyWidget: React.FC<NearbyWidgetProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <SkeletonBox testID="skeleton-nearby" width="100%" height={64} borderRadius={12} />
+      <SkeletonBox
+        testID="skeleton-nearby"
+        width="100%"
+        height={64}
+        borderRadius={12}
+      />
     );
   }
 
@@ -198,14 +207,29 @@ const NearbyWidget: React.FC<NearbyWidgetProps> = ({
         activeOpacity={0.85}
       >
         <View style={recentListStyles.row}>
-          <View style={[recentListStyles.iconWrap, { backgroundColor: colors.surfaceVariant }]}>
-            <Ionicons name="location-outline" size={18} color={colors.textMuted} />
+          <View
+            style={[
+              recentListStyles.iconWrap,
+              { backgroundColor: colors.surfaceVariant },
+            ]}
+          >
+            <Ionicons
+              name="location-outline"
+              size={18}
+              color={colors.textMuted}
+            />
           </View>
           <View style={recentListStyles.info}>
             <Text style={recentListStyles.name}>Ubicación desactivada</Text>
-            <Text style={recentListStyles.meta}>Toca para activarla en ajustes</Text>
+            <Text style={recentListStyles.meta}>
+              Toca para activarla en ajustes
+            </Text>
           </View>
-          <Ionicons name="settings-outline" size={16} color={colors.textMuted} />
+          <Ionicons
+            name="settings-outline"
+            size={16}
+            color={colors.textMuted}
+          />
         </View>
       </TouchableOpacity>
     );
@@ -219,7 +243,11 @@ const NearbyWidget: React.FC<NearbyWidgetProps> = ({
     >
       <View style={recentListStyles.row}>
         <View style={recentListStyles.iconWrap}>
-          <Ionicons name="storefront-outline" size={18} color={colors.primary} />
+          <Ionicons
+            name="storefront-outline"
+            size={18}
+            color={colors.primary}
+          />
         </View>
         <View style={recentListStyles.info}>
           <Text style={recentListStyles.name}>
@@ -284,7 +312,9 @@ const PriceAlertCard: React.FC<{
           </Text>
           <Text style={priceAlertStyles.prices}>
             Objetivo: €{fmt(alert.target_price)}
-            {alert.current_price != null ? ` · Actual: €${fmt(alert.current_price)}` : ""}
+            {alert.current_price != null
+              ? ` · Actual: €${fmt(alert.current_price)}`
+              : ""}
           </Text>
         </View>
       </View>
@@ -322,7 +352,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
   });
 
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
 
   const loadAll = useCallback(async () => {
     // Lists
@@ -388,15 +419,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
     try {
       const fetchedLists = await listService.getLists();
       setLists(fetchedLists);
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
     try {
       const result = await notificationService.getNotifications(1);
       setStoreNotifications(result.results);
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
     try {
       const alerts = await priceService.getPriceAlerts();
       setPriceAlerts(alerts);
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
@@ -415,7 +452,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
         const stores = await storeService.getNearby(lat, lng, 5);
         setNearbyStores(stores);
       }
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
   }, [setLists, setStoreNotifications]);
 
   useEffect(() => {
@@ -470,7 +509,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
   // Recent lists: 2 most recently updated
   const recentLists = [...lists]
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    )
     .slice(0, 2);
 
   // Recent unread notifications: 3 most recent
@@ -487,7 +529,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
       iconName: "document-text-outline",
       color: colors.secondary,
       bg: colors.secondaryTint,
-      onPress: () => navigation.navigate("ListsTab" as never, { screen: "Templates" } as never),
+      onPress: () =>
+        navigation.navigate(
+          "ListsTab" as never,
+          { screen: "Templates" } as never,
+        ),
     },
     {
       id: "catalog",
@@ -629,19 +675,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
           {widgetLoading.lists ? (
             <>
-              <SkeletonBox testID="skeleton-list-1" width="100%" height={56} borderRadius={12} style={{ marginBottom: spacing.xs }} />
-              <SkeletonBox testID="skeleton-list-2" width="100%" height={56} borderRadius={12} />
+              <SkeletonBox
+                testID="skeleton-list-1"
+                width="100%"
+                height={56}
+                borderRadius={12}
+                style={{ marginBottom: spacing.xs }}
+              />
+              <SkeletonBox
+                testID="skeleton-list-2"
+                width="100%"
+                height={56}
+                borderRadius={12}
+              />
             </>
           ) : recentLists.length === 0 ? (
             <View style={styles.emptyAlertsWrap}>
-              <Text style={styles.emptyText}>Sin listas recientes. ¡Crea tu primera lista!</Text>
+              <Text style={styles.emptyText}>
+                Sin listas recientes. ¡Crea tu primera lista!
+              </Text>
               <TouchableOpacity
                 style={styles.createAlertButton}
                 onPress={() => navigation.navigate("ListsTab" as never)}
                 accessibilityRole="button"
                 accessibilityLabel="Crear lista"
               >
-                <Ionicons name="add-circle-outline" size={16} color={colors.primary} />
+                <Ionicons
+                  name="add-circle-outline"
+                  size={16}
+                  color={colors.primary}
+                />
                 <Text style={styles.createAlertButtonText}>Crear lista</Text>
               </TouchableOpacity>
             </View>
@@ -695,18 +758,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
                 accessibilityRole="button"
                 accessibilityLabel="Crear alerta de precio"
               >
-                <Ionicons name="add-circle-outline" size={16} color={colors.primary} />
+                <Ionicons
+                  name="add-circle-outline"
+                  size={16}
+                  color={colors.primary}
+                />
                 <Text style={styles.createAlertButtonText}>Crear alerta</Text>
               </TouchableOpacity>
             </View>
           ) : (
-            safePriceAlerts.slice(0, 3).map((alert) => (
-              <PriceAlertCard
-                key={alert.id}
-                alert={alert}
-                onPress={() => navigation.navigate("PriceAlerts" as never)}
-              />
-            ))
+            safePriceAlerts
+              .slice(0, 3)
+              .map((alert) => (
+                <PriceAlertCard
+                  key={alert.id}
+                  alert={alert}
+                  onPress={() => navigation.navigate("PriceAlerts" as never)}
+                />
+              ))
           )}
         </Animated.View>
 
@@ -719,10 +788,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
             style={teaserStyles.card}
             activeOpacity={1}
             onPress={() =>
-              Alert.alert("Próximamente", "Esta función estará disponible próximamente")
+              Alert.alert(
+                "Próximamente",
+                "Esta función estará disponible próximamente",
+              )
             }
           >
-            <Ionicons name="lock-closed-outline" size={24} color={colors.textMuted} />
+            <Ionicons
+              name="lock-closed-outline"
+              size={24}
+              color={colors.textMuted}
+            />
             <View style={teaserStyles.info}>
               <Text style={teaserStyles.title}>Optimizar ruta</Text>
               <Text style={teaserStyles.badge}>Próximamente</Text>
@@ -936,7 +1012,6 @@ const recentListStyles = StyleSheet.create({
     marginTop: 1,
   },
 });
-
 
 // ─── Estilos Notificaciones recientes ─────────────────────────────────────────
 

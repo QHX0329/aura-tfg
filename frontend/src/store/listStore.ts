@@ -40,8 +40,7 @@ export const useListStore = create<ListState>((set) => ({
 
   setActiveList: (list) => set({ activeList: list }),
 
-  addList: (list) =>
-    set((state) => ({ lists: [list, ...state.lists] })),
+  addList: (list) => set((state) => ({ lists: [list, ...state.lists] })),
 
   removeList: (id) =>
     set((state) => ({

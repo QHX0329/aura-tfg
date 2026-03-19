@@ -35,12 +35,7 @@
  * />
  */
 
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
   Keyboard,
@@ -54,13 +49,7 @@ import {
   View,
 } from "react-native";
 
-import {
-  borderRadius,
-  colors,
-  shadows,
-  spacing,
-  textStyles,
-} from "@/theme";
+import { borderRadius, colors, shadows, spacing, textStyles } from "@/theme";
 import { blurActiveElementOnWeb } from "@/utils/webA11y";
 import { BargainButton, type ButtonVariant } from "./BargainButton";
 
@@ -199,7 +188,10 @@ export const AppModal: React.FC<AppModalProps> = ({
       >
         {/* Overlay */}
         <Animated.View style={[styles.overlay, { opacity: opacityAnim }]}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={type === "info" ? handleConfirm : handleCancel} />
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={type === "info" ? handleConfirm : handleCancel}
+          />
 
           {/* Card */}
           <Animated.View
@@ -215,9 +207,7 @@ export const AppModal: React.FC<AppModalProps> = ({
             <Text style={styles.title}>{title}</Text>
 
             {/* Mensaje */}
-            {message ? (
-              <Text style={styles.message}>{message}</Text>
-            ) : null}
+            {message ? <Text style={styles.message}>{message}</Text> : null}
 
             {/* Input (solo type="input") */}
             {type === "input" ? (
@@ -258,7 +248,10 @@ export const AppModal: React.FC<AppModalProps> = ({
                 size="md"
                 loading={loading}
                 disabled={isConfirmDisabled}
-                style={[styles.actionButton, !hasCancel && styles.actionButtonFull]}
+                style={[
+                  styles.actionButton,
+                  !hasCancel && styles.actionButtonFull,
+                ]}
                 testID={testID ? `${testID}-confirm` : undefined}
               />
             </View>

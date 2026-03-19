@@ -60,7 +60,7 @@ function buildMockResult(listName: string): OptimizationResult {
     },
     mode: "balanced",
     totalPrice: 34.87,
-    originalPrice: 41.20,
+    originalPrice: 41.2,
     savedAmount: 6.33,
     savedPercent: 15.4,
     totalDistanceKm: 3.2,
@@ -79,12 +79,40 @@ function buildMockResult(listName: string): OptimizationResult {
           isOpen: true,
         },
         items: [
-          { id: "i1", product: "p1", product_name: "Leche entera 1L Hacendado", quantity: 2, latest_price: 1.05, is_checked: false },
-          { id: "i2", product: "p2", product_name: "Aceite de oliva virgen extra 750ml", quantity: 1, latest_price: 6.95, is_checked: false },
-          { id: "i3", product: "p3", product_name: "Pan de molde integral 500g", quantity: 1, latest_price: 1.45, is_checked: false },
-          { id: "i4", product: "p4", product_name: "Yogur natural x8", quantity: 1, latest_price: 2.20, is_checked: false },
+          {
+            id: "i1",
+            product: "p1",
+            product_name: "Leche entera 1L Hacendado",
+            quantity: 2,
+            latest_price: 1.05,
+            is_checked: false,
+          },
+          {
+            id: "i2",
+            product: "p2",
+            product_name: "Aceite de oliva virgen extra 750ml",
+            quantity: 1,
+            latest_price: 6.95,
+            is_checked: false,
+          },
+          {
+            id: "i3",
+            product: "p3",
+            product_name: "Pan de molde integral 500g",
+            quantity: 1,
+            latest_price: 1.45,
+            is_checked: false,
+          },
+          {
+            id: "i4",
+            product: "p4",
+            product_name: "Yogur natural x8",
+            quantity: 1,
+            latest_price: 2.2,
+            is_checked: false,
+          },
         ],
-        subtotal: 12.70,
+        subtotal: 12.7,
         estimatedTimeMinutes: 15,
       },
       {
@@ -99,9 +127,30 @@ function buildMockResult(listName: string): OptimizationResult {
           isOpen: true,
         },
         items: [
-          { id: "i5", product: "p5", product_name: "Pollo entero 1.8kg", quantity: 1, latest_price: 4.99, is_checked: false },
-          { id: "i6", product: "p6", product_name: "Manzanas Royal Gala 1kg", quantity: 1, latest_price: 1.89, is_checked: false },
-          { id: "i7", product: "p7", product_name: "Queso manchego semicurado 400g", quantity: 1, latest_price: 4.29, is_checked: false },
+          {
+            id: "i5",
+            product: "p5",
+            product_name: "Pollo entero 1.8kg",
+            quantity: 1,
+            latest_price: 4.99,
+            is_checked: false,
+          },
+          {
+            id: "i6",
+            product: "p6",
+            product_name: "Manzanas Royal Gala 1kg",
+            quantity: 1,
+            latest_price: 1.89,
+            is_checked: false,
+          },
+          {
+            id: "i7",
+            product: "p7",
+            product_name: "Queso manchego semicurado 400g",
+            quantity: 1,
+            latest_price: 4.29,
+            is_checked: false,
+          },
         ],
         subtotal: 11.17,
         estimatedTimeMinutes: 20,
@@ -118,10 +167,24 @@ function buildMockResult(listName: string): OptimizationResult {
           isOpen: true,
         },
         items: [
-          { id: "i8", product: "p8", product_name: "Jamón serrano loncheado 200g", quantity: 2, latest_price: 3.50, is_checked: false },
-          { id: "i9", product: "p9", product_name: "Lomo embuchado 150g", quantity: 1, latest_price: 4.30, is_checked: false },
+          {
+            id: "i8",
+            product: "p8",
+            product_name: "Jamón serrano loncheado 200g",
+            quantity: 2,
+            latest_price: 3.5,
+            is_checked: false,
+          },
+          {
+            id: "i9",
+            product: "p9",
+            product_name: "Lomo embuchado 150g",
+            quantity: 1,
+            latest_price: 4.3,
+            is_checked: false,
+          },
         ],
-        subtotal: 11.30,
+        subtotal: 11.3,
         estimatedTimeMinutes: 10,
       },
     ],
@@ -141,7 +204,13 @@ const CHAIN_COLORS: Record<string, string> = {
 };
 
 const CHAIN_INITIALS: Record<string, string> = {
-  mercadona: "M", lidl: "L", aldi: "A", carrefour: "C", dia: "D", alcampo: "Al", local: "🏪",
+  mercadona: "M",
+  lidl: "L",
+  aldi: "A",
+  carrefour: "C",
+  dia: "D",
+  alcampo: "Al",
+  local: "🏪",
 };
 
 // ─── Tab Ruta ─────────────────────────────────────────────────────────────────
@@ -157,16 +226,23 @@ const RouteTab: React.FC<RouteTabProps> = ({ result }) => (
     showsVerticalScrollIndicator={false}
   >
     {/* Resumen */}
-    <Animated.View entering={FadeInDown.delay(50).springify()} style={routeTabStyles.summary}>
+    <Animated.View
+      entering={FadeInDown.delay(50).springify()}
+      style={routeTabStyles.summary}
+    >
       <View style={routeTabStyles.summaryItem}>
         <Ionicons name="navigate-outline" size={20} color={colors.primary} />
-        <Text style={routeTabStyles.summaryValue}>{result.totalDistanceKm.toFixed(1)} km</Text>
+        <Text style={routeTabStyles.summaryValue}>
+          {result.totalDistanceKm.toFixed(1)} km
+        </Text>
         <Text style={routeTabStyles.summaryLabel}>total</Text>
       </View>
       <View style={routeTabStyles.summaryDivider} />
       <View style={routeTabStyles.summaryItem}>
         <Ionicons name="time-outline" size={20} color={colors.info} />
-        <Text style={routeTabStyles.summaryValue}>{result.totalTimeMinutes} min</Text>
+        <Text style={routeTabStyles.summaryValue}>
+          {result.totalTimeMinutes} min
+        </Text>
         <Text style={routeTabStyles.summaryLabel}>estimado</Text>
       </View>
       <View style={routeTabStyles.summaryDivider} />
@@ -191,7 +267,8 @@ const RouteTab: React.FC<RouteTabProps> = ({ result }) => (
             <View style={routeTabStyles.connector}>
               <View style={routeTabStyles.connectorLine} />
               <Text style={routeTabStyles.connectorDist}>
-                {stop.store.distanceKm.toFixed(1)} km · {stop.estimatedTimeMinutes} min
+                {stop.store.distanceKm.toFixed(1)} km ·{" "}
+                {stop.estimatedTimeMinutes} min
               </Text>
             </View>
           )}
@@ -199,36 +276,60 @@ const RouteTab: React.FC<RouteTabProps> = ({ result }) => (
           {/* Tarjeta de parada */}
           <View style={routeTabStyles.stopCard}>
             {/* Badge de orden */}
-            <View style={[routeTabStyles.orderBadge, { backgroundColor: chainColor }]}>
+            <View
+              style={[
+                routeTabStyles.orderBadge,
+                { backgroundColor: chainColor },
+              ]}
+            >
               <Text style={routeTabStyles.orderText}>{stop.order}</Text>
             </View>
 
             <View style={routeTabStyles.stopBody}>
               <View style={routeTabStyles.stopHeader}>
-                <View style={[routeTabStyles.chainBadge, { backgroundColor: chainColor + "22" }]}>
-                  <Text style={[routeTabStyles.chainInitial, { color: chainColor }]}>
+                <View
+                  style={[
+                    routeTabStyles.chainBadge,
+                    { backgroundColor: chainColor + "22" },
+                  ]}
+                >
+                  <Text
+                    style={[routeTabStyles.chainInitial, { color: chainColor }]}
+                  >
                     {initial}
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={routeTabStyles.storeName}>{stop.store.name}</Text>
+                  <Text style={routeTabStyles.storeName}>
+                    {stop.store.name}
+                  </Text>
                   <Text style={routeTabStyles.storeAddress} numberOfLines={1}>
                     {stop.store.address}
                   </Text>
                 </View>
-                <Text style={routeTabStyles.stopSubtotal}>{stop.subtotal.toFixed(2)} €</Text>
+                <Text style={routeTabStyles.stopSubtotal}>
+                  {stop.subtotal.toFixed(2)} €
+                </Text>
               </View>
 
               {/* Items */}
               <View style={routeTabStyles.itemsList}>
                 {stop.items.map((item, i) => (
-                  <View key={item.id} style={[routeTabStyles.itemRow, i > 0 && routeTabStyles.itemBorder]}>
+                  <View
+                    key={item.id}
+                    style={[
+                      routeTabStyles.itemRow,
+                      i > 0 && routeTabStyles.itemBorder,
+                    ]}
+                  >
                     <Text style={routeTabStyles.itemName} numberOfLines={1}>
                       {item.product_name ?? "Producto"}
                     </Text>
                     <Text style={routeTabStyles.itemQty}>×{item.quantity}</Text>
                     <Text style={routeTabStyles.itemPrice}>
-                      {item.latest_price ? `${(item.latest_price * item.quantity).toFixed(2)} €` : "—"}
+                      {item.latest_price
+                        ? `${(item.latest_price * item.quantity).toFixed(2)} €`
+                        : "—"}
                     </Text>
                   </View>
                 ))}
@@ -266,12 +367,19 @@ const SavingsTab: React.FC<SavingsTabProps> = ({ result }) => {
       showsVerticalScrollIndicator={false}
     >
       {/* Hero de ahorro */}
-      <Animated.View entering={FadeInDown.springify()} style={savingsStyles.hero}>
+      <Animated.View
+        entering={FadeInDown.springify()}
+        style={savingsStyles.hero}
+      >
         <Text style={savingsStyles.heroLabel}>Ahorro total estimado</Text>
-        <Text style={savingsStyles.heroAmount}>-{result.savedAmount.toFixed(2)} €</Text>
+        <Text style={savingsStyles.heroAmount}>
+          -{result.savedAmount.toFixed(2)} €
+        </Text>
         <View style={savingsStyles.heroBadge}>
           <Ionicons name="trending-down" size={14} color={colors.success} />
-          <Text style={savingsStyles.heroPct}>{result.savedPercent.toFixed(1)}% menos</Text>
+          <Text style={savingsStyles.heroPct}>
+            {result.savedPercent.toFixed(1)}% menos
+          </Text>
         </View>
 
         {/* Barra de comparación */}
@@ -285,8 +393,12 @@ const SavingsTab: React.FC<SavingsTabProps> = ({ result }) => {
             />
           </View>
           <View style={savingsStyles.barLabels}>
-            <Text style={savingsStyles.barLabel}>Optimizado {result.totalPrice.toFixed(2)} €</Text>
-            <Text style={savingsStyles.barLabelMuted}>Normal {result.originalPrice.toFixed(2)} €</Text>
+            <Text style={savingsStyles.barLabel}>
+              Optimizado {result.totalPrice.toFixed(2)} €
+            </Text>
+            <Text style={savingsStyles.barLabelMuted}>
+              Normal {result.originalPrice.toFixed(2)} €
+            </Text>
           </View>
         </View>
       </Animated.View>
@@ -303,7 +415,9 @@ const SavingsTab: React.FC<SavingsTabProps> = ({ result }) => {
             style={savingsStyles.storeCard}
           >
             <View style={savingsStyles.storeHeader}>
-              <View style={[savingsStyles.dot, { backgroundColor: chainColor }]} />
+              <View
+                style={[savingsStyles.dot, { backgroundColor: chainColor }]}
+              />
               <Text style={savingsStyles.storeName}>{stop.store.name}</Text>
               <View style={savingsStyles.storeSavings}>
                 <Text style={savingsStyles.storeSavingsText}>
@@ -314,14 +428,25 @@ const SavingsTab: React.FC<SavingsTabProps> = ({ result }) => {
 
             {stop.items.map((item, i) => {
               const orig = item.latest_price ? item.latest_price * 1.15 : null;
-              const saved = orig && item.latest_price ? (orig - item.latest_price) * item.quantity : 0;
+              const saved =
+                orig && item.latest_price
+                  ? (orig - item.latest_price) * item.quantity
+                  : 0;
               return (
-                <View key={item.id} style={[savingsStyles.itemRow, i > 0 && savingsStyles.itemBorder]}>
+                <View
+                  key={item.id}
+                  style={[
+                    savingsStyles.itemRow,
+                    i > 0 && savingsStyles.itemBorder,
+                  ]}
+                >
                   <Text style={savingsStyles.itemName} numberOfLines={1}>
                     {item.product_name}
                   </Text>
                   {saved > 0 && (
-                    <Text style={savingsStyles.itemSaving}>-{saved.toFixed(2)} €</Text>
+                    <Text style={savingsStyles.itemSaving}>
+                      -{saved.toFixed(2)} €
+                    </Text>
                   )}
                 </View>
               );
@@ -329,7 +454,9 @@ const SavingsTab: React.FC<SavingsTabProps> = ({ result }) => {
 
             <View style={savingsStyles.storeFooter}>
               <Text style={savingsStyles.storeFooterLabel}>Subtotal</Text>
-              <Text style={savingsStyles.storeFooterValue}>{stop.subtotal.toFixed(2)} €</Text>
+              <Text style={savingsStyles.storeFooterValue}>
+                {stop.subtotal.toFixed(2)} €
+              </Text>
             </View>
           </Animated.View>
         );
@@ -337,9 +464,14 @@ const SavingsTab: React.FC<SavingsTabProps> = ({ result }) => {
 
       {/* Nota sobre mock */}
       <View style={savingsStyles.mockNote}>
-        <Ionicons name="information-circle-outline" size={14} color={colors.info} />
+        <Ionicons
+          name="information-circle-outline"
+          size={14}
+          color={colors.info}
+        />
         <Text style={savingsStyles.mockText}>
-          Datos de ejemplo. El optimizador estará disponible en una próxima versión.
+          Datos de ejemplo. El optimizador estará disponible en una próxima
+          versión.
         </Text>
       </View>
 
@@ -382,12 +514,17 @@ export const RouteScreen: React.FC = () => {
     <SafeAreaView style={styles.safe} edges={[]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.back}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>Ruta optimizada</Text>
-          <Text style={styles.headerSub} numberOfLines={1}>{listName}</Text>
+          <Text style={styles.headerSub} numberOfLines={1}>
+            {listName}
+          </Text>
         </View>
         <View style={styles.modeBadge}>
           <Ionicons name="scale-outline" size={12} color={colors.white} />
@@ -406,7 +543,12 @@ export const RouteScreen: React.FC = () => {
             size={16}
             color={activeTab === "route" ? colors.primary : colors.textMuted}
           />
-          <Text style={[styles.tabText, activeTab === "route" && styles.tabTextActive]}>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "route" && styles.tabTextActive,
+            ]}
+          >
             Ruta
           </Text>
         </TouchableOpacity>
@@ -419,11 +561,21 @@ export const RouteScreen: React.FC = () => {
             size={16}
             color={activeTab === "savings" ? colors.primary : colors.textMuted}
           />
-          <Text style={[styles.tabText, activeTab === "savings" && styles.tabTextActive]}>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "savings" && styles.tabTextActive,
+            ]}
+          >
             Ahorro
           </Text>
         </TouchableOpacity>
-        <View style={[styles.tabIndicator, { left: activeTab === "route" ? "0%" : "50%" }]} />
+        <View
+          style={[
+            styles.tabIndicator,
+            { left: activeTab === "route" ? "0%" : "50%" },
+          ]}
+        />
       </View>
 
       {loading ? (

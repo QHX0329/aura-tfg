@@ -1,7 +1,7 @@
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
 export function blurActiveElementOnWeb(): void {
-  if (Platform.OS !== 'web' || typeof document === 'undefined') {
+  if (Platform.OS !== "web" || typeof document === "undefined") {
     return;
   }
 

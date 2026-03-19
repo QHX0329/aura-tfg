@@ -24,7 +24,14 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown, Easing } from "react-native-reanimated";
 
-import { colors, spacing, borderRadius, fontFamilies, fontSize, shadows } from "@/theme";
+import {
+  colors,
+  spacing,
+  borderRadius,
+  fontFamilies,
+  fontSize,
+  shadows,
+} from "@/theme";
 import type { ListsStackParamList } from "@/navigation/types";
 import type { ListTemplate } from "@/types/domain";
 import { listService } from "@/api/listService";
@@ -40,31 +47,46 @@ interface TemplateCardProps {
   onDelete: (t: ListTemplate) => void;
 }
 
-const TemplateCard: React.FC<TemplateCardProps> = ({ template, onUse, onDelete }) => {
+const TemplateCard: React.FC<TemplateCardProps> = ({
+  template,
+  onUse,
+  onDelete,
+}) => {
   const preview = template.items
     .slice(0, 3)
     .map((i) => i.product_name ?? `Producto #${i.product}`)
     .join(", ");
-  const extra = template.item_count > 3 ? ` +${template.item_count - 3} más` : "";
-  const createdDate = new Date(template.created_at).toLocaleDateString("es-ES", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const extra =
+    template.item_count > 3 ? ` +${template.item_count - 3} más` : "";
+  const createdDate = new Date(template.created_at).toLocaleDateString(
+    "es-ES",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    },
+  );
 
   return (
-    <Animated.View entering={FadeInDown.duration(320).easing(Easing.out(Easing.quad))}>
+    <Animated.View
+      entering={FadeInDown.duration(320).easing(Easing.out(Easing.quad))}
+    >
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View style={styles.iconWrap}>
-            <Ionicons name="document-text-outline" size={20} color={colors.primary} />
+            <Ionicons
+              name="document-text-outline"
+              size={20}
+              color={colors.primary}
+            />
           </View>
           <View style={styles.cardInfo}>
             <Text style={styles.cardName} numberOfLines={1}>
               {template.name}
             </Text>
             <Text style={styles.cardMeta}>
-              {template.item_count} producto{template.item_count !== 1 ? "s" : ""} · {createdDate}
+              {template.item_count} producto
+              {template.item_count !== 1 ? "s" : ""} · {createdDate}
             </Text>
           </View>
           <TouchableOpacity
@@ -72,7 +94,11 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onUse, onDelete }
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             style={styles.deleteBtn}
           >
-            <Ionicons name="trash-outline" size={18} color={colors.error ?? "#E53E3E"} />
+            <Ionicons
+              name="trash-outline"
+              size={18}
+              color={colors.error ?? "#E53E3E"}
+            />
           </TouchableOpacity>
         </View>
 
@@ -83,7 +109,11 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onUse, onDelete }
           </Text>
         )}
 
-        <TouchableOpacity style={styles.useBtn} onPress={() => onUse(template)} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.useBtn}
+          onPress={() => onUse(template)}
+          activeOpacity={0.8}
+        >
           <Ionicons name="add-circle-outline" size={16} color={colors.white} />
           <Text style={styles.useBtnText}>Usar plantilla</Text>
         </TouchableOpacity>
@@ -137,7 +167,10 @@ export const TemplatesScreen: React.FC = () => {
       await listService.deleteTemplate(deleteTarget.id);
       setTemplates((prev) => prev.filter((t) => t.id !== deleteTarget.id));
     } catch {
-      Alert.alert("Error", "No se pudo eliminar la plantilla. Inténtalo de nuevo.");
+      Alert.alert(
+        "Error",
+        "No se pudo eliminar la plantilla. Inténtalo de nuevo.",
+      );
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
@@ -176,7 +209,10 @@ export const TemplatesScreen: React.FC = () => {
     <SafeAreaView style={styles.safe} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.back}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Plantillas</Text>
@@ -189,7 +225,11 @@ export const TemplatesScreen: React.FC = () => {
         </View>
       ) : templates.length === 0 ? (
         <View style={styles.center}>
-          <Ionicons name="document-text-outline" size={48} color={colors.textMuted} />
+          <Ionicons
+            name="document-text-outline"
+            size={48}
+            color={colors.textMuted}
+          />
           <Text style={styles.emptyTitle}>Sin plantillas</Text>
           <Text style={styles.emptyText}>
             Guarda una lista como plantilla para reutilizarla aquí.

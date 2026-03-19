@@ -1,8 +1,15 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, FlatList } from 'react-native';
-import { GoogleMap, useJsApiLoader, InfoWindow } from '@react-google-maps/api';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useCallback, useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
+import { GoogleMap, useJsApiLoader, InfoWindow } from "@react-google-maps/api";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import {
   borderRadius,
@@ -12,20 +19,20 @@ import {
   shadows,
   spacing,
   textStyles,
-} from '@/theme';
-import { storeService } from '@/api/storeService';
-import type { MapStackParamList } from '@/navigation/types';
-import type { Store, StoreChain } from '@/types/domain';
+} from "@/theme";
+import { storeService } from "@/api/storeService";
+import type { MapStackParamList } from "@/navigation/types";
+import type { Store, StoreChain } from "@/types/domain";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const SEVILLE_COORDS = { lat: 37.3886, lng: -5.9823 };
 const EARTH_RADIUS_KM = 6371;
-const GOOGLE_MAP_LIBRARIES: ('marker')[] = ['marker'];
+const GOOGLE_MAP_LIBRARIES: "marker"[] = ["marker"];
 
 const MAP_CONTAINER_STYLE = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  height: "100%",
 };
 
 const CHAIN_COLORS: Record<StoreChain, string> = {
@@ -75,7 +82,11 @@ interface StoreCardProps {
   isSelected?: boolean;
 }
 
-const StoreCard: React.FC<StoreCardProps> = ({ store, onPress, isSelected }) => {
+const StoreCard: React.FC<StoreCardProps> = ({
+  store,
+  onPress,
+  isSelected,
+}) => {
   const chainColor = CHAIN_COLORS[store.chain] || colors.primary;
   const initial = CHAIN_INITIALS[store.chain] || "?";
 
@@ -84,7 +95,7 @@ const StoreCard: React.FC<StoreCardProps> = ({ store, onPress, isSelected }) => 
       style={[
         cardStyles.card,
         shadows.card,
-        isSelected && { borderColor: colors.primary, borderWidth: 2 }
+        isSelected && { borderColor: colors.primary, borderWidth: 2 },
       ]}
       onPress={() => onPress(store)}
       activeOpacity={0.85}
@@ -116,12 +127,13 @@ const StoreCard: React.FC<StoreCardProps> = ({ store, onPress, isSelected }) => 
 // ─── Main Screen ───────────────────────────────────────────────────────
 
 export const MapScreen: React.FC = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<MapStackParamList, 'Map'>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<MapStackParamList, "Map">>();
   const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || "";
   const mapId = process.env.EXPO_PUBLIC_GOOGLE_MAPS_MAP_ID?.trim() || undefined;
-  
+
   const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script',
+    id: "google-map-script",
     googleMapsApiKey: apiKey,
     libraries: GOOGLE_MAP_LIBRARIES,
   });
@@ -146,7 +158,7 @@ export const MapScreen: React.FC = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsFetchingStores(true);
-      
+
       let lat = SEVILLE_COORDS.lat;
       let lng = SEVILLE_COORDS.lng;
 
@@ -162,7 +174,7 @@ export const MapScreen: React.FC = () => {
           () => {
             console.warn("Geolocation denied or failed, using fallback.");
             fetchNearbyStores(lat, lng);
-          }
+          },
         );
       } else {
         fetchNearbyStores(lat, lng);
@@ -211,7 +223,11 @@ export const MapScreen: React.FC = () => {
 
     setIsFetchingStores(true);
     try {
-      const nearby = await storeService.getNearby(centerLat, centerLng, searchRadiusKm);
+      const nearby = await storeService.getNearby(
+        centerLat,
+        centerLng,
+        searchRadiusKm,
+      );
       setCenter({ lat: centerLat, lng: centerLng });
       setStores(nearby);
       setSelectedStore(null);
@@ -222,15 +238,18 @@ export const MapScreen: React.FC = () => {
     }
   }, [map]);
 
-  const handleStoreCardPress = useCallback((store: Store) => {
-    if (store.location?.coordinates) {
-      const [lng, lat] = store.location.coordinates;
-      const newPos = { lat, lng };
-      setCenter(newPos);
-      setSelectedStore(store);
-      map?.panTo(newPos);
-    }
-  }, [map]);
+  const handleStoreCardPress = useCallback(
+    (store: Store) => {
+      if (store.location?.coordinates) {
+        const [lng, lat] = store.location.coordinates;
+        const newPos = { lat, lng };
+        setCenter(newPos);
+        setSelectedStore(store);
+        map?.panTo(newPos);
+      }
+    },
+    [map],
+  );
 
   useEffect(() => {
     if (!map || !window.google?.maps?.marker?.AdvancedMarkerElement) {
@@ -247,13 +266,13 @@ export const MapScreen: React.FC = () => {
       const [lng, lat] = store.location.coordinates;
       const color = CHAIN_COLORS[store.chain] || colors.primary;
 
-      const markerNode = document.createElement('div');
-      markerNode.style.width = '18px';
-      markerNode.style.height = '18px';
-      markerNode.style.borderRadius = '999px';
+      const markerNode = document.createElement("div");
+      markerNode.style.width = "18px";
+      markerNode.style.height = "18px";
+      markerNode.style.borderRadius = "999px";
       markerNode.style.backgroundColor = color;
-      markerNode.style.border = '2px solid #FFFFFF';
-      markerNode.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.24)';
+      markerNode.style.border = "2px solid #FFFFFF";
+      markerNode.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.24)";
 
       const marker = new google.maps.marker.AdvancedMarkerElement({
         map,
@@ -262,7 +281,7 @@ export const MapScreen: React.FC = () => {
         content: markerNode,
       });
 
-      marker.addListener('click', () => {
+      marker.addListener("click", () => {
         setSelectedStore(store);
         setCenter({ lat, lng });
       });
@@ -289,7 +308,9 @@ export const MapScreen: React.FC = () => {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { marginTop: spacing.md }]}>Cargando Google Maps...</Text>
+        <Text style={[styles.loadingText, { marginTop: spacing.md }]}>
+          Cargando Google Maps...
+        </Text>
       </View>
     );
   }
@@ -309,21 +330,22 @@ export const MapScreen: React.FC = () => {
         }}
       >
         {selectedStore && selectedStore.location?.coordinates && (
-           <InfoWindow
-             position={{ 
-               lat: selectedStore.location.coordinates[1], 
-               lng: selectedStore.location.coordinates[0] 
-             }}
-             onCloseClick={() => setSelectedStore(null)}
-           >
-             <div style={infoWindowStyles.wrap}>
-               <h4 style={infoWindowStyles.title}>{selectedStore.name}</h4>
-               <p style={infoWindowStyles.meta}>
-                 {selectedStore.chain?.toUpperCase() ?? 'TIENDA'} · {selectedStore.isOpen ? 'ABIERTO' : 'CERRADO'}
-               </p>
-               <p style={infoWindowStyles.address}>{selectedStore.address}</p>
-             </div>
-           </InfoWindow>
+          <InfoWindow
+            position={{
+              lat: selectedStore.location.coordinates[1],
+              lng: selectedStore.location.coordinates[0],
+            }}
+            onCloseClick={() => setSelectedStore(null)}
+          >
+            <div style={infoWindowStyles.wrap}>
+              <h4 style={infoWindowStyles.title}>{selectedStore.name}</h4>
+              <p style={infoWindowStyles.meta}>
+                {selectedStore.chain?.toUpperCase() ?? "TIENDA"} ·{" "}
+                {selectedStore.isOpen ? "ABIERTO" : "CERRADO"}
+              </p>
+              <p style={infoWindowStyles.address}>{selectedStore.address}</p>
+            </div>
+          </InfoWindow>
         )}
       </GoogleMap>
 
@@ -350,14 +372,21 @@ export const MapScreen: React.FC = () => {
           onPress={() => setStoresPanelExpanded((prev) => !prev)}
           activeOpacity={0.85}
           accessibilityRole="button"
-          accessibilityLabel={storesPanelExpanded ? 'Plegar panel de tiendas' : 'Desplegar panel de tiendas'}
+          accessibilityLabel={
+            storesPanelExpanded
+              ? "Plegar panel de tiendas"
+              : "Desplegar panel de tiendas"
+          }
         >
           <View style={styles.panelHandleGrip} />
           <View style={styles.panelHandleMeta}>
             <Text style={styles.panelTitle}>
-              {stores.length} tienda{stores.length !== 1 ? 's' : ''} en esta zona
+              {stores.length} tienda{stores.length !== 1 ? "s" : ""} en esta
+              zona
             </Text>
-            <Text style={styles.panelHandleChevron}>{storesPanelExpanded ? '▾' : '▴'}</Text>
+            <Text style={styles.panelHandleChevron}>
+              {storesPanelExpanded ? "▾" : "▴"}
+            </Text>
           </View>
         </TouchableOpacity>
 
@@ -367,7 +396,7 @@ export const MapScreen: React.FC = () => {
               <TouchableOpacity
                 style={[styles.storeProfileButton, shadows.card]}
                 onPress={() =>
-                  navigation.navigate('StoreProfile', {
+                  navigation.navigate("StoreProfile", {
                     storeId: selectedStore.id,
                     storeName: selectedStore.name,
                     userLat: userCoords.lat,
@@ -376,7 +405,9 @@ export const MapScreen: React.FC = () => {
                 }
                 activeOpacity={0.9}
               >
-                <Text style={styles.storeProfileButtonText}>Ver perfil de tienda</Text>
+                <Text style={styles.storeProfileButtonText}>
+                  Ver perfil de tienda
+                </Text>
               </TouchableOpacity>
             )}
             <FlatList
@@ -413,8 +444,8 @@ const styles = StyleSheet.create({
   },
   center: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     ...textStyles.body,
@@ -477,7 +508,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   panelHandleGrip: {
-    alignSelf: 'center',
+    alignSelf: "center",
     width: 36,
     height: 4,
     borderRadius: 2,
@@ -485,9 +516,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   panelHandleMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   panelHandleChevron: {
     fontFamily: fontFamilies.bodySemiBold,
@@ -501,7 +532,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   storeProfileButton: {
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: spacing.sm,
     backgroundColor: colors.primaryTint,
     borderRadius: borderRadius.pill,
@@ -589,26 +620,26 @@ const cardStyles = StyleSheet.create({
 const infoWindowStyles: Record<string, React.CSSProperties> = {
   wrap: {
     maxWidth: 220,
-    padding: '6px 8px',
+    padding: "6px 8px",
   },
   title: {
-    margin: '0 0 3px 0',
-    fontSize: '14px',
-    lineHeight: '18px',
+    margin: "0 0 3px 0",
+    fontSize: "14px",
+    lineHeight: "18px",
     fontWeight: 600,
-    color: '#1F2937',
+    color: "#1F2937",
   },
   meta: {
-    margin: '0 0 3px 0',
-    fontSize: '11px',
-    lineHeight: '14px',
-    letterSpacing: '0.4px',
-    color: '#0E7490',
+    margin: "0 0 3px 0",
+    fontSize: "11px",
+    lineHeight: "14px",
+    letterSpacing: "0.4px",
+    color: "#0E7490",
   },
   address: {
     margin: 0,
-    fontSize: '12px',
-    lineHeight: '16px',
-    color: '#4B5563',
+    fontSize: "12px",
+    lineHeight: "16px",
+    color: "#4B5563",
   },
 };

@@ -21,15 +21,15 @@ import { Platform } from "react-native";
  */
 export const fontFamilies = {
   /** Display: Fraunces en Android/Web — SF Pro Display en iOS */
-  display:       Platform.OS === "ios" ? undefined : "Fraunces_600SemiBold",
+  display: Platform.OS === "ios" ? undefined : "Fraunces_600SemiBold",
   /** Body regular */
-  body:          Platform.OS === "ios" ? undefined : "SourceSans3_400Regular",
-  bodyMedium:    Platform.OS === "ios" ? undefined : "SourceSans3_500Medium",
-  bodySemiBold:  Platform.OS === "ios" ? undefined : "SourceSans3_600SemiBold",
-  bodyBold:      Platform.OS === "ios" ? undefined : "SourceSans3_700Bold",
+  body: Platform.OS === "ios" ? undefined : "SourceSans3_400Regular",
+  bodyMedium: Platform.OS === "ios" ? undefined : "SourceSans3_500Medium",
+  bodySemiBold: Platform.OS === "ios" ? undefined : "SourceSans3_600SemiBold",
+  bodyBold: Platform.OS === "ios" ? undefined : "SourceSans3_700Bold",
   /** Monoespaciado: Menlo (iOS) / IBM Plex Mono (otros) */
-  mono:          Platform.OS === "ios" ? "Menlo"   : "IBMPlexMono_400Regular",
-  monoMedium:    Platform.OS === "ios" ? "Menlo"   : "IBMPlexMono_500Medium",
+  mono: Platform.OS === "ios" ? "Menlo" : "IBMPlexMono_400Regular",
+  monoMedium: Platform.OS === "ios" ? "Menlo" : "IBMPlexMono_500Medium",
 } as Record<string, string | undefined>;
 
 /**
@@ -38,11 +38,11 @@ export const fontFamilies = {
  * estos valores son undefined para no interferir con los Google Fonts.
  */
 const iosW = {
-  regular:  Platform.OS === "ios" ? ("400" as const) : undefined,
-  medium:   Platform.OS === "ios" ? ("500" as const) : undefined,
+  regular: Platform.OS === "ios" ? ("400" as const) : undefined,
+  medium: Platform.OS === "ios" ? ("500" as const) : undefined,
   semibold: Platform.OS === "ios" ? ("600" as const) : undefined,
-  bold:     Platform.OS === "ios" ? ("700" as const) : undefined,
-  heavy:    Platform.OS === "ios" ? ("800" as const) : undefined,
+  bold: Platform.OS === "ios" ? ("700" as const) : undefined,
+  heavy: Platform.OS === "ios" ? ("800" as const) : undefined,
 };
 
 // ─── Escala de tamaños (móvil 360px) ─────────────────────────────────────────
@@ -80,20 +80,20 @@ export const fontSize = {
 
 export const fontWeight = {
   regular: "400" as const,
-  medium:  "500" as const,
+  medium: "500" as const,
   semibold: "600" as const,
-  bold:    "700" as const,
+  bold: "700" as const,
 } as const;
 
 // ─── Alturas de línea ─────────────────────────────────────────────────────────
 
 export const lineHeight = {
   /** 1.15 - display grandes, un solo renglón */
-  tight:   1.15,
+  tight: 1.15,
   /** 1.35 - headings H2-H3 */
-  snug:    1.35,
+  snug: 1.35,
   /** 1.55 - cuerpo de texto estándar */
-  normal:  1.55,
+  normal: 1.55,
   /** 1.7 - texto largo, párrafos de chat */
   relaxed: 1.7,
 } as const;
@@ -101,13 +101,13 @@ export const lineHeight = {
 // ─── Tracking (letter-spacing) ───────────────────────────────────────────────
 
 export const letterSpacing = {
-  tight:  -0.3,
-  normal:  0,
-  wide:    0.2,
+  tight: -0.3,
+  normal: 0,
+  wide: 0.2,
   /** Para labels en mayúsculas */
-  wider:   0.4,
+  wider: 0.4,
   /** Para caps tracking decorativo */
-  widest:  0.8,
+  widest: 0.8,
 } as const;
 
 // ─── Estilos compuestos ───────────────────────────────────────────────────────

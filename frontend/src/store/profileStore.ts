@@ -36,7 +36,8 @@ export const useProfileStore = create<ProfileState>((set) => ({
         profile: {
           ...state.profile,
           // Map backend snake_case prefs onto the camelCase UserProfile fields
-          searchRadiusKm: prefs.max_search_radius_km ?? state.profile.searchRadiusKm,
+          searchRadiusKm:
+            prefs.max_search_radius_km ?? state.profile.searchRadiusKm,
           maxStops: prefs.max_stops ?? state.profile.maxStops,
           weightPrice: prefs.weight_price ?? state.profile.weightPrice,
           weightDistance: prefs.weight_distance ?? state.profile.weightDistance,

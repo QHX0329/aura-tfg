@@ -49,7 +49,10 @@ export const priceService = {
     apiClient.delete<never, void>(`/prices/alerts/${id}/`),
 
   /** PATCH /prices/alerts/{id}/ — actualizar alerta */
-  updatePriceAlert: (id: string, data: UpdatePriceAlertPayload): Promise<PriceAlert> =>
+  updatePriceAlert: (
+    id: string,
+    data: UpdatePriceAlertPayload,
+  ): Promise<PriceAlert> =>
     apiClient.patch<never, PriceAlert>(`/prices/alerts/${id}/`, data),
 
   /**
@@ -96,6 +99,5 @@ export const priceService = {
     store: number;
     price: string;
     offer_price?: string;
-  }): Promise<unknown> =>
-    apiClient.post("/prices/crowdsource/", data),
+  }): Promise<unknown> => apiClient.post("/prices/crowdsource/", data),
 };

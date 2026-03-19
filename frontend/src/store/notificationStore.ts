@@ -79,7 +79,9 @@ export const useNotificationStore = create<NotificationState>((set) => ({
 
   removeNotification: (id) =>
     set((state) => {
-      const updated = state.notifications.filter((n) => String(n.id) !== String(id));
+      const updated = state.notifications.filter(
+        (n) => String(n.id) !== String(id),
+      );
       return {
         notifications: updated,
         unreadCount: countUnread(updated),

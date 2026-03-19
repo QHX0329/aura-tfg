@@ -71,13 +71,13 @@ const CHAIN_INITIALS: Record<StoreChain, string> = {
 };
 
 const CHAIN_LABELS: Record<StoreChain, string> = {
-  mercadona: 'Mercadona',
-  lidl: 'Lidl',
-  aldi: 'Aldi',
-  carrefour: 'Carrefour',
-  dia: 'Dia',
-  alcampo: 'Alcampo',
-  local: 'Comercio local',
+  mercadona: "Mercadona",
+  lidl: "Lidl",
+  aldi: "Aldi",
+  carrefour: "Carrefour",
+  dia: "Dia",
+  alcampo: "Alcampo",
+  local: "Comercio local",
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -148,16 +148,20 @@ interface StoreCardProps {
   isSelected?: boolean;
 }
 
-const StoreCard: React.FC<StoreCardProps> = ({ store, onPress, isSelected }) => {
+const StoreCard: React.FC<StoreCardProps> = ({
+  store,
+  onPress,
+  isSelected,
+}) => {
   const chainColor = CHAIN_COLORS[store.chain];
   const initial = CHAIN_INITIALS[store.chain];
 
   return (
     <TouchableOpacity
       style={[
-        cardStyles.card, 
+        cardStyles.card,
         shadows.card,
-        isSelected && { borderColor: colors.primary, borderWidth: 2 }
+        isSelected && { borderColor: colors.primary, borderWidth: 2 },
       ]}
       onPress={() => onPress(store)}
       activeOpacity={0.85}
@@ -191,7 +195,8 @@ const StoreCard: React.FC<StoreCardProps> = ({ store, onPress, isSelected }) => 
 // ─── Pantalla principal ───────────────────────────────────────────────────────
 
 export const MapScreen: React.FC = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<MapStackParamList, "Map">>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<MapStackParamList, "Map">>();
   const mapRef = useRef<MapView>(null);
 
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(
@@ -246,9 +251,13 @@ export const MapScreen: React.FC = () => {
       },
       onPanResponderMove: (_, gs) => {
         const adjustedDy = gs.dy - panelGestureOffsetRef.current;
-        const newVal = Math.max(0, Math.min(1,
-          panelBaseValueRef.current - adjustedDy / PANEL_ANIM_MAX_HEIGHT,
-        ));
+        const newVal = Math.max(
+          0,
+          Math.min(
+            1,
+            panelBaseValueRef.current - adjustedDy / PANEL_ANIM_MAX_HEIGHT,
+          ),
+        );
         panelAnim.setValue(newVal);
       },
       onPanResponderRelease: (_, gs) => {
@@ -303,7 +312,9 @@ export const MapScreen: React.FC = () => {
         // En __DEV__, usar coords de Sevilla como fallback
         if (!__DEV__) {
           // En producción, propagar el error de forma controlada
-          console.warn("[MapScreen] No se pudo obtener ubicación del dispositivo");
+          console.warn(
+            "[MapScreen] No se pudo obtener ubicación del dispositivo",
+          );
         }
       }
 
@@ -398,7 +409,6 @@ export const MapScreen: React.FC = () => {
   if (permissionGranted === null) {
     return (
       <SafeAreaView style={styles.container} edges={[]}>
-
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Obteniendo ubicación…</Text>
@@ -411,7 +421,6 @@ export const MapScreen: React.FC = () => {
   if (permissionGranted === false) {
     return (
       <SafeAreaView style={styles.container} edges={[]}>
-
         <LocationDeniedCard />
       </SafeAreaView>
     );
@@ -451,7 +460,7 @@ export const MapScreen: React.FC = () => {
               ? `${Math.round(store.distanceKm * 1000)} m`
               : `${store.distanceKm.toFixed(1)} km`;
           const calloutDescription = `${CHAIN_LABELS[store.chain]} · ${storeDistanceLabel} · ${
-            store.isOpen ? 'Abierto ahora' : 'Cerrado'
+            store.isOpen ? "Abierto ahora" : "Cerrado"
           }`;
           return (
             <Marker
@@ -465,7 +474,9 @@ export const MapScreen: React.FC = () => {
               <Callout tooltip={false}>
                 <View style={styles.markerCalloutContent}>
                   <Text style={styles.markerCalloutTitle}>{store.name}</Text>
-                  <Text style={styles.markerCalloutMeta}>{calloutDescription}</Text>
+                  <Text style={styles.markerCalloutMeta}>
+                    {calloutDescription}
+                  </Text>
                   {store.address ? (
                     <Text style={styles.markerCalloutAddress} numberOfLines={2}>
                       {store.address}
@@ -479,7 +490,7 @@ export const MapScreen: React.FC = () => {
       </MapView>
 
       {/* ── Botón: Buscar en esta zona ────────────────────────── */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.searchAreaButton, shadows.elevated]}
         onPress={handleSearchAreaPress}
         activeOpacity={0.9}
@@ -505,12 +516,19 @@ export const MapScreen: React.FC = () => {
           <View style={styles.panelHandleGrip} />
           <View style={styles.panelHandleMeta}>
             <Text style={styles.panelTitle}>
-              {stores.length} tienda{stores.length !== 1 ? "s" : ""} en esta zona
+              {stores.length} tienda{stores.length !== 1 ? "s" : ""} en esta
+              zona
             </Text>
           </View>
         </View>
 
-        <Animated.View style={{ maxHeight: panelContentMaxHeight, opacity: panelContentOpacity, overflow: 'hidden' }}>
+        <Animated.View
+          style={{
+            maxHeight: panelContentMaxHeight,
+            opacity: panelContentOpacity,
+            overflow: "hidden",
+          }}
+        >
           {stores.length > 0 ? (
             <>
               {selectedStore && (
@@ -526,8 +544,14 @@ export const MapScreen: React.FC = () => {
                   }
                   activeOpacity={0.9}
                 >
-                  <Ionicons name="storefront-outline" size={16} color={colors.primary} />
-                  <Text style={styles.storeProfileButtonText}>Ver perfil de tienda</Text>
+                  <Ionicons
+                    name="storefront-outline"
+                    size={16}
+                    color={colors.primary}
+                  />
+                  <Text style={styles.storeProfileButtonText}>
+                    Ver perfil de tienda
+                  </Text>
                 </TouchableOpacity>
               )}
               <FlatList
@@ -628,7 +652,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   panelHandleGrip: {
-    alignSelf: 'center',
+    alignSelf: "center",
     width: 36,
     height: 4,
     borderRadius: 2,
@@ -636,9 +660,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   panelHandleMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   panelTitle: {
     fontFamily: fontFamilies.bodySemiBold,

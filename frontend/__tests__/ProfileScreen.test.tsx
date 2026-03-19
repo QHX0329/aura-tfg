@@ -1,9 +1,12 @@
 /**
- * Tests for ProfileScreen (Task 2) — user profile with sliders, toggles, and account management.
+ * Tests for ProfileScreen (Task 2) — user profile read-only optimization,
+ * notification toggles, and account management.
  *
- * Tests 1-6: ProfileScreen (real API, sliders, toggles, logout, account actions)
+ * Tests 1-6: ProfileScreen (real API, optimization summary, toggles, logout, account actions)
  * Tests 7-8: ChangePasswordScreen (validation, API call)
  */
+
+const mockNavigate = jest.fn();
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -17,9 +20,10 @@ jest.mock("../src/api/authService", () => ({
 
 jest.mock("@react-navigation/native", () => ({
   useNavigation: () => ({
-    navigate: jest.fn(),
+    navigate: mockNavigate,
     goBack: jest.fn(),
   }),
+  useFocusEffect: jest.fn(),
 }));
 
 jest.mock("react-native-reanimated", () => {
@@ -39,7 +43,6 @@ import {
   render,
   fireEvent,
   waitFor,
-  act,
 } from "@testing-library/react-native";
 import { Alert } from "react-native";
 import { authService } from "../src/api/authService";
@@ -70,6 +73,7 @@ describe("ProfileScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+    mockNavigate.mockReset();
     alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
 
     // Reset stores
@@ -115,68 +119,28 @@ describe("ProfileScreen", () => {
     });
   });
 
-  // Test 2: Changing weight_price slider to 60 redistributes remaining 40 proportionally
-  it("Test 2: changing weight_price to 60 redistributes remaining 40 proportionally, sum stays 100", async () => {
-    const { getByTestId } = render(<ProfileScreen />);
+  // Test 2: Optimization values render as read-only summary (editing is delegated)
+  it("Test 2: renders read-only optimization values and no inline sliders", async () => {
+    const { getByText, queryByTestId } = render(<ProfileScreen />);
 
     await waitFor(() => {
-      expect(getByTestId("slider-weight-price")).toBeTruthy();
-    });
-
-    // Change weight_price to 60 (others were 30 and 20 = 50 total)
-    const priceSlider = getByTestId("slider-weight-price");
-    fireEvent(priceSlider, "valueChange", 60);
-
-    await waitFor(() => {
-      const distSlider = getByTestId("slider-weight-distance");
-      const timeSlider = getByTestId("slider-weight-time");
-
-      // After redistribution, the sum of all three must be 100
-      const priceVal = 60;
-      const distVal = Number(distSlider.props.value);
-      const timeVal = Number(timeSlider.props.value);
-
-      expect(priceVal + distVal + timeVal).toBeCloseTo(100, 0);
-      // Both distance and time should have been redistributed (not zero unless original was zero)
-      expect(distVal).toBeGreaterThan(0);
-      expect(timeVal).toBeGreaterThan(0);
+      expect(getByText("Optimización")).toBeTruthy();
+      expect(getByText("50%")).toBeTruthy();
+      expect(getByText("30%")).toBeTruthy();
+      expect(getByText("20%")).toBeTruthy();
+      expect(getByText("Configurar")).toBeTruthy();
+      expect(queryByTestId("slider-weight-price")).toBeNull();
     });
   });
 
-  // Test 3: Slider change triggers debounced PATCH after 500ms; second change resets timer
-  it("Test 3: slider change debounces PATCH 500ms; rapid changes coalesce to one call", async () => {
-    const { getByTestId } = render(<ProfileScreen />);
+  // Test 3: Tapping "Configurar" navigates to OptimizerConfig screen
+  it("Test 3: tapping Configurar navigates to OptimizerConfig", async () => {
+    const { getByText } = render(<ProfileScreen />);
+
+    fireEvent.press(getByText("Configurar"));
 
     await waitFor(() => {
-      expect(getByTestId("slider-weight-price")).toBeTruthy();
-    });
-
-    const priceSlider = getByTestId("slider-weight-price");
-
-    // First change
-    fireEvent(priceSlider, "valueChange", 55);
-    // Should NOT call immediately
-    expect(authService.updatePreferences).not.toHaveBeenCalled();
-
-    // Second change within 500ms — resets timer
-    act(() => {
-      jest.advanceTimersByTime(300);
-    });
-    fireEvent(priceSlider, "valueChange", 60);
-
-    // Still not called after another 300ms (total 600ms from first, only 300ms from second)
-    act(() => {
-      jest.advanceTimersByTime(300);
-    });
-    expect(authService.updatePreferences).not.toHaveBeenCalled();
-
-    // Now advance to 500ms after last change
-    act(() => {
-      jest.advanceTimersByTime(200);
-    });
-
-    await waitFor(() => {
-      expect(authService.updatePreferences).toHaveBeenCalledTimes(1);
+      expect(mockNavigate).toHaveBeenCalledWith("OptimizerConfig");
     });
   });
 

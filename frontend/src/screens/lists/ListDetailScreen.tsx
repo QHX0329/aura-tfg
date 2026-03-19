@@ -184,7 +184,9 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const [collabUsername, setCollabUsername] = useState("");
   const [isLoadingCollaborators, setIsLoadingCollaborators] = useState(false);
   const [isAddingCollaborator, setIsAddingCollaborator] = useState(false);
-  const [removingCollaboratorId, setRemovingCollaboratorId] = useState<number | null>(null);
+  const [removingCollaboratorId, setRemovingCollaboratorId] = useState<
+    number | null
+  >(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
 
   const loadCollaborators = useCallback(async () => {
@@ -206,7 +208,9 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       headerRight: () => (
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("ProductsCatalog", { listId, listName })}
+            onPress={() =>
+              navigation.navigate("ProductsCatalog", { listId, listName })
+            }
             style={{ padding: 4 }}
             accessibilityLabel="Abrir catalogo de productos"
           >
@@ -235,7 +239,11 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
             style={{ padding: 4 }}
             accessibilityLabel="Optimizar ruta"
           >
-            <Ionicons name="navigate-outline" size={22} color={colors.primary} />
+            <Ionicons
+              name="navigate-outline"
+              size={22}
+              color={colors.primary}
+            />
           </TouchableOpacity>
         </View>
       ),
@@ -255,7 +263,8 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       setCollabUsername("");
       await loadCollaborators();
     } catch (err: unknown) {
-      const status = (err as { response?: { status?: number } })?.response?.status;
+      const status = (err as { response?: { status?: number } })?.response
+        ?.status;
       if (status === 404) {
         setInviteError("El usuario no existe");
       } else {
@@ -266,17 +275,20 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   }, [collabUsername, listId, loadCollaborators]);
 
-  const handleRemoveCollaborator = useCallback(async (collaborator: ListCollaborator) => {
-    setRemovingCollaboratorId(collaborator.user.id);
-    try {
-      await listService.removeCollaborator(listId, collaborator.user.id);
-      await loadCollaborators();
-    } catch {
-      Alert.alert("Error", "No se pudo eliminar el colaborador.");
-    } finally {
-      setRemovingCollaboratorId(null);
-    }
-  }, [listId, loadCollaborators]);
+  const handleRemoveCollaborator = useCallback(
+    async (collaborator: ListCollaborator) => {
+      setRemovingCollaboratorId(collaborator.user.id);
+      try {
+        await listService.removeCollaborator(listId, collaborator.user.id);
+        await loadCollaborators();
+      } catch {
+        Alert.alert("Error", "No se pudo eliminar el colaborador.");
+      } finally {
+        setRemovingCollaboratorId(null);
+      }
+    },
+    [listId, loadCollaborators],
+  );
 
   const loadList = useCallback(async () => {
     setIsLoading(true);
@@ -426,10 +438,34 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   // ─── Loading skeleton ─────────────────────────────────────────────────────
   const skeletonItems = isLoading ? (
     <View style={styles.skeletonContainer}>
-      <SkeletonBox testID="skeleton-item-0" width="100%" height={48} borderRadius={8} style={styles.skeletonRow} />
-      <SkeletonBox testID="skeleton-item-1" width="100%" height={48} borderRadius={8} style={styles.skeletonRow} />
-      <SkeletonBox testID="skeleton-item-2" width="100%" height={48} borderRadius={8} style={styles.skeletonRow} />
-      <SkeletonBox testID="skeleton-item-3" width="100%" height={48} borderRadius={8} style={styles.skeletonRow} />
+      <SkeletonBox
+        testID="skeleton-item-0"
+        width="100%"
+        height={48}
+        borderRadius={8}
+        style={styles.skeletonRow}
+      />
+      <SkeletonBox
+        testID="skeleton-item-1"
+        width="100%"
+        height={48}
+        borderRadius={8}
+        style={styles.skeletonRow}
+      />
+      <SkeletonBox
+        testID="skeleton-item-2"
+        width="100%"
+        height={48}
+        borderRadius={8}
+        style={styles.skeletonRow}
+      />
+      <SkeletonBox
+        testID="skeleton-item-3"
+        width="100%"
+        height={48}
+        borderRadius={8}
+        style={styles.skeletonRow}
+      />
     </View>
   ) : null;
 
@@ -461,7 +497,9 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       <TouchableOpacity
         testID="fab-open-product-catalog"
         style={styles.catalogFab}
-        onPress={() => navigation.navigate("ProductsCatalog", { listId, listName })}
+        onPress={() =>
+          navigation.navigate("ProductsCatalog", { listId, listName })
+        }
         activeOpacity={0.9}
         accessibilityRole="button"
         accessibilityLabel="Añadir productos desde catalogo"
@@ -482,7 +520,10 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
             <View style={styles.collabInputRow}>
               <TextInput
                 value={collabUsername}
-                onChangeText={(text) => { setCollabUsername(text); setInviteError(null); }}
+                onChangeText={(text) => {
+                  setCollabUsername(text);
+                  setInviteError(null);
+                }}
                 placeholder="Nombre de usuario"
                 placeholderTextColor={colors.textMuted}
                 autoCapitalize="none"
@@ -496,7 +537,11 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
                 {isAddingCollaborator ? (
                   <ActivityIndicator size="small" color={colors.white} />
                 ) : (
-                  <Ionicons name="person-add-outline" size={16} color={colors.white} />
+                  <Ionicons
+                    name="person-add-outline"
+                    size={16}
+                    color={colors.white}
+                  />
                 )}
               </TouchableOpacity>
             </View>
@@ -516,7 +561,9 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
                 renderItem={({ item }) => (
                   <View style={styles.collabRow}>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.collabUsername}>{item.user.username}</Text>
+                      <Text style={styles.collabUsername}>
+                        {item.user.username}
+                      </Text>
                       <Text style={styles.collabMeta}>
                         Invitado por {item.invited_by?.username ?? "sistema"}
                       </Text>
@@ -531,13 +578,19 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
                       {removingCollaboratorId === item.user.id ? (
                         <ActivityIndicator size="small" color={colors.error} />
                       ) : (
-                        <Ionicons name="trash-outline" size={16} color={colors.error} />
+                        <Ionicons
+                          name="trash-outline"
+                          size={16}
+                          color={colors.error}
+                        />
                       )}
                     </TouchableOpacity>
                   </View>
                 )}
                 ListEmptyComponent={
-                  <Text style={styles.collabEmptyText}>Aun no hay colaboradores.</Text>
+                  <Text style={styles.collabEmptyText}>
+                    Aun no hay colaboradores.
+                  </Text>
                 }
               />
             )}

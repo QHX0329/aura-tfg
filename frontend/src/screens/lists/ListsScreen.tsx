@@ -70,7 +70,10 @@ const ListCard: React.FC<ListCardProps> = ({
   const itemLabel = itemCount === 1 ? "1 producto" : `${itemCount} productos`;
   const rawDate = item.updated_at ?? item.updatedAt ?? "";
   const updatedDate = rawDate
-    ? new Date(rawDate).toLocaleDateString("es-ES", { day: "numeric", month: "short" })
+    ? new Date(rawDate).toLocaleDateString("es-ES", {
+        day: "numeric",
+        month: "short",
+      })
     : "";
 
   return (
@@ -107,7 +110,11 @@ const ListCard: React.FC<ListCardProps> = ({
           accessibilityRole="button"
           accessibilityLabel={`Guardar ${item.name} como plantilla`}
         >
-          <Ionicons name="document-text-outline" size={18} color={colors.secondary} />
+          <Ionicons
+            name="document-text-outline"
+            size={18}
+            color={colors.secondary}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -150,7 +157,8 @@ function makeRenderItem(
 
 export const ListsScreen: React.FC = () => {
   const navigation = useNavigation<ListsScreenNavigationProp>();
-  const { lists, isLoading, setLists, addList, removeList, updateList } = useListStore();
+  const { lists, isLoading, setLists, addList, removeList, updateList } =
+    useListStore();
   const [refreshing, setRefreshing] = useState(false);
 
   // ─── Modal: crear lista ──────────────────────────────────────────────────
@@ -158,11 +166,20 @@ export const ListsScreen: React.FC = () => {
   const [createLoading, setCreateLoading] = useState(false);
 
   // ─── Modal: confirmar eliminación ────────────────────────────────────────
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [renameTarget, setRenameTarget] = useState<{ id: string; name: string } | null>(null);
+  const [renameTarget, setRenameTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [renameLoading, setRenameLoading] = useState(false);
-  const [templateTarget, setTemplateTarget] = useState<{ id: string; name: string } | null>(null);
+  const [templateTarget, setTemplateTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [templateLoading, setTemplateLoading] = useState(false);
 
   // ─── Fetch on mount ──────────────────────────────────────────────────────
@@ -212,23 +229,26 @@ export const ListsScreen: React.FC = () => {
   }, [setLists]);
 
   // ─── Create list ─────────────────────────────────────────────────────────
-  const handleCreateConfirm = useCallback(async (name?: string) => {
-    if (!name?.trim()) return;
-    setCreateLoading(true);
-    try {
-      const newList = await listService.createList(name.trim());
-      addList(newList);
-      setCreateModalVisible(false);
-      navigation.navigate("ListDetail", {
-        listId: newList.id,
-        listName: newList.name,
-      });
-    } catch {
-      Alert.alert("Error", "No se pudo crear la lista.");
-    } finally {
-      setCreateLoading(false);
-    }
-  }, [addList, navigation]);
+  const handleCreateConfirm = useCallback(
+    async (name?: string) => {
+      if (!name?.trim()) return;
+      setCreateLoading(true);
+      try {
+        const newList = await listService.createList(name.trim());
+        addList(newList);
+        setCreateModalVisible(false);
+        navigation.navigate("ListDetail", {
+          listId: newList.id,
+          listName: newList.name,
+        });
+      } catch {
+        Alert.alert("Error", "No se pudo crear la lista.");
+      } finally {
+        setCreateLoading(false);
+      }
+    },
+    [addList, navigation],
+  );
 
   // ─── Delete list ─────────────────────────────────────────────────────────
   const handleDeleteRequest = useCallback((id: string, name: string) => {
@@ -253,43 +273,54 @@ export const ListsScreen: React.FC = () => {
     setRenameTarget({ id, name });
   }, []);
 
-  const handleRenameConfirm = useCallback(async (name?: string) => {
-    if (!renameTarget || !name?.trim()) {
-      return;
-    }
+  const handleRenameConfirm = useCallback(
+    async (name?: string) => {
+      if (!renameTarget || !name?.trim()) {
+        return;
+      }
 
-    setRenameLoading(true);
-    try {
-      const updated = await listService.updateList(renameTarget.id, { name: name.trim() });
-      updateList(updated);
-      setRenameTarget(null);
-    } catch {
-      Alert.alert("Error", "No se pudo renombrar la lista.");
-    } finally {
-      setRenameLoading(false);
-    }
-  }, [renameTarget, updateList]);
+      setRenameLoading(true);
+      try {
+        const updated = await listService.updateList(renameTarget.id, {
+          name: name.trim(),
+        });
+        updateList(updated);
+        setRenameTarget(null);
+      } catch {
+        Alert.alert("Error", "No se pudo renombrar la lista.");
+      } finally {
+        setRenameLoading(false);
+      }
+    },
+    [renameTarget, updateList],
+  );
 
   const handleSaveTemplateRequest = useCallback((id: string, name: string) => {
     setTemplateTarget({ id, name: `${name} (plantilla)` });
   }, []);
 
-  const handleSaveTemplateConfirm = useCallback(async (name?: string) => {
-    if (!templateTarget || !name?.trim()) {
-      return;
-    }
+  const handleSaveTemplateConfirm = useCallback(
+    async (name?: string) => {
+      if (!templateTarget || !name?.trim()) {
+        return;
+      }
 
-    setTemplateLoading(true);
-    try {
-      await listService.saveAsTemplate(templateTarget.id, name.trim());
-      setTemplateTarget(null);
-      Alert.alert("Plantilla creada", "La plantilla se ha guardado correctamente.");
-    } catch {
-      Alert.alert("Error", "No se pudo guardar la plantilla.");
-    } finally {
-      setTemplateLoading(false);
-    }
-  }, [templateTarget]);
+      setTemplateLoading(true);
+      try {
+        await listService.saveAsTemplate(templateTarget.id, name.trim());
+        setTemplateTarget(null);
+        Alert.alert(
+          "Plantilla creada",
+          "La plantilla se ha guardado correctamente.",
+        );
+      } catch {
+        Alert.alert("Error", "No se pudo guardar la plantilla.");
+      } finally {
+        setTemplateLoading(false);
+      }
+    },
+    [templateTarget],
+  );
 
   // ─── Navigate to detail ───────────────────────────────────────────────────
   const handlePressItem = useCallback(
@@ -311,7 +342,6 @@ export const ListsScreen: React.FC = () => {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container} edges={[]}>
-
         <View style={styles.header}>
           <Text style={styles.title}>Mis Listas</Text>
         </View>

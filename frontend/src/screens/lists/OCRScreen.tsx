@@ -55,12 +55,48 @@ type RouteP = RouteProp<ListsStackParamList, "OCR">;
 // ─── Mock de resultados OCR ───────────────────────────────────────────────────
 
 const MOCK_ITEMS: OCRItem[] = [
-  { id: "1", raw_text: "LECHE CENTRAL LECHERA 1L", quantity: 2, price: 1.09, confidence: 0.94 },
-  { id: "2", raw_text: "PAN BIMBO INTEGRAL 500G", quantity: 1, price: 1.65, confidence: 0.88 },
-  { id: "3", raw_text: "ACEITE OLIVA KOIPE 750ML", quantity: 1, price: 7.45, confidence: 0.91 },
-  { id: "4", raw_text: "YOGUR DANONE NATURAL X4", quantity: 2, price: 1.35, confidence: 0.72 },
-  { id: "5", raw_text: "TOMATE FRITO HIDA 390G", quantity: 1, price: 0.99, confidence: 0.85 },
-  { id: "6", raw_text: "?????????  0.49", quantity: 1, price: 0.49, confidence: 0.31 },
+  {
+    id: "1",
+    raw_text: "LECHE CENTRAL LECHERA 1L",
+    quantity: 2,
+    price: 1.09,
+    confidence: 0.94,
+  },
+  {
+    id: "2",
+    raw_text: "PAN BIMBO INTEGRAL 500G",
+    quantity: 1,
+    price: 1.65,
+    confidence: 0.88,
+  },
+  {
+    id: "3",
+    raw_text: "ACEITE OLIVA KOIPE 750ML",
+    quantity: 1,
+    price: 7.45,
+    confidence: 0.91,
+  },
+  {
+    id: "4",
+    raw_text: "YOGUR DANONE NATURAL X4",
+    quantity: 2,
+    price: 1.35,
+    confidence: 0.72,
+  },
+  {
+    id: "5",
+    raw_text: "TOMATE FRITO HIDA 390G",
+    quantity: 1,
+    price: 0.99,
+    confidence: 0.85,
+  },
+  {
+    id: "6",
+    raw_text: "?????????  0.49",
+    quantity: 1,
+    price: 0.49,
+    confidence: 0.31,
+  },
 ];
 
 function confidenceColor(c: number): string {
@@ -144,7 +180,10 @@ const CaptureTab: React.FC<CaptureTabProps> = ({ onScanned }) => {
   return (
     <View style={captureStyles.container}>
       {/* Ilustración */}
-      <Animated.View entering={FadeInDown.springify()} style={captureStyles.illustration}>
+      <Animated.View
+        entering={FadeInDown.springify()}
+        style={captureStyles.illustration}
+      >
         <View style={captureStyles.receiptIcon}>
           <Ionicons name="receipt-outline" size={64} color={colors.primary} />
         </View>
@@ -153,7 +192,10 @@ const CaptureTab: React.FC<CaptureTabProps> = ({ onScanned }) => {
         </View>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(80).springify()} style={captureStyles.textBlock}>
+      <Animated.View
+        entering={FadeInDown.delay(80).springify()}
+        style={captureStyles.textBlock}
+      >
         <Text style={captureStyles.title}>Escanea tu ticket</Text>
         <Text style={captureStyles.subtitle}>
           Fotografía un ticket de compra y BargAIn añadirá automáticamente los
@@ -161,7 +203,10 @@ const CaptureTab: React.FC<CaptureTabProps> = ({ onScanned }) => {
         </Text>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(160).springify()} style={captureStyles.actions}>
+      <Animated.View
+        entering={FadeInDown.delay(160).springify()}
+        style={captureStyles.actions}
+      >
         <TouchableOpacity
           style={captureStyles.btnPrimary}
           onPress={() => simulateScan(true)}
@@ -181,10 +226,14 @@ const CaptureTab: React.FC<CaptureTabProps> = ({ onScanned }) => {
         </TouchableOpacity>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(240).springify()} style={captureStyles.tipBox}>
+      <Animated.View
+        entering={FadeInDown.delay(240).springify()}
+        style={captureStyles.tipBox}
+      >
         <Ionicons name="bulb-outline" size={14} color={colors.accent} />
         <Text style={captureStyles.tipText}>
-          Mejor resultado: ticket sobre superficie plana, buena iluminación y sin arrugas.
+          Mejor resultado: ticket sobre superficie plana, buena iluminación y
+          sin arrugas.
         </Text>
       </Animated.View>
 
@@ -202,20 +251,29 @@ const CaptureTab: React.FC<CaptureTabProps> = ({ onScanned }) => {
 
 interface ReviewTabProps {
   items: OCRItem[];
-  onItemChange: (id: string, field: "raw_text" | "quantity" | "price", value: string | number) => void;
+  onItemChange: (
+    id: string,
+    field: "raw_text" | "quantity" | "price",
+    value: string | number,
+  ) => void;
   onRemoveItem: (id: string) => void;
   onAddToList: () => void;
 }
 
 const ReviewTab: React.FC<ReviewTabProps> = ({
-  items, onItemChange, onRemoveItem, onAddToList,
+  items,
+  onItemChange,
+  onRemoveItem,
+  onAddToList,
 }) => {
   if (items.length === 0) {
     return (
       <View style={reviewStyles.empty}>
         <Ionicons name="document-outline" size={48} color={colors.textMuted} />
         <Text style={reviewStyles.emptyTitle}>Sin resultados</Text>
-        <Text style={reviewStyles.emptyBody}>Escanea un ticket para ver los productos aquí.</Text>
+        <Text style={reviewStyles.emptyBody}>
+          Escanea un ticket para ver los productos aquí.
+        </Text>
       </View>
     );
   }
@@ -228,13 +286,20 @@ const ReviewTab: React.FC<ReviewTabProps> = ({
         contentContainerStyle={reviewStyles.list}
         renderItem={({ item, index }) => (
           <Animated.View entering={FadeInDown.delay(index * 50).springify()}>
-            <View style={[reviewStyles.card, item.confidence < 0.65 && reviewStyles.cardWarn]}>
+            <View
+              style={[
+                reviewStyles.card,
+                item.confidence < 0.65 && reviewStyles.cardWarn,
+              ]}
+            >
               {/* Header con confianza */}
               <View style={reviewStyles.cardHeader}>
                 <View
                   style={[
                     reviewStyles.confidenceBadge,
-                    { backgroundColor: confidenceColor(item.confidence) + "22" },
+                    {
+                      backgroundColor: confidenceColor(item.confidence) + "22",
+                    },
                   ]}
                 >
                   <View
@@ -249,14 +314,19 @@ const ReviewTab: React.FC<ReviewTabProps> = ({
                       { color: confidenceColor(item.confidence) },
                     ]}
                   >
-                    Confianza {confidenceLabel(item.confidence)} ({Math.round(item.confidence * 100)}%)
+                    Confianza {confidenceLabel(item.confidence)} (
+                    {Math.round(item.confidence * 100)}%)
                   </Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => onRemoveItem(item.id)}
                   style={reviewStyles.removeBtn}
                 >
-                  <Ionicons name="trash-outline" size={16} color={colors.error} />
+                  <Ionicons
+                    name="trash-outline"
+                    size={16}
+                    color={colors.error}
+                  />
                 </TouchableOpacity>
               </View>
 
@@ -276,7 +346,9 @@ const ReviewTab: React.FC<ReviewTabProps> = ({
                   <TextInput
                     style={reviewStyles.fieldInput}
                     value={String(item.quantity)}
-                    onChangeText={(v) => onItemChange(item.id, "quantity", parseInt(v) || 1)}
+                    onChangeText={(v) =>
+                      onItemChange(item.id, "quantity", parseInt(v) || 1)
+                    }
                     keyboardType="number-pad"
                     maxLength={2}
                   />
@@ -286,7 +358,9 @@ const ReviewTab: React.FC<ReviewTabProps> = ({
                   <TextInput
                     style={reviewStyles.fieldInput}
                     value={item.price ? String(item.price) : ""}
-                    onChangeText={(v) => onItemChange(item.id, "price", parseFloat(v) || 0)}
+                    onChangeText={(v) =>
+                      onItemChange(item.id, "price", parseFloat(v) || 0)
+                    }
                     keyboardType="decimal-pad"
                     maxLength={6}
                   />
@@ -354,7 +428,10 @@ export const OCRScreen: React.FC = () => {
     <SafeAreaView style={styles.safe} edges={[]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.back}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Escanear ticket</Text>
@@ -378,7 +455,9 @@ export const OCRScreen: React.FC = () => {
               size={16}
               color={activeTab === tab ? colors.primary : colors.textMuted}
             />
-            <Text style={[styles.tabText, activeTab === tab && styles.tabActive]}>
+            <Text
+              style={[styles.tabText, activeTab === tab && styles.tabActive]}
+            >
               {tab === "capture" ? "Captura" : "Revisión"}
             </Text>
             {tab === "review" && items.length > 0 && (
@@ -388,7 +467,12 @@ export const OCRScreen: React.FC = () => {
             )}
           </TouchableOpacity>
         ))}
-        <View style={[styles.indicator, { left: activeTab === "capture" ? "0%" : "50%" }]} />
+        <View
+          style={[
+            styles.indicator,
+            { left: activeTab === "capture" ? "0%" : "50%" },
+          ]}
+        />
       </View>
 
       {activeTab === "capture" ? (

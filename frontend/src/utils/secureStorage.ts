@@ -3,7 +3,9 @@ import { Platform } from "react-native";
 const memoryFallback = new Map<string, string>();
 
 function hasLocalStorage(): boolean {
-  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+  return (
+    typeof window !== "undefined" && typeof window.localStorage !== "undefined"
+  );
 }
 
 async function getNativeSecureStore() {

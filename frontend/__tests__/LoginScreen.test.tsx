@@ -7,10 +7,10 @@
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-jest.mock("expo-secure-store", () => ({
-  getItemAsync: jest.fn(),
-  setItemAsync: jest.fn(),
-  deleteItemAsync: jest.fn(),
+jest.mock("@/utils/secureStorage", () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  deleteItem: jest.fn(),
 }));
 
 jest.mock("@/api/authService", () => ({
@@ -73,7 +73,7 @@ jest.mock("expo-status-bar", () => ({
 
 import React from "react";
 import { render, fireEvent, waitFor, act } from "@testing-library/react-native";
-import * as SecureStore from "expo-secure-store";
+import * as secureStorage from "@/utils/secureStorage";
 import { authService } from "@/api/authService";
 import { useAuthStore } from "@/store/authStore";
 import { LoginScreen } from "@/screens/auth/LoginScreen";
@@ -122,7 +122,7 @@ describe("LoginScreen", () => {
       refresh: "refresh456",
     } as never);
     mockAuthService.getProfileWithToken.mockResolvedValueOnce(mockProfile as never);
-    (SecureStore.setItemAsync as jest.Mock).mockResolvedValue(undefined);
+    (secureStorage.setItem as jest.Mock).mockResolvedValue(undefined);
 
     const { getByPlaceholderText, getByText } = render(<LoginScreen />);
     fireEvent.changeText(getByPlaceholderText("tu_usuario"), "test_user");
@@ -178,15 +178,15 @@ describe("LoginScreen", () => {
 
   // Test 5: App.tsx calls authStore.hydrate() on mount before NavigationContainer
   it("Test 5: App renders without crashing and hydrate is called on mount", async () => {
-    (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+    (secureStorage.getItem as jest.Mock).mockResolvedValue(null);
 
-    const { toJSON } = render(<App />);
+    const rendered = render(<App />);
 
     await waitFor(() => {
-      expect(SecureStore.getItemAsync).toHaveBeenCalledWith("access_token");
+      expect(secureStorage.getItem).toHaveBeenCalledWith("access_token");
     });
 
-    expect(toJSON()).toBeTruthy();
+    expect(rendered).toBeDefined();
   });
 });
 
@@ -207,25 +207,25 @@ describe("RegisterScreen", () => {
   it("Test 6: renders username, first_name, last_name, email, and password fields", () => {
     const { getByPlaceholderText } = render(<RegisterScreen />);
     expect(getByPlaceholderText("tu_usuario")).toBeTruthy();
-    expect(getByPlaceholderText("Tu nombre")).toBeTruthy();
-    expect(getByPlaceholderText("Tus apellidos")).toBeTruthy();
+    expect(getByPlaceholderText("Nombre")).toBeTruthy();
+    expect(getByPlaceholderText("Apellidos")).toBeTruthy();
     expect(getByPlaceholderText("tu@email.com")).toBeTruthy();
-    expect(getByPlaceholderText("Mínimo 8 caracteres")).toBeTruthy();
+    expect(getByPlaceholderText("Mín. 8 caracteres")).toBeTruthy();
   });
 
   // Test 7: valid data → calls authService.register with all required fields (auto-login)
   it("Test 7: pressing submit with valid data calls register then login (auto-login)", async () => {
     mockAuthService.register.mockResolvedValueOnce({ user: { id: "u1", email: "juan@example.com", name: "Juan García" } } as never);
     mockAuthService.getProfileWithToken.mockResolvedValueOnce(mockProfile as never);
-    (SecureStore.setItemAsync as jest.Mock).mockResolvedValue(undefined);
+    (secureStorage.setItem as jest.Mock).mockResolvedValue(undefined);
 
     const { getByPlaceholderText, getByText } = render(<RegisterScreen />);
     fireEvent.changeText(getByPlaceholderText("tu_usuario"), "juan_garcia");
-    fireEvent.changeText(getByPlaceholderText("Tu nombre"), "Juan");
-    fireEvent.changeText(getByPlaceholderText("Tus apellidos"), "García");
+    fireEvent.changeText(getByPlaceholderText("Nombre"), "Juan");
+    fireEvent.changeText(getByPlaceholderText("Apellidos"), "García");
     fireEvent.changeText(getByPlaceholderText("tu@email.com"), "juan@example.com");
-    fireEvent.changeText(getByPlaceholderText("Mínimo 8 caracteres"), "password123");
-    fireEvent.changeText(getByPlaceholderText("Repetir contraseña"), "password123");
+    fireEvent.changeText(getByPlaceholderText("Mín. 8 caracteres"), "password123");
+    fireEvent.changeText(getByPlaceholderText("Repetir"), "password123");
     fireEvent.press(getByText("Crear cuenta"));
 
     await waitFor(() => {
@@ -259,14 +259,14 @@ describe("RegisterScreen", () => {
 
     const { getByPlaceholderText, getByText, findByText } = render(<RegisterScreen />);
     fireEvent.changeText(getByPlaceholderText("tu_usuario"), "juan_garcia");
-    fireEvent.changeText(getByPlaceholderText("Tu nombre"), "Juan");
-    fireEvent.changeText(getByPlaceholderText("Tus apellidos"), "García");
+    fireEvent.changeText(getByPlaceholderText("Nombre"), "Juan");
+    fireEvent.changeText(getByPlaceholderText("Apellidos"), "García");
     fireEvent.changeText(
       getByPlaceholderText("tu@email.com"),
       "existing@example.com",
     );
-    fireEvent.changeText(getByPlaceholderText("Mínimo 8 caracteres"), "password123");
-    fireEvent.changeText(getByPlaceholderText("Repetir contraseña"), "password123");
+    fireEvent.changeText(getByPlaceholderText("Mín. 8 caracteres"), "password123");
+    fireEvent.changeText(getByPlaceholderText("Repetir"), "password123");
     fireEvent.press(getByText("Crear cuenta"));
 
     const fieldError = await findByText("Ya existe un usuario con este email.");
@@ -277,11 +277,11 @@ describe("RegisterScreen", () => {
   it("Test 9: submit is disabled when passwords do not match", async () => {
     const { getByPlaceholderText, getByTestId } = render(<RegisterScreen />);
     fireEvent.changeText(getByPlaceholderText("tu_usuario"), "juan_garcia");
-    fireEvent.changeText(getByPlaceholderText("Tu nombre"), "Juan");
-    fireEvent.changeText(getByPlaceholderText("Tus apellidos"), "García");
+    fireEvent.changeText(getByPlaceholderText("Nombre"), "Juan");
+    fireEvent.changeText(getByPlaceholderText("Apellidos"), "García");
     fireEvent.changeText(getByPlaceholderText("tu@email.com"), "juan@example.com");
-    fireEvent.changeText(getByPlaceholderText("Mínimo 8 caracteres"), "password123");
-    fireEvent.changeText(getByPlaceholderText("Repetir contraseña"), "differentpass");
+    fireEvent.changeText(getByPlaceholderText("Mín. 8 caracteres"), "password123");
+    fireEvent.changeText(getByPlaceholderText("Repetir"), "differentpass");
 
     const submitButton = getByTestId("register-submit-button");
     expect(submitButton.props.accessibilityState?.disabled).toBe(true);

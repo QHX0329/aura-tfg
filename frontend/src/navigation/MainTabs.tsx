@@ -204,8 +204,16 @@ const TAB_ICONS: Record<
   HomeTab: { focused: "home", unfocused: "home-outline", label: "Inicio" },
   ListsTab: { focused: "list", unfocused: "list-outline", label: "Listas" },
   MapTab: { focused: "map", unfocused: "map-outline", label: "Mapa" },
-  AssistantTab: { focused: "sparkles", unfocused: "sparkles-outline", label: "Asistente" },
-  ProfileTab: { focused: "person", unfocused: "person-outline", label: "Perfil" },
+  AssistantTab: {
+    focused: "sparkles",
+    unfocused: "sparkles-outline",
+    label: "Asistente",
+  },
+  ProfileTab: {
+    focused: "person",
+    unfocused: "person-outline",
+    label: "Perfil",
+  },
 };
 
 // ── Tab Navigator ─────────────────────────────────────

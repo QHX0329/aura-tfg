@@ -60,10 +60,16 @@ function getDateLabel(isoDate: string): string {
   );
   if (diffDays < 30) return `Hace ${diffDays} días`;
 
-  return date.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return date.toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
-function groupByDay(notifications: Notification[]): SectionListData<Notification>[] {
+function groupByDay(
+  notifications: Notification[],
+): SectionListData<Notification>[] {
   const order = ["Hoy", "Ayer", "Esta semana"];
   const map = new Map<string, Notification[]>();
 
@@ -357,8 +363,14 @@ export const NotificationScreen: React.FC<NotificationScreenProps> = ({
         animationType="fade"
         onRequestClose={() => setSelectedNotif(null)}
       >
-        <Pressable style={modalStyles.overlay} onPress={() => setSelectedNotif(null)}>
-          <Pressable style={modalStyles.card} onPress={(e) => e.stopPropagation()}>
+        <Pressable
+          style={modalStyles.overlay}
+          onPress={() => setSelectedNotif(null)}
+        >
+          <Pressable
+            style={modalStyles.card}
+            onPress={(e) => e.stopPropagation()}
+          >
             <View style={modalStyles.accentBar} />
             <Text style={modalStyles.title}>{selectedNotif?.title}</Text>
             <Text style={modalStyles.body}>{selectedNotif?.body}</Text>

@@ -25,11 +25,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from "react-native-reanimated";
-import {
-  colors,
-  spacing,
-  sizes,
-} from "@/theme";
+import { colors, spacing, sizes } from "@/theme";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -106,10 +102,7 @@ const TabItem: React.FC<TabItemProps> = ({ tab, isActive, onPress }) => {
       </View>
 
       {/* Label — siempre visible (iOS HIG) */}
-      <Text
-        style={[styles.label, { color: labelColor }]}
-        numberOfLines={1}
-      >
+      <Text style={[styles.label, { color: labelColor }]} numberOfLines={1}>
         {tab.label}
       </Text>
     </TouchableOpacity>
@@ -152,7 +145,8 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Platform.OS === "ios" ? "rgba(252, 248, 240, 0.94)" : colors.surface,
+    backgroundColor:
+      Platform.OS === "ios" ? "rgba(252, 248, 240, 0.94)" : colors.surface,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
     // Sombra sutil hacia arriba (iOS)

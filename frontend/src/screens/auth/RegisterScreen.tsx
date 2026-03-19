@@ -123,7 +123,6 @@ export const RegisterScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -141,12 +140,16 @@ export const RegisterScreen: React.FC = () => {
             <Text style={[styles.title, isCompact && styles.titleCompact]}>
               Crea tu cuenta
             </Text>
-            <Text style={styles.subtitle}>Únete a BargAIn y empieza a ahorrar</Text>
+            <Text style={styles.subtitle}>
+              Únete a BargAIn y empieza a ahorrar
+            </Text>
           </View>
 
           <View style={styles.form}>
             {/* Fila usuario */}
-            <View style={[styles.inputGroup, isCompact && styles.inputGroupCompact]}>
+            <View
+              style={[styles.inputGroup, isCompact && styles.inputGroupCompact]}
+            >
               <Text style={styles.label}>Nombre de usuario</Text>
               <TextInput
                 style={[styles.input, isCompact && styles.inputCompact]}
@@ -165,7 +168,13 @@ export const RegisterScreen: React.FC = () => {
 
             {/* Nombre y Apellidos en fila */}
             <View style={[styles.row, isCompact && styles.rowCompact]}>
-              <View style={[styles.inputGroup, styles.rowItem, isCompact && styles.inputGroupCompact]}>
+              <View
+                style={[
+                  styles.inputGroup,
+                  styles.rowItem,
+                  isCompact && styles.inputGroupCompact,
+                ]}
+              >
                 <Text style={styles.label}>Nombre</Text>
                 <TextInput
                   style={[styles.input, isCompact && styles.inputCompact]}
@@ -177,10 +186,18 @@ export const RegisterScreen: React.FC = () => {
                   editable={!isLoading}
                 />
                 {fieldErrors.first_name ? (
-                  <Text style={styles.fieldError}>{fieldErrors.first_name}</Text>
+                  <Text style={styles.fieldError}>
+                    {fieldErrors.first_name}
+                  </Text>
                 ) : null}
               </View>
-              <View style={[styles.inputGroup, styles.rowItem, isCompact && styles.inputGroupCompact]}>
+              <View
+                style={[
+                  styles.inputGroup,
+                  styles.rowItem,
+                  isCompact && styles.inputGroupCompact,
+                ]}
+              >
                 <Text style={styles.label}>Apellidos</Text>
                 <TextInput
                   style={[styles.input, isCompact && styles.inputCompact]}
@@ -198,7 +215,9 @@ export const RegisterScreen: React.FC = () => {
             </View>
 
             {/* Email */}
-            <View style={[styles.inputGroup, isCompact && styles.inputGroupCompact]}>
+            <View
+              style={[styles.inputGroup, isCompact && styles.inputGroupCompact]}
+            >
               <Text style={styles.label}>Email</Text>
               <TextInput
                 style={[styles.input, isCompact && styles.inputCompact]}
@@ -218,7 +237,13 @@ export const RegisterScreen: React.FC = () => {
 
             {/* Contraseñas en fila */}
             <View style={[styles.row, isCompact && styles.rowCompact]}>
-              <View style={[styles.inputGroup, styles.rowItem, isCompact && styles.inputGroupCompact]}>
+              <View
+                style={[
+                  styles.inputGroup,
+                  styles.rowItem,
+                  isCompact && styles.inputGroupCompact,
+                ]}
+              >
                 <Text style={styles.label}>Contraseña</Text>
                 <TextInput
                   style={[styles.input, isCompact && styles.inputCompact]}
@@ -233,10 +258,20 @@ export const RegisterScreen: React.FC = () => {
                   <Text style={styles.fieldError}>{fieldErrors.password}</Text>
                 ) : null}
               </View>
-              <View style={[styles.inputGroup, styles.rowItem, isCompact && styles.inputGroupCompact]}>
+              <View
+                style={[
+                  styles.inputGroup,
+                  styles.rowItem,
+                  isCompact && styles.inputGroupCompact,
+                ]}
+              >
                 <Text style={styles.label}>Repetir</Text>
                 <TextInput
-                  style={[styles.input, isCompact && styles.inputCompact, passwordMismatch && styles.inputError]}
+                  style={[
+                    styles.input,
+                    isCompact && styles.inputCompact,
+                    passwordMismatch && styles.inputError,
+                  ]}
                   placeholder="Repetir"
                   placeholderTextColor={colors.textMuted}
                   value={confirmPassword}
@@ -256,7 +291,10 @@ export const RegisterScreen: React.FC = () => {
 
             <TouchableOpacity
               testID="register-submit-button"
-              style={[styles.registerButton, isSubmitDisabled && styles.registerButtonDisabled]}
+              style={[
+                styles.registerButton,
+                isSubmitDisabled && styles.registerButtonDisabled,
+              ]}
               onPress={handleRegister}
               disabled={isSubmitDisabled}
               accessibilityState={{ disabled: isSubmitDisabled }}

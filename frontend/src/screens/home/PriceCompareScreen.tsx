@@ -59,9 +59,12 @@ function bestPrice(item: PriceCompare): number {
 
 function sourceLabel(source: PriceCompare["source"]): string {
   return (
-    { scraping: "Scraping", crowdsourcing: "Comunidad", api: "Oficial", business: "PYME" }[
-      source
-    ] ?? source
+    {
+      scraping: "Scraping",
+      crowdsourcing: "Comunidad",
+      api: "Oficial",
+      business: "PYME",
+    }[source] ?? source
   );
 }
 
@@ -140,7 +143,10 @@ const StoreRow: React.FC<StoreRowProps> = ({ item, index, isBest }) => {
             ]}
           >
             <Text
-              style={[rowStyles.sourceText, { color: sourceColor(item.source) }]}
+              style={[
+                rowStyles.sourceText,
+                { color: sourceColor(item.source) },
+              ]}
             >
               {sourceLabel(item.source)}
             </Text>
@@ -148,11 +154,7 @@ const StoreRow: React.FC<StoreRowProps> = ({ item, index, isBest }) => {
 
           {item.is_stale && (
             <View style={rowStyles.staleBadge}>
-              <Ionicons
-                name="time-outline"
-                size={10}
-                color={colors.warning}
-              />
+              <Ionicons name="time-outline" size={10} color={colors.warning} />
               <Text style={rowStyles.staleText}>Precio desactualizado</Text>
             </View>
           )}
@@ -287,9 +289,7 @@ export const PriceCompareScreen: React.FC = () => {
           coords?.lng,
         );
         // Ordenar por precio efectivo ascendente
-        const sorted = [...data].sort(
-          (a, b) => bestPrice(a) - bestPrice(b),
-        );
+        const sorted = [...data].sort((a, b) => bestPrice(a) - bestPrice(b));
         setPrices(sorted);
       } catch {
         setError("No se pudieron cargar los precios. Comprueba tu conexión.");
@@ -339,7 +339,10 @@ export const PriceCompareScreen: React.FC = () => {
     <SafeAreaView style={styles.safe} edges={[]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.back}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
@@ -357,7 +360,11 @@ export const PriceCompareScreen: React.FC = () => {
           }}
           style={styles.alertBtn}
         >
-          <Ionicons name="notifications-outline" size={22} color={colors.primary} />
+          <Ionicons
+            name="notifications-outline"
+            size={22}
+            color={colors.primary}
+          />
         </TouchableOpacity>
       </View>
 
@@ -392,7 +399,9 @@ export const PriceCompareScreen: React.FC = () => {
       {product && (
         <View style={styles.productInfoCard}>
           <Text style={styles.productInfoTitle}>Información del producto</Text>
-          <Text style={styles.productInfoLine}>Categoría: {product.category}</Text>
+          <Text style={styles.productInfoLine}>
+            Categoría: {product.category}
+          </Text>
           <Text style={styles.productInfoLine}>
             Marca: {product.brand?.trim() ? product.brand : "Sin marca"}
           </Text>
@@ -413,9 +422,16 @@ export const PriceCompareScreen: React.FC = () => {
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Ionicons name="cloud-offline-outline" size={48} color={colors.textMuted} />
+          <Ionicons
+            name="cloud-offline-outline"
+            size={48}
+            color={colors.textMuted}
+          />
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => fetchPrices()}>
+          <TouchableOpacity
+            style={styles.retryBtn}
+            onPress={() => fetchPrices()}
+          >
             <Text style={styles.retryText}>Reintentar</Text>
           </TouchableOpacity>
         </View>

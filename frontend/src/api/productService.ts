@@ -29,12 +29,13 @@ function normalizeProduct(raw: RawProduct): Product {
   const category =
     typeof raw.category === "string"
       ? raw.category
-      : raw.category?.name ?? "Sin categoría";
+      : (raw.category?.name ?? "Sin categoría");
 
   return {
     id: String(raw.id),
     name: raw.name,
-    normalizedName: raw.normalizedName ?? raw.normalized_name ?? raw.name.toLowerCase(),
+    normalizedName:
+      raw.normalizedName ?? raw.normalized_name ?? raw.name.toLowerCase(),
     brand: raw.brand ?? undefined,
     category,
     barcode: raw.barcode ?? undefined,
@@ -70,18 +71,28 @@ export const productService = {
     apiClient.get<never, ProductCategory[]>("/products/categories/"),
 
   /** GET /products/?q=<q>&category=<id>&brand=<brand>&page=<n> */
-  list: async ({ q, category, brand, page = 1 }: ProductListParams): Promise<ProductSearchResult> => {
-    const payload = await apiClient.get<never, { count: number; next: string | null; previous: string | null; results: RawProduct[] }>(
-      "/products/",
+  list: async ({
+    q,
+    category,
+    brand,
+    page = 1,
+  }: ProductListParams): Promise<ProductSearchResult> => {
+    const payload = await apiClient.get<
+      never,
       {
-        params: {
-          ...(q ? { q } : {}),
-          ...(category ? { category } : {}),
-          ...(brand ? { brand } : {}),
-          page,
-        },
+        count: number;
+        next: string | null;
+        previous: string | null;
+        results: RawProduct[];
+      }
+    >("/products/", {
+      params: {
+        ...(q ? { q } : {}),
+        ...(category ? { category } : {}),
+        ...(brand ? { brand } : {}),
+        page,
       },
-    );
+    });
 
     return {
       ...payload,
@@ -93,7 +104,12 @@ export const productService = {
   search: async (query: string, page = 1): Promise<ProductSearchResult> => {
     const payload = await apiClient.get<
       never,
-      { count: number; next: string | null; previous: string | null; results: RawProduct[] }
+      {
+        count: number;
+        next: string | null;
+        previous: string | null;
+        results: RawProduct[];
+      }
     >("/products/", {
       params: { ...(query ? { q: query } : {}), page },
     });
@@ -106,9 +122,12 @@ export const productService = {
 
   /** GET /products/autocomplete/?q={q} — sugerencias de autocompletado */
   autocomplete: async (q: string): Promise<Product[]> => {
-    const payload = await apiClient.get<never, RawProduct[]>("/products/autocomplete/", {
-      params: { q },
-    });
+    const payload = await apiClient.get<never, RawProduct[]>(
+      "/products/autocomplete/",
+      {
+        params: { q },
+      },
+    );
     return payload.map(normalizeProduct);
   },
 };

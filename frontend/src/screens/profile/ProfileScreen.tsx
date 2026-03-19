@@ -23,7 +23,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -153,9 +156,7 @@ export const ProfileScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Weights state (local — debounced to API)
-  const [weightPrice, setWeightPrice] = useState(
-    profile?.weightPrice ?? 50,
-  );
+  const [weightPrice, setWeightPrice] = useState(profile?.weightPrice ?? 50);
   const [weightDistance, setWeightDistance] = useState(
     profile?.weightDistance ?? 30,
   );
@@ -204,18 +205,17 @@ export const ProfileScreen: React.FC = () => {
 
   // ── Handlers de toggles de notificación ─────────────────────────────────
 
-  const handleTogglePushMaster = useCallback(
-    async (value: boolean) => {
-      setPushEnabled(value);
-      try {
-        await authService.updatePreferences({ push_notifications_enabled: value });
-      } catch {
-        // Revertir en caso de error
-        setPushEnabled(!value);
-      }
-    },
-    [],
-  );
+  const handleTogglePushMaster = useCallback(async (value: boolean) => {
+    setPushEnabled(value);
+    try {
+      await authService.updatePreferences({
+        push_notifications_enabled: value,
+      });
+    } catch {
+      // Revertir en caso de error
+      setPushEnabled(!value);
+    }
+  }, []);
 
   const handleTogglePriceAlerts = useCallback(async (value: boolean) => {
     setNotifyPriceAlerts(value);
@@ -238,7 +238,9 @@ export const ProfileScreen: React.FC = () => {
   const handleToggleSharedListChanges = useCallback(async (value: boolean) => {
     setNotifySharedListChanges(value);
     try {
-      await authService.updatePreferences({ notify_shared_list_changes: value });
+      await authService.updatePreferences({
+        notify_shared_list_changes: value,
+      });
     } catch {
       setNotifySharedListChanges(!value);
     }
@@ -283,7 +285,6 @@ export const ProfileScreen: React.FC = () => {
   const userEmail = user?.email ?? profile?.email ?? "";
   const userInitial = userName.charAt(0).toUpperCase();
 
-
   // ── Renderizado ──────────────────────────────────────────────────────────
 
   if (isLoading) {
@@ -296,10 +297,30 @@ export const ProfileScreen: React.FC = () => {
           style={styles.scroll}
           contentContainerStyle={styles.content}
         >
-          <SkeletonBox width="100%" height={120} borderRadius={16} style={styles.skeletonSection} />
-          <SkeletonBox width="100%" height={200} borderRadius={16} style={styles.skeletonSection} />
-          <SkeletonBox width="100%" height={160} borderRadius={16} style={styles.skeletonSection} />
-          <SkeletonBox width="100%" height={140} borderRadius={16} style={styles.skeletonSection} />
+          <SkeletonBox
+            width="100%"
+            height={120}
+            borderRadius={16}
+            style={styles.skeletonSection}
+          />
+          <SkeletonBox
+            width="100%"
+            height={200}
+            borderRadius={16}
+            style={styles.skeletonSection}
+          />
+          <SkeletonBox
+            width="100%"
+            height={160}
+            borderRadius={16}
+            style={styles.skeletonSection}
+          />
+          <SkeletonBox
+            width="100%"
+            height={140}
+            borderRadius={16}
+            style={styles.skeletonSection}
+          />
         </ScrollView>
       </SafeAreaView>
     );
@@ -312,13 +333,19 @@ export const ProfileScreen: React.FC = () => {
       </View>
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: spacing.xxl + insets.bottom }]}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: spacing.xxl + insets.bottom },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {/* ── Sección 1: Información del usuario ─────────────────────── */}
         <View style={[sectionStyles.card, styles.userCard]}>
           {profile?.avatar ? (
-            <Image source={{ uri: profile.avatar }} style={styles.avatarImage} />
+            <Image
+              source={{ uri: profile.avatar }}
+              style={styles.avatarImage}
+            />
           ) : (
             <View style={styles.avatarCircle}>
               <Text style={styles.avatarInitial}>{userInitial}</Text>
@@ -338,7 +365,9 @@ export const ProfileScreen: React.FC = () => {
             accessibilityLabel="Modificar información del usuario"
           >
             <Ionicons name="create-outline" size={14} color={colors.primary} />
-            <Text style={styles.editProfileButtonText}>Modificar información</Text>
+            <Text style={styles.editProfileButtonText}>
+              Modificar información
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -364,10 +393,20 @@ export const ProfileScreen: React.FC = () => {
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
               onPress={() => navigation.navigate("OptimizerConfig")}
             >
-              <Text style={{ fontFamily: "SourceSans3_400Regular", fontSize: 13, color: colors.primary }}>
+              <Text
+                style={{
+                  fontFamily: "SourceSans3_400Regular",
+                  fontSize: 13,
+                  color: colors.primary,
+                }}
+              >
                 Configurar
               </Text>
-              <Ionicons name="chevron-forward" size={14} color={colors.primary} />
+              <Ionicons
+                name="chevron-forward"
+                size={14}
+                color={colors.primary}
+              />
             </TouchableOpacity>
           </Row>
         </Section>
@@ -392,7 +431,9 @@ export const ProfileScreen: React.FC = () => {
               disabled={!pushEnabled}
               style={!pushEnabled ? styles.toggleDisabled : undefined}
               trackColor={{ false: colors.border, true: colors.primary + "80" }}
-              thumbColor={notifyPriceAlerts ? colors.primary : colors.textDisabled}
+              thumbColor={
+                notifyPriceAlerts ? colors.primary : colors.textDisabled
+              }
             />
           </Row>
 
@@ -404,7 +445,9 @@ export const ProfileScreen: React.FC = () => {
               disabled={!pushEnabled}
               style={!pushEnabled ? styles.toggleDisabled : undefined}
               trackColor={{ false: colors.border, true: colors.primary + "80" }}
-              thumbColor={notifyNewPromos ? colors.primary : colors.textDisabled}
+              thumbColor={
+                notifyNewPromos ? colors.primary : colors.textDisabled
+              }
             />
           </Row>
 
@@ -416,7 +459,9 @@ export const ProfileScreen: React.FC = () => {
               disabled={!pushEnabled}
               style={!pushEnabled ? styles.toggleDisabled : undefined}
               trackColor={{ false: colors.border, true: colors.primary + "80" }}
-              thumbColor={notifySharedListChanges ? colors.primary : colors.textDisabled}
+              thumbColor={
+                notifySharedListChanges ? colors.primary : colors.textDisabled
+              }
             />
           </Row>
         </Section>

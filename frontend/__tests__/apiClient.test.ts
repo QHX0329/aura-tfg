@@ -5,10 +5,10 @@
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
-jest.mock("expo-secure-store", () => ({
-  getItemAsync: jest.fn(),
-  setItemAsync: jest.fn(),
-  deleteItemAsync: jest.fn(),
+jest.mock("../src/utils/secureStorage", () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  deleteItem: jest.fn(),
 }));
 
 // We mock axios so that apiClient module-level setup doesn't fail
@@ -31,7 +31,7 @@ jest.mock("axios", () => {
 
 // ─── Imports (after mocks) ────────────────────────────────────────────────────
 
-import * as SecureStore from "expo-secure-store";
+import * as secureStorage from "../src/utils/secureStorage";
 import { useAuthStore } from "../src/store/authStore";
 
 // ─── authStore tests ─────────────────────────────────────────────────────────
@@ -51,7 +51,7 @@ describe("authStore", () => {
   // Test 5: hydrate reads tokens from SecureStore
   it("hydrate() reads access_token and refresh_token from SecureStore and sets state", async () => {
     const fakeUser = { id: "u1", email: "test@example.com", name: "Test User" };
-    (SecureStore.getItemAsync as jest.Mock).mockImplementation((key: string) => {
+    (secureStorage.getItem as jest.Mock).mockImplementation((key: string) => {
       if (key === "access_token") return Promise.resolve("access123");
       if (key === "refresh_token") return Promise.resolve("refresh456");
       if (key === "auth_user") return Promise.resolve(JSON.stringify(fakeUser));
@@ -69,7 +69,7 @@ describe("authStore", () => {
 
   // Test 6: login writes both tokens to SecureStore
   it("login() writes tokens to SecureStore and sets isAuthenticated=true", async () => {
-    (SecureStore.setItemAsync as jest.Mock).mockResolvedValue(undefined);
+    (secureStorage.setItem as jest.Mock).mockResolvedValue(undefined);
 
     const user = { id: "u2", email: "login@example.com", name: "Login User" };
     await useAuthStore.getState().login("tok123", "ref789", user);
@@ -79,9 +79,9 @@ describe("authStore", () => {
     expect(state.token).toBe("tok123");
     expect(state.refreshToken).toBe("ref789");
 
-    expect(SecureStore.setItemAsync).toHaveBeenCalledWith("access_token", "tok123");
-    expect(SecureStore.setItemAsync).toHaveBeenCalledWith("refresh_token", "ref789");
-    expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
+    expect(secureStorage.setItem).toHaveBeenCalledWith("access_token", "tok123");
+    expect(secureStorage.setItem).toHaveBeenCalledWith("refresh_token", "ref789");
+    expect(secureStorage.setItem).toHaveBeenCalledWith(
       "auth_user",
       JSON.stringify(user),
     );
@@ -89,7 +89,7 @@ describe("authStore", () => {
 
   // Test 7: logout clears SecureStore entries and resets state
   it("logout() clears SecureStore entries and resets state", async () => {
-    (SecureStore.deleteItemAsync as jest.Mock).mockResolvedValue(undefined);
+    (secureStorage.deleteItem as jest.Mock).mockResolvedValue(undefined);
 
     // Set up some state first
     useAuthStore.setState({
@@ -107,9 +107,9 @@ describe("authStore", () => {
     expect(state.refreshToken).toBeNull();
     expect(state.user).toBeNull();
 
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("access_token");
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("refresh_token");
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("auth_user");
+    expect(secureStorage.deleteItem).toHaveBeenCalledWith("access_token");
+    expect(secureStorage.deleteItem).toHaveBeenCalledWith("refresh_token");
+    expect(secureStorage.deleteItem).toHaveBeenCalledWith("auth_user");
   });
 
   // authStore has refreshToken field

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -7,23 +7,30 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { borderRadius, colors, fontFamilies, fontSize, shadows, spacing } from '@/theme';
-import type { MapStackParamList } from '@/navigation/types';
-import { storeService } from '@/api/storeService';
-import { productService } from '@/api/productService';
-import { priceService } from '@/api/priceService';
-import type { PriceCompare, Product, Store } from '@/types/domain';
+import {
+  borderRadius,
+  colors,
+  fontFamilies,
+  fontSize,
+  shadows,
+  spacing,
+} from "@/theme";
+import type { MapStackParamList } from "@/navigation/types";
+import { storeService } from "@/api/storeService";
+import { productService } from "@/api/productService";
+import { priceService } from "@/api/priceService";
+import type { PriceCompare, Product, Store } from "@/types/domain";
 
-type Props = NativeStackScreenProps<MapStackParamList, 'StoreProfile'>;
+type Props = NativeStackScreenProps<MapStackParamList, "StoreProfile">;
 
 interface StoreProductOffer {
   product: Product;
   price: number;
-  source: PriceCompare['source'];
+  source: PriceCompare["source"];
   distanceKm: number | null;
 }
 
@@ -38,15 +45,15 @@ function effectiveRowPrice(row: PriceCompare): number {
 
 function chainLabel(store: Store): string {
   const map: Record<string, string> = {
-    mercadona: 'Mercadona',
-    lidl: 'Lidl',
-    aldi: 'Aldi',
-    carrefour: 'Carrefour',
-    dia: 'Dia',
-    alcampo: 'Alcampo',
-    local: 'Comercio local',
+    mercadona: "Mercadona",
+    lidl: "Lidl",
+    aldi: "Aldi",
+    carrefour: "Carrefour",
+    dia: "Dia",
+    alcampo: "Alcampo",
+    local: "Comercio local",
   };
-  return map[store.chain] ?? 'Tienda';
+  return map[store.chain] ?? "Tienda";
 }
 
 export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
@@ -61,7 +68,12 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
   const loadStoreProfile = useCallback(async () => {
     setIsLoading(true);
     try {
-      const detail = await storeService.getDetail(storeId, userLat, userLng, 20);
+      const detail = await storeService.getDetail(
+        storeId,
+        userLat,
+        userLng,
+        20,
+      );
       setStore(detail);
 
       const productCandidates: Product[] = [];
@@ -77,8 +89,15 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
 
       for (const product of scanProducts) {
         try {
-          const comparison = await priceService.getPriceComparison(product.id, userLat, userLng, 20);
-          const row = comparison.find((entry) => String(entry.store_id) === String(storeId));
+          const comparison = await priceService.getPriceComparison(
+            product.id,
+            userLat,
+            userLng,
+            20,
+          );
+          const row = comparison.find(
+            (entry) => String(entry.store_id) === String(storeId),
+          );
           if (!row) {
             continue;
           }
@@ -135,11 +154,11 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const openingHoursText = useMemo(() => {
     if (!store?.openingHours || Object.keys(store.openingHours).length === 0) {
-      return 'Horario no disponible';
+      return "Horario no disponible";
     }
     return Object.entries(store.openingHours)
       .map(([day, hours]) => `${day}: ${String(hours)}`)
-      .join('\n');
+      .join("\n");
   }, [store?.openingHours]);
 
   if (isLoading) {
@@ -154,7 +173,11 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
   if (!store) {
     return (
       <View style={styles.centered}>
-        <Ionicons name="storefront-outline" size={36} color={colors.textMuted} />
+        <Ionicons
+          name="storefront-outline"
+          size={36}
+          color={colors.textMuted}
+        />
         <Text style={styles.emptyText}>No se pudo cargar la tienda.</Text>
       </View>
     );
@@ -165,13 +188,19 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
       <FlatList
         data={products}
         keyExtractor={(item) => item.product.id}
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        }
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <View style={[styles.headerCard, shadows.card]}>
             <TouchableOpacity
               style={styles.backButton}
-              onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Map')}
+              onPress={() =>
+                navigation.canGoBack()
+                  ? navigation.goBack()
+                  : navigation.navigate("Map")
+              }
               accessibilityRole="button"
               accessibilityLabel="Volver"
             >
@@ -180,7 +209,9 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
             </TouchableOpacity>
             <View style={styles.headerTopRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.storeName}>{store.name ?? storeName ?? 'Tienda'}</Text>
+                <Text style={styles.storeName}>
+                  {store.name ?? storeName ?? "Tienda"}
+                </Text>
                 <Text style={styles.chainText}>{chainLabel(store)}</Text>
               </View>
 
@@ -198,7 +229,7 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
                   <ActivityIndicator size="small" color={colors.white} />
                 ) : (
                   <Ionicons
-                    name={store.isFavorite ? 'heart' : 'heart-outline'}
+                    name={store.isFavorite ? "heart" : "heart-outline"}
                     size={16}
                     color={colors.white}
                   />
@@ -206,9 +237,14 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.addressText}>{store.address || 'Dirección no disponible'}</Text>
+            <Text style={styles.addressText}>
+              {store.address || "Dirección no disponible"}
+            </Text>
             <Text style={styles.distanceText}>
-              Distancia: {store.distanceKm ? `${store.distanceKm.toFixed(1)} km` : 'No disponible'}
+              Distancia:{" "}
+              {store.distanceKm
+                ? `${store.distanceKm.toFixed(1)} km`
+                : "No disponible"}
             </Text>
 
             <View style={styles.hoursBox}>
@@ -216,12 +252,18 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
               <Text style={styles.hoursText}>{openingHoursText}</Text>
             </View>
 
-            <Text style={styles.productsTitle}>Productos detectados en esta tienda</Text>
+            <Text style={styles.productsTitle}>
+              Productos detectados en esta tienda
+            </Text>
           </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyProducts}>
-            <Ionicons name="cube-outline" size={24} color={colors.textDisabled} />
+            <Ionicons
+              name="cube-outline"
+              size={24}
+              color={colors.textDisabled}
+            />
             <Text style={styles.emptyProductsText}>
               No se encontraron productos con precio para esta tienda.
             </Text>
@@ -235,7 +277,7 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
               </Text>
               <Text style={styles.productMeta} numberOfLines={1}>
                 {item.product.category}
-                {item.product.brand ? ` · ${item.product.brand}` : ''}
+                {item.product.brand ? ` · ${item.product.brand}` : ""}
               </Text>
             </View>
             <View style={styles.productPriceWrap}>
@@ -256,8 +298,8 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
     backgroundColor: colors.background,
     paddingHorizontal: spacing.lg,
@@ -277,8 +319,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 2,
     marginBottom: spacing.sm,
   },
@@ -296,8 +338,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   headerTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
   },
   storeName: {
@@ -316,8 +358,8 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     backgroundColor: colors.textMuted,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   favoriteButtonActive: {
     backgroundColor: colors.error,
@@ -359,7 +401,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   emptyProducts: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.xs,
     paddingVertical: spacing.lg,
   },
@@ -367,7 +409,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.body,
     fontSize: fontSize.sm,
     color: colors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
   },
   productRow: {
     backgroundColor: colors.surface,
@@ -376,8 +418,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.sm,
     marginBottom: spacing.xs,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   productInfo: {
     flex: 1,
@@ -395,7 +437,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   productPriceWrap: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   productPrice: {
     fontFamily: fontFamilies.bodySemiBold,

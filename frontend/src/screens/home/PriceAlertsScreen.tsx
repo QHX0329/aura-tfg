@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -10,23 +10,30 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+} from "react-native";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useFocusEffect } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
-import { colors, spacing, fontFamilies, fontSize, borderRadius, shadows } from '@/theme';
-import { SkeletonBox } from '@/components/ui/SkeletonBox';
-import { priceService } from '@/api/priceService';
-import { productService } from '@/api/productService';
-import type { HomeStackParamList } from '@/navigation/types';
-import type { PriceAlert, Product } from '@/types/domain';
-import { blurActiveElementOnWeb } from '@/utils/webA11y';
+import {
+  colors,
+  spacing,
+  fontFamilies,
+  fontSize,
+  borderRadius,
+  shadows,
+} from "@/theme";
+import { SkeletonBox } from "@/components/ui/SkeletonBox";
+import { priceService } from "@/api/priceService";
+import { productService } from "@/api/productService";
+import type { HomeStackParamList } from "@/navigation/types";
+import type { PriceAlert, Product } from "@/types/domain";
+import { blurActiveElementOnWeb } from "@/utils/webA11y";
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'PriceAlerts'>;
+type Props = NativeStackScreenProps<HomeStackParamList, "PriceAlerts">;
 
 function getAlertProduct(alert: PriceAlert): Product | null {
-  if (typeof alert.product === 'object' && alert.product !== null) {
+  if (typeof alert.product === "object" && alert.product !== null) {
     return alert.product as Product;
   }
   return null;
@@ -68,7 +75,7 @@ const PriceAlertRow: React.FC<{
           Objetivo: €{Number(alert.target_price ?? 0).toFixed(2)}
           {alert.current_price != null
             ? ` · Actual: €${Number(alert.current_price).toFixed(2)}`
-            : ''}
+            : ""}
         </Text>
       </View>
 
@@ -82,13 +89,13 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [productQuery, setProductQuery] = useState('');
+  const [productQuery, setProductQuery] = useState("");
   const [productSuggestions, setProductSuggestions] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [targetPrice, setTargetPrice] = useState('');
+  const [targetPrice, setTargetPrice] = useState("");
   const [isCreatingAlert, setIsCreatingAlert] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<PriceAlert | null>(null);
-  const [editTargetPrice, setEditTargetPrice] = useState('');
+  const [editTargetPrice, setEditTargetPrice] = useState("");
   const [isUpdatingAlert, setIsUpdatingAlert] = useState(false);
   const [isDeletingAlert, setIsDeletingAlert] = useState(false);
 
@@ -145,14 +152,11 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [productQuery]);
 
-  const handleOpenAlertModal = useCallback(
-    (alert: PriceAlert) => {
-      blurActiveElementOnWeb();
-      setSelectedAlert(alert);
-      setEditTargetPrice(Number(alert.target_price ?? 0).toFixed(2));
-    },
-    [],
-  );
+  const handleOpenAlertModal = useCallback((alert: PriceAlert) => {
+    blurActiveElementOnWeb();
+    setSelectedAlert(alert);
+    setEditTargetPrice(Number(alert.target_price ?? 0).toFixed(2));
+  }, []);
 
   const handleOpenCompare = useCallback(() => {
     if (!selectedAlert) {
@@ -164,7 +168,7 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
     const productName = getAlertProductName(selectedAlert);
 
     setSelectedAlert(null);
-    navigation.navigate('PriceCompare', {
+    navigation.navigate("PriceCompare", {
       productId: String(productId),
       productName,
     });
@@ -175,16 +179,19 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    const parsedPrice = parseFloat(editTargetPrice.replace(',', '.'));
+    const parsedPrice = parseFloat(editTargetPrice.replace(",", "."));
     if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
       return;
     }
 
     setIsUpdatingAlert(true);
     try {
-      const updated = await priceService.updatePriceAlert(String(selectedAlert.id), {
-        target_price: parsedPrice.toFixed(2),
-      });
+      const updated = await priceService.updatePriceAlert(
+        String(selectedAlert.id),
+        {
+          target_price: parsedPrice.toFixed(2),
+        },
+      );
       setAlerts((prev) =>
         prev.map((alert) =>
           String(alert.id) === String(updated.id) ? updated : alert,
@@ -214,14 +221,14 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
   }, [selectedAlert]);
 
   const resetCreateForm = useCallback(() => {
-    setProductQuery('');
+    setProductQuery("");
     setProductSuggestions([]);
     setSelectedProduct(null);
-    setTargetPrice('');
+    setTargetPrice("");
   }, []);
 
   const handleCreateAlert = useCallback(async () => {
-    const parsedPrice = parseFloat(targetPrice.replace(',', '.'));
+    const parsedPrice = parseFloat(targetPrice.replace(",", "."));
     if (!selectedProduct || Number.isNaN(parsedPrice) || parsedPrice <= 0) {
       return;
     }
@@ -245,9 +252,24 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
     return (
       <View style={styles.container}>
         <View style={styles.loadingWrap}>
-          <SkeletonBox width="100%" height={64} borderRadius={12} style={styles.skeleton} />
-          <SkeletonBox width="100%" height={64} borderRadius={12} style={styles.skeleton} />
-          <SkeletonBox width="100%" height={64} borderRadius={12} style={styles.skeleton} />
+          <SkeletonBox
+            width="100%"
+            height={64}
+            borderRadius={12}
+            style={styles.skeleton}
+          />
+          <SkeletonBox
+            width="100%"
+            height={64}
+            borderRadius={12}
+            style={styles.skeleton}
+          />
+          <SkeletonBox
+            width="100%"
+            height={64}
+            borderRadius={12}
+            style={styles.skeleton}
+          />
         </View>
       </View>
     );
@@ -258,14 +280,26 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
       <FlatList
         data={activeAlerts}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={activeAlerts.length === 0 ? styles.emptyContainer : styles.listContent}
-        renderItem={({ item }) => <PriceAlertRow alert={item} onPress={handleOpenAlertModal} />}
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
+        contentContainerStyle={
+          activeAlerts.length === 0 ? styles.emptyContainer : styles.listContent
+        }
+        renderItem={({ item }) => (
+          <PriceAlertRow alert={item} onPress={handleOpenAlertModal} />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Ionicons name="pricetag-outline" size={28} color={colors.textDisabled} />
+            <Ionicons
+              name="pricetag-outline"
+              size={28}
+              color={colors.textDisabled}
+            />
             <Text style={styles.emptyTitle}>No tienes alertas activas</Text>
-            <Text style={styles.emptyText}>Crea alertas desde la comparación de precios</Text>
+            <Text style={styles.emptyText}>
+              Crea alertas desde la comparación de precios
+            </Text>
           </View>
         }
       />
@@ -369,20 +403,28 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setSelectedAlert(null)}
       >
-        <Pressable style={styles.modalOverlay} onPress={() => setSelectedAlert(null)}>
-          <Pressable style={styles.modalCard} onPress={(event) => event.stopPropagation()}>
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setSelectedAlert(null)}
+        >
+          <Pressable
+            style={styles.modalCard}
+            onPress={(event) => event.stopPropagation()}
+          >
             <Text style={styles.modalTitle}>Detalle de alerta</Text>
 
             {selectedAlert ? (
               <>
                 <Text style={styles.detailLabel}>Producto</Text>
-                <Text style={styles.detailValue}>{getAlertProductName(selectedAlert)}</Text>
+                <Text style={styles.detailValue}>
+                  {getAlertProductName(selectedAlert)}
+                </Text>
 
                 <Text style={styles.detailLabel}>Precio actual</Text>
                 <Text style={styles.detailValue}>
                   {selectedAlert.current_price != null
                     ? `€${Number(selectedAlert.current_price).toFixed(2)}`
-                    : 'Sin precio disponible'}
+                    : "Sin precio disponible"}
                 </Text>
 
                 <Text style={styles.detailLabel}>Precio objetivo</Text>
@@ -421,8 +463,13 @@ export const PriceAlertsScreen: React.FC<Props> = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.modalSecondaryLink} onPress={handleOpenCompare}>
-                  <Text style={styles.modalSecondaryLinkText}>Ver comparación de precios</Text>
+                <TouchableOpacity
+                  style={styles.modalSecondaryLink}
+                  onPress={handleOpenCompare}
+                >
+                  <Text style={styles.modalSecondaryLinkText}>
+                    Ver comparación de precios
+                  </Text>
                 </TouchableOpacity>
               </>
             ) : null}
@@ -455,8 +502,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.sm,
     marginBottom: spacing.xs,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
   },
   rowIcon: {
@@ -464,8 +511,8 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     backgroundColor: colors.accentTint,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   rowBody: {
     flex: 1,
@@ -483,10 +530,10 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   emptyState: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: spacing.xl,
     gap: spacing.xs,
   },
@@ -499,18 +546,18 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.body,
     fontSize: fontSize.sm,
     color: colors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     right: spacing.xl,
     bottom: spacing.xxl,
     width: 56,
     height: 56,
     borderRadius: 28,
     backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     elevation: 6,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 3 },
@@ -519,8 +566,8 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    justifyContent: 'center',
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
     paddingHorizontal: spacing.lg,
   },
   modalCard: {
@@ -561,14 +608,14 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     gap: spacing.sm,
   },
   modalActionsBetween: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: spacing.sm,
   },
   modalCancelButton: {
@@ -581,8 +628,8 @@ const styles = StyleSheet.create({
   },
   modalConfirmButton: {
     minWidth: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.pill,
@@ -606,8 +653,8 @@ const styles = StyleSheet.create({
   },
   modalDangerButton: {
     minWidth: 92,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.pill,
@@ -619,7 +666,7 @@ const styles = StyleSheet.create({
   },
   modalSecondaryLink: {
     marginTop: spacing.sm,
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     paddingVertical: spacing.xs,
   },
   modalSecondaryLinkText: {

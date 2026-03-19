@@ -3,7 +3,11 @@
  */
 
 import { apiClient } from "./client";
-import type { ShoppingList, ShoppingListItem, ListTemplate } from "@/types/domain";
+import type {
+  ShoppingList,
+  ShoppingListItem,
+  ListTemplate,
+} from "@/types/domain";
 
 export interface ListCollaboratorUser {
   id: number;
@@ -68,7 +72,10 @@ export const listService = {
     apiClient.post<never, ShoppingList>("/lists/", { name }),
 
   /** PATCH /lists/{id}/ — actualizar nombre o estado de archivado */
-  updateList: (id: string, data: Partial<Pick<ShoppingList, "name" | "is_archived">>): Promise<ShoppingList> =>
+  updateList: (
+    id: string,
+    data: Partial<Pick<ShoppingList, "name" | "is_archived">>,
+  ): Promise<ShoppingList> =>
     apiClient.patch<never, ShoppingList>(`/lists/${id}/`, data),
 
   /** DELETE /lists/{id}/ — eliminar lista */
@@ -76,7 +83,10 @@ export const listService = {
     apiClient.delete<never, void>(`/lists/${id}/`),
 
   /** POST /lists/{id}/items/ — añadir producto a la lista */
-  addItem: (listId: string, payload: AddItemPayload): Promise<ShoppingListItem> =>
+  addItem: (
+    listId: string,
+    payload: AddItemPayload,
+  ): Promise<ShoppingListItem> =>
     apiClient.post<never, ShoppingListItem>(`/lists/${listId}/items/`, payload),
 
   /** PATCH /lists/{id}/items/{itemId}/ — actualizar ítem */
@@ -99,7 +109,10 @@ export const listService = {
     apiClient.get<never, ListCollaborator[]>(`/lists/${listId}/collaborators/`),
 
   /** POST /lists/{id}/collaborators/ — invitar colaborador por username */
-  addCollaborator: (listId: string, username: string): Promise<ListCollaborator> =>
+  addCollaborator: (
+    listId: string,
+    username: string,
+  ): Promise<ListCollaborator> =>
     apiClient.post<never, ListCollaborator>(`/lists/${listId}/collaborators/`, {
       username,
     }),
@@ -112,11 +125,13 @@ export const listService = {
 
   /** GET /lists/templates/ — listar plantillas del usuario */
   getTemplates: async (): Promise<ListTemplate[]> => {
-    const payload = await apiClient.get<never, ListTemplate[] | { results: ListTemplate[] }>(
-      "/lists/templates/",
-    );
+    const payload = await apiClient.get<
+      never,
+      ListTemplate[] | { results: ListTemplate[] }
+    >("/lists/templates/");
     if (Array.isArray(payload)) return payload;
-    if (payload && Array.isArray((payload as any).results)) return (payload as any).results;
+    if (payload && Array.isArray((payload as any).results))
+      return (payload as any).results;
     return [];
   },
 
@@ -137,12 +152,20 @@ export const listService = {
     apiClient.delete<never, void>(`/lists/templates/${id}/`),
 
   /** POST /lists/templates/{id}/create-list/ — instanciar lista desde plantilla */
-  createListFromTemplate: (templateId: string, name?: string): Promise<ShoppingList> =>
-    apiClient.post<never, ShoppingList>(`/lists/templates/${templateId}/create-list/`, {
-      ...(name ? { name } : {}),
-    }),
+  createListFromTemplate: (
+    templateId: string,
+    name?: string,
+  ): Promise<ShoppingList> =>
+    apiClient.post<never, ShoppingList>(
+      `/lists/templates/${templateId}/create-list/`,
+      {
+        ...(name ? { name } : {}),
+      },
+    ),
 
   /** POST /lists/{id}/save-template/ — guardar lista actual como plantilla */
   saveAsTemplate: (listId: string, name: string): Promise<ListTemplate> =>
-    apiClient.post<never, ListTemplate>(`/lists/${listId}/save-template/`, { name }),
+    apiClient.post<never, ListTemplate>(`/lists/${listId}/save-template/`, {
+      name,
+    }),
 };

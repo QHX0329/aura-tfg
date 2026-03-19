@@ -2,6 +2,12 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import App from './App';
 
+jest.mock('./src/utils/secureStorage', () => ({
+  getItem: jest.fn().mockResolvedValue(null),
+  setItem: jest.fn(),
+  deleteItem: jest.fn(),
+}));
+
 describe('App Component', () => {
   it('renders correctly without crashing', () => {
     // Si la app tiene providers de navegación o estado global, 

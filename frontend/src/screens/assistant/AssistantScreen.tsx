@@ -65,7 +65,11 @@ const QUICK_SUGGESTIONS = [
 function generateMockResponse(message: string): string {
   const lower = message.toLowerCase();
 
-  if (lower.includes("leche") || lower.includes("mercadona") || lower.includes("lidl")) {
+  if (
+    lower.includes("leche") ||
+    lower.includes("mercadona") ||
+    lower.includes("lidl")
+  ) {
     return "Basándome en los datos de precios disponibles, **Mercadona** suele tener la leche entera a 1,05 €/L con su marca Hacendado, mientras que **Lidl** la tiene a 0,99 €/L con Milbona. Para la leche semidesnatada, Mercadona gana ligeramente en precio. ¿Quieres que compare más productos?";
   }
 
@@ -73,19 +77,35 @@ function generateMockResponse(message: string): string {
     return "El aceite de oliva ha subido bastante últimamente. En este momento:\n\n• **Mercadona** — Aceite Hacendado AOVE 750ml: 6,95 €\n• **Lidl** — Belvin AOVE 750ml: 6,49 €\n• **Carrefour** — Aceite propio 750ml: 7,20 €\n\nLidl tiene la mejor relación calidad-precio ahora mismo. ¿Quieres añadirlo a tu lista?";
   }
 
-  if (lower.includes("cena") || lower.includes("económic") || lower.includes("receta")) {
+  if (
+    lower.includes("cena") ||
+    lower.includes("económic") ||
+    lower.includes("receta")
+  ) {
     return "Aquí tienes una cena económica para 4 personas con un presupuesto de ~8€:\n\n🍳 **Tortilla de patatas**\n• 6 huevos (~1,50 €)\n• 800g patatas (~0,90 €)\n• 1 cebolla (~0,30 €)\n• Aceite de oliva (aprox. 0,50 €)\n\n🥗 **Ensalada mixta**\n• Lechuga (~0,80 €)\n• 2 tomates (~0,60 €)\n• Atún en lata x2 (~1,20 €)\n\n**Total estimado: ~5,80 €**\n¿Añado estos ingredientes a tu lista de la compra?";
   }
 
-  if (lower.includes("día") || lower.includes("semana") || lower.includes("cuando")) {
+  if (
+    lower.includes("día") ||
+    lower.includes("semana") ||
+    lower.includes("cuando")
+  ) {
     return "Los mejores días para hacer la compra según los datos que tenemos son:\n\n📅 **Martes y miércoles**: los supermercados reponen el pescado fresco y suelen iniciar nuevas ofertas.\n\n📅 **Jueves**: muchos supermercados activan descuentos en productos próximos a caducar.\n\n⚠️ **Evita los domingos por la tarde**: hay menos stock y los precios dinámicos suelen ser más altos.\n\n¿Quieres que te avise cuando haya ofertas en los productos de tu lista habitual?";
   }
 
-  if (lower.includes("optimiz") || lower.includes("lista") || lower.includes("ruta")) {
+  if (
+    lower.includes("optimiz") ||
+    lower.includes("lista") ||
+    lower.includes("ruta")
+  ) {
     return "Para optimizar tu lista de la compra, el algoritmo de BargAIn analiza:\n\n1. **Precios actuales** en todas las tiendas de tu radio\n2. **Distancia** desde tu ubicación\n3. **Tu preferencia** (precio / distancia / equilibrado)\n\nVe a la pestaña **Listas**, abre una lista y pulsa el botón **Optimizar** para generar la ruta óptima. ¿Tienes alguna lista creada?";
   }
 
-  return "Entiendo tu pregunta sobre \"" + message.slice(0, 50) + "...\". Soy el asistente de compras de BargAIn. Puedo ayudarte a:\n\n• Comparar precios entre tiendas\n• Sugerir recetas económicas\n• Optimizar tu lista de la compra\n• Encontrar las mejores ofertas\n\nEl asistente completo con IA estará disponible próximamente. ¿En qué más puedo ayudarte?";
+  return (
+    'Entiendo tu pregunta sobre "' +
+    message.slice(0, 50) +
+    '...". Soy el asistente de compras de BargAIn. Puedo ayudarte a:\n\n• Comparar precios entre tiendas\n• Sugerir recetas económicas\n• Optimizar tu lista de la compra\n• Encontrar las mejores ofertas\n\nEl asistente completo con IA estará disponible próximamente. ¿En qué más puedo ayudarte?'
+  );
 }
 
 // ─── Componentes de mensaje ───────────────────────────────────────────────────
@@ -113,11 +133,18 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, index }) => {
         </View>
       )}
 
-      <View style={[bubbleStyles.bubble, isUser ? bubbleStyles.bubbleUser : bubbleStyles.bubbleBot]}>
+      <View
+        style={[
+          bubbleStyles.bubble,
+          isUser ? bubbleStyles.bubbleUser : bubbleStyles.bubbleBot,
+        ]}
+      >
         <Text style={[bubbleStyles.text, isUser && bubbleStyles.textUser]}>
           {message.content}
         </Text>
-        <Text style={[bubbleStyles.time, isUser && bubbleStyles.timeUser]}>{time}</Text>
+        <Text style={[bubbleStyles.time, isUser && bubbleStyles.timeUser]}>
+          {time}
+        </Text>
       </View>
     </Animated.View>
   );
@@ -146,9 +173,18 @@ const TypingIndicator: React.FC = () => {
     setTimeout(() => anim(dot3, 300), 300);
   }, [dot1, dot2, dot3]);
 
-  const d1 = useAnimatedStyle(() => ({ opacity: 0.3 + dot1.value * 0.7, transform: [{ scale: 0.8 + dot1.value * 0.4 }] }));
-  const d2 = useAnimatedStyle(() => ({ opacity: 0.3 + dot2.value * 0.7, transform: [{ scale: 0.8 + dot2.value * 0.4 }] }));
-  const d3 = useAnimatedStyle(() => ({ opacity: 0.3 + dot3.value * 0.7, transform: [{ scale: 0.8 + dot3.value * 0.4 }] }));
+  const d1 = useAnimatedStyle(() => ({
+    opacity: 0.3 + dot1.value * 0.7,
+    transform: [{ scale: 0.8 + dot1.value * 0.4 }],
+  }));
+  const d2 = useAnimatedStyle(() => ({
+    opacity: 0.3 + dot2.value * 0.7,
+    transform: [{ scale: 0.8 + dot2.value * 0.4 }],
+  }));
+  const d3 = useAnimatedStyle(() => ({
+    opacity: 0.3 + dot3.value * 0.7,
+    transform: [{ scale: 0.8 + dot3.value * 0.4 }],
+  }));
 
   return (
     <Animated.View entering={FadeIn} style={typingStyles.wrapper}>
@@ -282,7 +318,10 @@ export const AssistantScreen: React.FC = () => {
             <>
               {isTyping && <TypingIndicator />}
               {showSuggestions && messages.length <= 1 && (
-                <Animated.View entering={FadeInDown.delay(300).springify()} style={styles.suggestionsContainer}>
+                <Animated.View
+                  entering={FadeInDown.delay(300).springify()}
+                  style={styles.suggestionsContainer}
+                >
                   <Text style={styles.suggestionsTitle}>Sugerencias</Text>
                   {QUICK_SUGGESTIONS.map((s, i) => (
                     <TouchableOpacity
@@ -291,9 +330,17 @@ export const AssistantScreen: React.FC = () => {
                       onPress={() => sendMessage(s)}
                       activeOpacity={0.7}
                     >
-                      <Ionicons name="chatbubble-outline" size={14} color={colors.primary} />
+                      <Ionicons
+                        name="chatbubble-outline"
+                        size={14}
+                        color={colors.primary}
+                      />
                       <Text style={styles.suggestionText}>{s}</Text>
-                      <Ionicons name="arrow-forward" size={14} color={colors.textMuted} />
+                      <Ionicons
+                        name="arrow-forward"
+                        size={14}
+                        color={colors.textMuted}
+                      />
                     </TouchableOpacity>
                   ))}
                 </Animated.View>
@@ -328,7 +375,11 @@ export const AssistantScreen: React.FC = () => {
             <Ionicons
               name="send"
               size={18}
-              color={!inputText.trim() || isTyping ? colors.textDisabled : colors.white}
+              color={
+                !inputText.trim() || isTyping
+                  ? colors.textDisabled
+                  : colors.white
+              }
             />
           </TouchableOpacity>
         </View>

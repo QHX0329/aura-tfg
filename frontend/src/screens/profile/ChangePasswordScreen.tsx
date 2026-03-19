@@ -36,7 +36,10 @@ import type { ProfileStackParamList } from "@/navigation/types";
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface ChangePasswordScreenProps {
-  navigation: NativeStackNavigationProp<ProfileStackParamList, "ChangePassword">;
+  navigation: NativeStackNavigationProp<
+    ProfileStackParamList,
+    "ChangePassword"
+  >;
 }
 
 // ─── Componente ───────────────────────────────────────────────────────────────
@@ -83,7 +86,10 @@ export const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({
     setIsLoading(true);
     try {
       await authService.changePassword(oldPassword, newPassword);
-      Alert.alert("Contraseña actualizada", "Tu contraseña ha sido cambiada correctamente");
+      Alert.alert(
+        "Contraseña actualizada",
+        "Tu contraseña ha sido cambiada correctamente",
+      );
       navigation.goBack();
     } catch (err: unknown) {
       const message =
@@ -96,7 +102,6 @@ export const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -104,7 +109,8 @@ export const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({
       >
         <Text style={styles.heading}>Cambiar contraseña</Text>
         <Text style={styles.subtitle}>
-          Introduce tu contraseña actual y elige una nueva de al menos 8 caracteres.
+          Introduce tu contraseña actual y elige una nueva de al menos 8
+          caracteres.
         </Text>
 
         {/* ── Contraseña actual ───────────────────────────────────── */}
