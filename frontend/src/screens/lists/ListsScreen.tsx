@@ -178,14 +178,24 @@ export const ListsScreen: React.FC = () => {
     }
   }, [setLists]);
 
+  // Silent refresh on focus — no muestra skeleton para evitar parpadeo al volver
+  const silentRefresh = useCallback(async () => {
+    try {
+      const data = await listService.getLists();
+      setLists(data);
+    } catch {
+      // silent
+    }
+  }, [setLists]);
+
   useEffect(() => {
     void loadLists();
   }, [loadLists]);
 
   useFocusEffect(
     useCallback(() => {
-      void loadLists();
-    }, [loadLists]),
+      void silentRefresh();
+    }, [silentRefresh]),
   );
 
   // ─── Pull-to-refresh ─────────────────────────────────────────────────────

@@ -3,10 +3,15 @@
  *
  * 5 tabs: Inicio, Listas, Mapa, Asistente, Perfil.
  * Cada tab tiene su propio Stack Navigator anidado.
+ *
+ * Usa @react-navigation/material-top-tabs (sobre react-native-pager-view)
+ * para transiciones lado-a-lado sin pantalla blanca entre tabs.
+ * El swipe sigue el dedo en tiempo real.
+ * Stack transitions: slide_from_right (estilo iOS).
  */
 
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import React, { useMemo } from "react";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -60,7 +65,9 @@ const AssistantStack = createNativeStackNavigator<AssistantStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
 const HomeStackNavigator: React.FC = () => (
-  <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+  <HomeStack.Navigator
+    screenOptions={{ headerShown: false, animation: "slide_from_right" }}
+  >
     <HomeStack.Screen name="Home" component={HomeScreen} />
     <HomeStack.Screen
       name="ProductsCatalog"
@@ -95,6 +102,7 @@ const ListsStackNavigator: React.FC = () => (
     screenOptions={{
       headerStyle: { backgroundColor: colors.surface },
       headerTintColor: colors.text,
+      animation: "slide_from_right",
     }}
   >
     <ListsStack.Screen
@@ -105,9 +113,7 @@ const ListsStackNavigator: React.FC = () => (
     <ListsStack.Screen
       name="ListDetail"
       component={ListDetailScreen}
-      options={({ route }) => ({
-        title: route.params.listName,
-      })}
+      options={({ route }) => ({ title: route.params.listName })}
     />
     <ListsStack.Screen
       name="Templates"
@@ -138,7 +144,9 @@ const ListsStackNavigator: React.FC = () => (
 );
 
 const MapStackNavigator: React.FC = () => (
-  <MapStack.Navigator screenOptions={{ headerShown: false }}>
+  <MapStack.Navigator
+    screenOptions={{ headerShown: false, animation: "slide_from_right" }}
+  >
     <MapStack.Screen name="Map" component={MapScreen} />
     <MapStack.Screen
       name="StoreProfile"
@@ -149,7 +157,9 @@ const MapStackNavigator: React.FC = () => (
 );
 
 const AssistantStackNavigator: React.FC = () => (
-  <AssistantStack.Navigator screenOptions={{ headerShown: false }}>
+  <AssistantStack.Navigator
+    screenOptions={{ headerShown: false, animation: "slide_from_right" }}
+  >
     <AssistantStack.Screen name="Assistant" component={AssistantScreen} />
   </AssistantStack.Navigator>
 );
@@ -159,6 +169,7 @@ const ProfileStackNavigator: React.FC = () => (
     screenOptions={{
       headerStyle: { backgroundColor: colors.surface },
       headerTintColor: colors.text,
+      animation: "slide_from_right",
     }}
   >
     <ProfileStack.Screen
@@ -184,11 +195,8 @@ const ProfileStackNavigator: React.FC = () => (
   </ProfileStack.Navigator>
 );
 
-// ── Tab Navigator ────────────────────────────────────
+// ── Tab icons ────────────────────────────────────────
 
-const Tab = createBottomTabNavigator<MainTabParamList>();
-
-/** Mapa de iconos por cada tab */
 const TAB_ICONS: Record<
   keyof MainTabParamList,
   { focused: string; unfocused: string; label: string }
@@ -200,53 +208,60 @@ const TAB_ICONS: Record<
   ProfileTab: { focused: "person", unfocused: "person-outline", label: "Perfil" },
 };
 
+// ── Tab Navigator ─────────────────────────────────────
+
+const Tab = createMaterialTopTabNavigator<MainTabParamList>();
+
 export const MainTabs: React.FC = () => {
+  const tabs = useMemo(
+    () =>
+      (Object.keys(TAB_ICONS) as Array<keyof MainTabParamList>).map((key) => {
+        const info = TAB_ICONS[key];
+        return {
+          key,
+          route: key,
+          label: info.label,
+          icon: (
+            <Ionicons
+              name={info.unfocused as any}
+              size={sizes.tabIconSize}
+              color={colors.textMuted}
+            />
+          ),
+          iconActive: (
+            <Ionicons
+              name={info.focused as any}
+              size={sizes.tabIconSize}
+              color={colors.primary}
+            />
+          ),
+          accessibilityLabel: info.label,
+        };
+      }),
+    [],
+  );
+
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false }}
-      tabBar={(props) => {
-        const tabs = props.state.routes.map((route) => {
-          const info = TAB_ICONS[route.name as keyof MainTabParamList];
-          return {
-            key: route.key,
-            route: route.name,
-            label: info.label,
-            icon: (
-              <Ionicons
-                name={info.unfocused as any}
-                size={sizes.tabIconSize}
-                color={colors.textMuted}
-              />
-            ),
-            iconActive: (
-              <Ionicons
-                name={info.focused as any}
-                size={sizes.tabIconSize}
-                color={colors.primary}
-              />
-            ),
-            accessibilityLabel: info.label,
-          };
-        });
-
-        return (
-          <BottomTabBar
-            tabs={tabs}
-            activeIndex={props.state.index}
-            onTabPress={(index) => {
-              const route = props.state.routes[index];
-              const event = props.navigation.emit({
-                type: "tabPress",
-                target: route.key,
-                canPreventDefault: true,
-              });
-              if (!event.defaultPrevented) {
-                props.navigation.navigate(route.name as never);
-              }
-            }}
-          />
-        );
-      }}
+      tabBarPosition="bottom"
+      screenOptions={{ swipeEnabled: true }}
+      tabBar={(props) => (
+        <BottomTabBar
+          tabs={tabs}
+          activeIndex={props.state.index}
+          onTabPress={(index) => {
+            const route = props.state.routes[index];
+            const event = props.navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!event.defaultPrevented) {
+              props.navigation.navigate(route.name as any);
+            }
+          }}
+        />
+      )}
     >
       <Tab.Screen name="HomeTab" component={HomeStackNavigator} />
       <Tab.Screen name="ListsTab" component={ListsStackNavigator} />

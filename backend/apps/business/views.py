@@ -1,7 +1,10 @@
 """Vistas del portal business de BargAIn."""
 
+from typing import Any
+
 import structlog
 from django.db import IntegrityError, transaction
+from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import serializers as drf_serializers
 from rest_framework import status, viewsets
@@ -12,6 +15,7 @@ from rest_framework.response import Response
 from apps.core.exceptions import PromotionConflictError
 from apps.core.responses import success_response
 from apps.prices.models import Price
+from apps.stores.models import Store
 
 from .models import BusinessProfile, Promotion
 from .permissions import IsVerifiedBusiness
@@ -35,8 +39,9 @@ class BusinessProfileViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = BusinessProfileSerializer
+    queryset = BusinessProfile.objects.select_related("user").all()
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[BusinessProfile]:
         if self.request.user.is_staff:
             return BusinessProfile.objects.select_related("user").all()
         return BusinessProfile.objects.select_related("user").filter(user=self.request.user)
@@ -46,7 +51,7 @@ class BusinessProfileViewSet(viewsets.ModelViewSet):
             return [IsAdminUser()]
         return [IsAuthenticated()]
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[BusinessProfileSerializer]:
         if self.request.user.is_staff:
             return BusinessProfileAdminSerializer
         return BusinessProfileSerializer
@@ -141,8 +146,9 @@ class PromotionViewSet(viewsets.ModelViewSet):
 
     serializer_class = PromotionSerializer
     permission_classes = [IsAuthenticated, IsVerifiedBusiness]
+    queryset = Promotion.objects.select_related("product", "store").all()
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Promotion]:
         try:
             profile = BusinessProfile.objects.get(user=self.request.user, is_verified=True)
             return Promotion.objects.filter(store__business_profile=profile).select_related(
@@ -155,7 +161,8 @@ class PromotionViewSet(viewsets.ModelViewSet):
         serializer.save()
         from apps.notifications.tasks import notify_new_promo_at_store
 
-        notify_new_promo_at_store.delay(serializer.instance.id)
+        notify_new_promo_task: Any = notify_new_promo_at_store
+        notify_new_promo_task.delay(serializer.instance.id)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -200,8 +207,9 @@ class BusinessPriceViewSet(viewsets.ModelViewSet):
     serializer_class = BusinessPriceSerializer
     permission_classes = [IsAuthenticated, IsVerifiedBusiness]
     http_method_names = ["get", "post", "patch", "head", "options"]
+    queryset = Price.objects.select_related("product", "store").all()
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Price]:
         try:
             profile = BusinessProfile.objects.get(user=self.request.user, is_verified=True)
             return Price.objects.filter(
@@ -232,6 +240,6 @@ class BusinessPriceViewSet(viewsets.ModelViewSet):
         if profile is None:
             return Response([], status=status.HTTP_200_OK)
 
-        stores_qs = profile.stores.filter(is_active=True).order_by("name")
+        stores_qs = Store.objects.filter(business_profile=profile, is_active=True).order_by("name")
         serializer = BusinessStoreSerializer(stores_qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

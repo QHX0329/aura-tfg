@@ -22,7 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeInDown, Easing } from "react-native-reanimated";
 
 import { colors, spacing, borderRadius, fontFamilies, fontSize, shadows } from "@/theme";
 import type { ListsStackParamList } from "@/navigation/types";
@@ -53,7 +53,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onUse, onDelete }
   });
 
   return (
-    <Animated.View entering={FadeInDown.springify().damping(18)}>
+    <Animated.View entering={FadeInDown.duration(320).easing(Easing.out(Easing.quad))}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View style={styles.iconWrap}>
@@ -173,7 +173,7 @@ export const TemplatesScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={[]}>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>

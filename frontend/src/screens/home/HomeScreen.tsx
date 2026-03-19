@@ -383,14 +383,49 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
     }
   }, [setLists, setStoreNotifications]);
 
+  // Silent refresh on focus — no muestra skeletons al volver a la pantalla
+  const silentRefreshAll = useCallback(async () => {
+    try {
+      const fetchedLists = await listService.getLists();
+      setLists(fetchedLists);
+    } catch { /* silent */ }
+    try {
+      const result = await notificationService.getNotifications(1);
+      setStoreNotifications(result.results);
+    } catch { /* silent */ }
+    try {
+      const alerts = await priceService.getPriceAlerts();
+      setPriceAlerts(alerts);
+    } catch { /* silent */ }
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        let lat: number;
+        let lng: number;
+        if (__DEV__) {
+          lat = 37.3886;
+          lng = -5.9823;
+        } else {
+          const pos = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          });
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+        }
+        const stores = await storeService.getNearby(lat, lng, 5);
+        setNearbyStores(stores);
+      }
+    } catch { /* silent */ }
+  }, [setLists, setStoreNotifications]);
+
   useEffect(() => {
     loadAll();
   }, [loadAll]);
 
   useFocusEffect(
     useCallback(() => {
-      void loadAll();
-    }, [loadAll]),
+      void silentRefreshAll();
+    }, [silentRefreshAll]),
   );
 
   const handleRefresh = useCallback(async () => {
