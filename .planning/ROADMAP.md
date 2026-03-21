@@ -2,7 +2,7 @@
 
 ## Overview
 
-Roadmap operativo sincronizado a 2026-03-19. El proyecto tiene F1, F2 y F3 finalizadas, F4 en progreso avanzado y F5-F6 pendientes.
+Roadmap operativo sincronizado a 2026-03-21. El proyecto tiene F1, F2 y F3 finalizadas, F4 en progreso avanzado y F5-F6 pendientes.
 
 ## Phase Status
 
@@ -17,9 +17,15 @@ Roadmap operativo sincronizado a 2026-03-19. El proyecto tiene F1, F2 y F3 final
 
 ### Phase 4 (active)
 
-- Cerrar integraciones frontend restantes y mejoras UX.
-- Mantener alineacion frontend-backend para contratos API.
-- Consolidar experiencia de usuario en Home, Catalogo, Mapa, Listas y Favoritas.
+**Goal:** Complete Google Places integration (F4-21) to close Phase 4.
+
+**Requirements:** [STORE-04]
+
+**Plans:** 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Backend Places enrichment proxy (Store model + endpoint + Redis cache + tests)
+- [ ] 04-02-PLAN.md — Frontend Places integration (autocomplete + discovery markers + StoreProfile enrichment)
 
 ### Phase 5 (next)
 
@@ -42,9 +48,9 @@ Roadmap operativo sincronizado a 2026-03-19. El proyecto tiene F1, F2 y F3 final
 | 1. Core Backend | Complete | Base backend y API consolidada |
 | 2. Business & Notifications | Complete | Portal PYME + notificaciones listas |
 | 3. Frontend | Complete (baseline) | Pantallas y flujos clave operativos |
-| 4. Frontend Advanced | In progress | F4-27 completada |
+| 4. Frontend Advanced | In progress | F4-21 (Google Places) planned — 2 plans in 2 waves |
 | 5. IA + Optimizer + Scraping | Not started | Bloque tecnico critico pendiente |
 | 6. Final QA + Deploy + Thesis | Not started | Cierre de proyecto |
 
 ---
-Last updated: 2026-03-19
+Last updated: 2026-03-21
