@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-19 (F4-27 completada — CTA de crear lista en estado vacío de Home, paneles plegables en catálogo y mapa, mejora visual de carteles del mapa y acceso a perfil desde favoritas)
+> Última sincronización: 2026-03-19 (F4-27 completada + documentación global sincronizada en README/CLAUDE/docs/memory/.planning)
 
 ---
 

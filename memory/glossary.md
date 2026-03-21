@@ -1,91 +1,46 @@
-# Glosario — Proyecto BargAIn
+# Glosario - Proyecto BargAIn
 
-Términos internos, siglas y abreviaturas del proyecto.
+## Estado
 
-## Acrónimos del proyecto
-| Término | Significado | Contexto |
-|---------|-------------|---------|
-| BargAIn | Asistente Unificado de Rutas y Ahorro | Nombre del proyecto TFG |
-| TFG | Trabajo Fin de Grado | Documento académico final |
-| PDT | Precio-Distancia-Tiempo | Pesos del algoritmo de optimización |
-| DRF | Django REST Framework | Framework API backend |
-| ETSII-US | Escuela Técnica Superior de Ingeniería Informática, Universidad de Sevilla | Universidad |
-| HU | Historia de Usuario | Artefacto de requisitos ágiles |
-| RF | Requisito Funcional | Artefacto de requisitos |
-| RNF | Requisito No Funcional | Artefacto de requisitos |
-| RI | Requisito de Información | Artefacto de requisitos |
-| RN | Regla de Negocio | Artefacto de requisitos |
-| ADR | Architecture Decision Record | Documento de decisión arquitectónica (docs/decisiones/) |
-| PYME | Pequeña y Mediana Empresa | Módulo business de BargAIn |
+Documento sincronizado con el estado del proyecto a 2026-03-19.
 
-## Términos internos del proyecto
-| Término | Significado |
+## Acr�nimos clave
+
+| Termino | Significado |
 |---------|-------------|
-| la memoria | Documento TFG en docs/memoria/ (12 capítulos) |
-| el algoritmo | Algoritmo de optimización multicriterio PDT (backend/apps/optimizer/) |
-| el scraping | Módulo Scrapy para obtener precios de supermercados (scraping/) |
-| el OCR | Módulo de visión artificial para tickets/listas (backend/apps/ocr/) |
-| el asistente | Módulo LLM con Claude API (backend/apps/assistant/) |
-| el optimizer | App Django backend/apps/optimizer/ |
-| el portal / portal business | App Django backend/apps/business/ para PYMEs |
-| staging | Entorno de pruebas en Render (deploy automático vía GitHub Actions) |
-| la ruta | Resultado de optimización con paradas ordenadas de compra |
-| candidatos | Combinaciones de tiendas evaluadas por el optimizer |
-| score | Puntuación de una ruta candidata según función PDT |
-| fuentes verificadas | Jerarquía: API oficial > Scraping > Crowdsourcing |
-| caducidad de precio | 48h para scraping, 24h para crowdsourcing |
+| TFG | Trabajo Fin de Grado |
+| DRF | Django REST Framework |
+| JWT | JSON Web Token |
+| OCR | Reconocimiento optico de caracteres |
+| ADR | Architecture Decision Record |
+| PYME | Pequena y mediana empresa |
+| UX | User Experience |
 
-## Supermercados con spider
-| Nombre | Spider |
-|--------|--------|
-| Mercadona | scraping/bargain_scraping/spiders/mercadona.py |
-| Carrefour | scraping/bargain_scraping/spiders/carrefour.py |
-| Lidl | scraping/bargain_scraping/spiders/lidl.py |
-| DIA | scraping/bargain_scraping/spiders/dia.py |
-| Alcampo | scraping/bargain_scraping/spiders/alcampo.py |
+## Fases y codigos
 
-## Apps Django (backend/apps/)
-| App | Responsabilidad |
-|-----|----------------|
-| users | Autenticación, perfiles, roles |
-| products | Catálogo de productos normalizados |
-| stores | Supermercados y comercios (PostGIS) |
-| prices | Precios actuales e histórico |
-| scraping | Spiders Scrapy + pipeline |
-| shopping_lists | Listas de la compra del usuario |
-| optimizer | Algoritmo PDT |
-| ocr | Procesamiento de fotos/tickets |
-| assistant | Integración LLM (Claude API) |
-| business | Portal PYMEs, suscripciones |
-| notifications | Push + email |
-| core | Excepciones, utilidades comunes |
-
-## Comandos Make frecuentes
-| Comando | Acción |
-|---------|--------|
-| make dev | Levantar entorno completo (Docker) |
-| make test | Ejecutar todos los tests |
-| make lint | Lint backend + frontend |
-| make migrate | Aplicar migraciones Django |
-| make seed | Poblar BD con datos de prueba |
-| make scrape | Ejecutar spiders de scraping |
-
-## Modelos de datos clave
-| Modelo | Campos clave |
+| Codigo | Significado |
 |--------|-------------|
-| Product | id, name, normalized_name, barcode, category, brand |
-| Store | id, name, chain, address, location (PostGIS), opening_hours |
-| Price | id, product, store, price, offer_price, source, verified_at |
-| ShoppingList | id, user, name, items |
-| OptimizationResult | id, shopping_list, user_location, mode, route_data (JSON) |
+| F1 | Analisis y diseno |
+| F2 | Infraestructura base |
+| F3 | Desarrollo core backend |
+| F4 | Desarrollo frontend |
+| F5 | IA, optimizador y scraping |
+| F6 | Pruebas finales y cierre |
 
-## Git / Convenciones
-| Concepto | Convención |
-|----------|-----------|
-| Rama producción | main |
-| Rama integración | develop |
-| Nuevas features | feature/XX-descripcion |
-| Bugfixes | fix/XX-descripcion |
-| Documentación | docs/XX-descripcion |
-| Commits | Conventional Commits en español |
-| PR target | Siempre contra develop |
+## Estado de avance
+
+- F1, F2, F3: completadas.
+- F4: en progreso (F4-27 completada).
+- F5-F6: pendientes.
+
+## Terminos operativos
+
+| Termino | Significado interno |
+|---------|---------------------|
+| TASKS | Archivo maestro de seguimiento del backlog |
+| ai-mistakes-log | Registro de errores y reglas derivadas para agentes |
+| modelo hibrido | Backend Docker + frontend host nativo |
+| core backend | M�dulos users/products/stores/prices/lists/business/notifications |
+
+---
+Actualizado: 2026-03-19

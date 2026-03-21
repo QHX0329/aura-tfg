@@ -10,6 +10,15 @@
 **Tutor:** Juan Vicente Gutiérrez Santacreu
 **Departamento:** Matemática Aplicada I
 
+## 📌 Estado actual (2026-03-19)
+
+- **F1:** completada
+- **F2:** completada
+- **F3:** completada
+- **F4:** en progreso (hasta **F4-27** completada)
+- **F5-F6:** pendientes
+- **Progreso global estimado:** ~62%
+
 ---
 
 ## 🏗️ Arquitectura y Stack Tecnológico
@@ -86,20 +95,11 @@ bargain-tfg/
 │
 ├── backend/
 │   ├── Dockerfile
-│   ├── requirements/
-│   │   ├── base.txt
-│   │   ├── dev.txt
-│   │   └── prod.txt
+│   ├── Dockerfile.dev
 │   ├── manage.py
-│   ├── config/                  # Settings de Django
-│   │   ├── settings/
-│   │   │   ├── base.py
-│   │   │   ├── dev.py
-│   │   │   ├── prod.py
-│   │   │   └── test.py
-│   │   ├── urls.py
-│   │   ├── celery.py
-│   │   └── wsgi.py
+│   ├── pyrightconfig.json
+│   ├── pytest.ini
+│   ├── ruff.toml
 │   ├── apps/
 │   │   ├── users/               # Autenticación, perfiles, roles
 │   │   ├── products/            # Catálogo de productos normalizados
@@ -112,11 +112,27 @@ bargain-tfg/
 │   │   ├── assistant/           # Integración LLM (Claude API)
 │   │   ├── business/            # Portal PYMES, suscripciones
 │   │   └── notifications/       # Push + email
-│   ├── tests/
-│   │   ├── unit/
-│   │   ├── integration/
-│   │   └── e2e/
-│   └── scripts/                 # Utilidades de gestión
+│   └── (código de apps)
+│
+├── config/                      # Settings globales Django
+│   ├── settings/
+│   │   ├── base.py
+│   │   ├── dev.py
+│   │   ├── prod.py
+│   │   └── test.py
+│   ├── urls.py
+│   ├── celery.py
+│   └── wsgi.py
+│
+├── requirements/
+│   ├── base.txt
+│   ├── dev.txt
+│   └── prod.txt
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
 │
 ├── frontend/
 │   ├── package.json
@@ -147,7 +163,8 @@ bargain-tfg/
 │       ├── pipelines.py
 │       └── middlewares.py
 │
-├── memory/                      # Memorias persistentes de Claude Code (gitignored)
+├── memory/                      # Contexto local del proyecto (versionado)
+├── .planning/                   # Planificación viva (roadmap/estado/fases)
 ├── docker-compose.yml
 ├── docker-compose.dev.yml
 ├── Makefile                     # Comandos útiles

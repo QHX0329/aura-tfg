@@ -18,3 +18,6 @@
 - TDD cuando sea posible
 - Ruff para linting Python
 - PRs siempre contra `develop`
+
+---
+Actualizado: 2026-03-19

@@ -16,6 +16,15 @@ BarGAIN es una aplicación móvil y web que elimina la ineficiencia en la compra
 
 Este proyecto es un **Trabajo Fin de Grado** del Grado en Ingeniería Informática — Ingeniería del Software, Universidad de Sevilla (ETSII).
 
+## 📌 Estado Actual (2026-03-19)
+
+- F1 (Análisis y Diseño): completada.
+- F2 (Infraestructura Base): completada.
+- F3 (Core Backend): completada.
+- F4 (Frontend): en progreso con tareas hasta F4-27 completadas.
+- F5 y F6: pendientes.
+- Progreso global aproximado: 62%.
+
 [![Ver Dashboard](https://img.shields.io/badge/Ver_Dashboard_Interactivo-2EA043?style=for-the-badge&logo=github)](https://qhx0329.github.io/bargain-tfg/dashboard.html)
 
 [![Ver MockUps](https://img.shields.io/badge/Ver_MockUps-2EA043?style=for-the-badge&logo=github)](https://qhx0329.github.io/bargain-tfg/docs/diagramas/ui-mockups/index.html)
@@ -51,6 +60,17 @@ BarGAIN actúa como un **orquestador inteligente de la cesta de la compra** medi
 | Async         | Celery + Redis                        |
 | CI/CD         | GitHub Actions                        |
 | Infra         | Docker + Docker Compose (dev híbrido) + Render |
+
+## 🗺️ Roadmap Resumido
+
+| Fase | Estado | Notas |
+|------|--------|-------|
+| F1 — Análisis y Diseño | ✅ | Requisitos, comparativa y base documental del TFG |
+| F2 — Infraestructura | ✅ | Backend en Docker, frontend nativo en host (ADR-002) |
+| F3 — Core Backend | ✅ | Módulos de dominio + API + tests + docs OpenAPI |
+| F4 — Frontend | 🔄 | UX y flujos principales operativos, quedan integraciones avanzadas |
+| F5 — IA/Optimización/Scraping | ⬜ | OCR real, optimizer multicriterio y scraping productivo |
+| F6 — Cierre | ⬜ | E2E, deploy staging final, memoria y defensa |
 
 ## 🚀 Inicio Rápido
 
@@ -98,6 +118,23 @@ make frontend-install
 make frontend
 ```
 
+## 🧭 Comandos útiles
+
+```bash
+# Backend (Docker)
+make lint-backend
+make test-backend
+make test-backend-cov
+
+# Frontend (host)
+make test-frontend
+cd frontend && npx eslint src/
+
+# Full checks
+make test
+make lint
+```
+
 ## 📁 Estructura del Proyecto
 
 ```
@@ -122,6 +159,16 @@ make test-frontend
 # Todo
 make test
 ```
+
+## 📚 Documentación
+
+- Estado de tareas: `TASKS.md`
+- Instrucciones operativas del proyecto: `CLAUDE.md`
+- Memoria del TFG: `docs/memoria/`
+- API REST: `docs/api/README.md`
+- ADRs: `docs/decisiones/`
+- Planificación operativa: `.planning/`
+- Memoria de contexto del proyecto: `memory/`
 
 ## 🤝 Diferenciación del Mercado
 

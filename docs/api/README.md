@@ -1,4 +1,6 @@
-# Referencia de la API REST — BargAIn (Fase 1)
+# Referencia de la API REST — BargAIn (Fases 1-4)
+
+> Estado de sincronización: 2026-03-19. La API backend core (F3) está completada y el frontend (F4) consume estos contratos.
 
 ## Índice
 

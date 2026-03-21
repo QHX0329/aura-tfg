@@ -9,3 +9,6 @@
 - Supervisa y tutela el TFG de Nicolás Parrilla
 - Pertenece al departamento de Matemática Aplicada I
 - Punto de contacto académico para el proyecto BargAIn
+
+---
+Actualizado: 2026-03-19
