@@ -8,6 +8,27 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Restore client-side route after GitHub Pages 404 redirect.
+      (function (location) {
+        if (location.search.startsWith('?/')) {
+          var decoded = location.search
+            .slice(2)
+            .split('&')
+            .map(function (segment, index) {
+              return index === 0 ? segment : '?' + segment;
+            })
+            .join('')
+            .replace(/~and~/g, '&');
+
+          window.history.replaceState(
+            null,
+            '',
+            location.pathname.replace(/\/$/, '') + '/' + decoded + location.hash,
+          );
+        }
+      })(window.location);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

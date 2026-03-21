@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BarGAIN</title>
+    <script>
+      // Redirect unknown paths to SPA entry while preserving the route.
+      // pathSegmentsToKeep = 1 because the app is hosted under /bargain-tfg/.
+      var pathSegmentsToKeep = 1;
+      var l = window.location;
+      var basePath = l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/');
+      var routePath = l.pathname
+        .slice(1)
+        .split('/')
+        .slice(pathSegmentsToKeep)
+        .join('/')
+        .replace(/&/g, '~and~');
+      var query = l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '';
+
+      l.replace(
+        l.protocol +
+          '//' +
+          l.hostname +
+          (l.port ? ':' + l.port : '') +
+          basePath +
+          '/?/' +
+          routePath +
+          query +
+          l.hash,
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
