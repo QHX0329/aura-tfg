@@ -20,9 +20,12 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
       VITE_BASE_PATH: '/bargain-tfg/'
+      VITE_DEMO_VIDEO_URL: ${{ secrets['VITE_DEMO_VIDEO_URL'] }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
+  BookOpenText,
   Bot,
   Building2,
   ChartLine,
@@ -28,7 +29,8 @@ type BentoFeature = {
 const navItems = [
   { label: 'Producto', href: '#producto' },
   { label: 'Arquitectura', href: '#arquitectura' },
-  { label: 'Demo', href: '/demo' },
+  { label: 'Demo', href: 'demo', isRoute: true },
+  { label: 'Docs', href: 'docs', isRoute: true },
   { label: 'Impacto', href: '#impacto' },
   { label: 'Comercios', href: '#comercios' },
 ];
@@ -135,7 +137,7 @@ const LandingPage: React.FC = () => {
             {navItems.map((item) => (
               <a
                 key={item.label}
-                href={item.href}
+                href={item.isRoute ? withBase(item.href) : item.href}
                 className="transition hover:text-emerald-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-300"
               >
                 {item.label}
@@ -183,6 +185,12 @@ const LandingPage: React.FC = () => {
                 className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-500 px-6 py-3 text-sm font-semibold text-emerald-950 transition hover:brightness-110"
               >
                 Ver demo <Rocket className="h-4 w-4" />
+              </a>
+              <a
+                href={withBase('docs')}
+                className="inline-flex items-center gap-2 rounded-2xl bg-white/5 px-6 py-3 text-sm font-semibold text-slate-100 ring-1 ring-white/15 transition hover:bg-white/10"
+              >
+                Ver docs tecnicas <BookOpenText className="h-4 w-4" />
               </a>
               <a
                 href="#arquitectura"

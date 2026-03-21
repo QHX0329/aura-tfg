@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-21 (F4-29 completada: onboarding comercios + página demo con Stitch + wiring de enlaces)
+> Última sincronización: 2026-03-21 (F4-30 completada: pantalla Docs tecnica + integracion de navegacion publica)
 
 ---
 
@@ -162,6 +162,7 @@
 | F4-27 | Mejora UX Home/Catálogo/Mapa/Favoritas (CTA listas + paneles plegables + perfil tienda) | Shopping Lists/Products/Stores | 🔴 Crítica | ✅ | 5 | 5 | Botón crear lista cuando no hay listas en Home; filtros de catálogo plegables; panel de tiendas del mapa plegable (native/web); carteles de markers más cuidados; acceso a StoreProfile desde favoritas |
 | F4-28 | Landing web premium marketing + portafolio técnico (Stitch + React/Tailwind + Motion + Pages) | Frontend Web | 🔴 Crítica | ✅ | 8 | 8 | Escaparate público con bento interactivo, storytelling técnico y despliegue en GitHub Pages |
 | F4-29 | Onboarding comercios + página demo (Stitch) y conexión de enlaces de marketing | Frontend Web | 🔴 Crítica | ✅ | 5 | 5 | Nueva página onboarding para PYMEs, nueva página demo y wiring de docs/email en la landing |
+| F4-30 | Pantalla Docs técnica web (Stitch) + integración en navegación y demo | Frontend Web | 🔴 Crítica | ✅ | 4 | 4 | Nueva ruta pública `/docs` con índice técnico basado en documentación del proyecto |
 
 ---
 

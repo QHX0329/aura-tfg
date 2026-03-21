@@ -11,6 +11,38 @@ import {
   Store,
 } from 'lucide-react';
 
+const DEMO_VIDEO_URL =
+  (typeof import.meta !== 'undefined' && (import.meta.env?.VITE_DEMO_VIDEO_URL as string | undefined)) ||
+  '';
+
+const demoStoryboard = [
+  {
+    time: '00:00-00:05',
+    scene: 'Hero BarGAIN y propuesta de valor',
+    voiceover: 'BarGAIN optimiza tu compra combinando precio, distancia y tiempo en una sola decision.',
+  },
+  {
+    time: '00:05-00:12',
+    scene: 'Lista de compra + comparativa multi-tienda',
+    voiceover: 'Anade productos y compara precios en supermercados y comercios cercanos en tiempo real.',
+  },
+  {
+    time: '00:12-00:18',
+    scene: 'Mapa y ruta recomendada',
+    voiceover: 'El motor calcula la ruta optima con ahorro esperado y numero de paradas sugeridas.',
+  },
+  {
+    time: '00:18-00:26',
+    scene: 'Portal PYME: precios y promociones',
+    voiceover: 'Los comercios gestionan catalogo y promociones para competir con trazabilidad y control.',
+  },
+  {
+    time: '00:26-00:33',
+    scene: 'Stack tecnico y cierre',
+    voiceover: 'Django, PostGIS, React Native y Celery sostienen una arquitectura lista para escalar.',
+  },
+];
+
 const walkthrough = [
   {
     title: 'Savings Tracker',
@@ -39,6 +71,8 @@ const reveal = {
 const withBase = (path: string): string => `${import.meta.env.BASE_URL}${path}`;
 
 const DemoPage: React.FC = () => {
+  const hasDemoVideo = DEMO_VIDEO_URL.trim().length > 0;
+
   return (
     <div className="min-h-screen bg-[#060a12] text-slate-100 antialiased">
       <div className="fixed inset-0 -z-10 opacity-85">
@@ -50,6 +84,7 @@ const DemoPage: React.FC = () => {
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           <a href={withBase('')} className="text-lg font-semibold tracking-tight text-white">BarGAIN Demo</a>
           <div className="flex items-center gap-3">
+            <a href={withBase('docs')} className="rounded-xl bg-white/5 px-4 py-2 text-sm font-medium text-slate-200">Docs tecnicas</a>
             <a href={withBase('onboarding')} className="rounded-xl bg-white/5 px-4 py-2 text-sm font-medium text-slate-200">Onboarding comercios</a>
             <a href={withBase('login')} className="rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950">Entrar</a>
           </div>
@@ -76,14 +111,44 @@ const DemoPage: React.FC = () => {
             <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-emerald-400/20 blur-3xl" />
             <div className="absolute -bottom-16 -right-16 h-52 w-52 rounded-full bg-indigo-400/20 blur-3xl" />
             <div className="relative aspect-video rounded-2xl bg-slate-950/80 ring-1 ring-white/15">
-              <div className="flex h-full items-center justify-center">
-                <a
-                  href="https://github.com/QHX0329/bargain-tfg/dashboard.html"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20"
-                >
-                  <PlayCircle className="h-5 w-5 text-emerald-300" /> Abrir demo tecnica
-                </a>
-              </div>
+              {hasDemoVideo ? (
+                <iframe
+                  className="h-full w-full rounded-2xl"
+                  src={DEMO_VIDEO_URL}
+                  title="BarGAIN Demo Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
+                  <p className="text-sm text-slate-300">Video de demo pendiente de publicacion.</p>
+                  <p className="max-w-xl text-xs text-slate-400">
+                    Configura VITE_DEMO_VIDEO_URL en el build para insertar un video real (YouTube/Vimeo/embed).
+                  </p>
+                  <a
+                    href={withBase('docs')}
+                    className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20"
+                  >
+                    <PlayCircle className="h-5 w-5 text-emerald-300" /> Ver guion tecnico
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section {...reveal} className="mx-auto w-full max-w-7xl px-6 pb-16 lg:px-10">
+          <div className="rounded-3xl bg-white/[0.03] p-7 ring-1 ring-white/10">
+            <p className="text-xs uppercase tracking-[0.16em] text-indigo-300">Script de produccion</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">Guion por segundos + locucion</h2>
+            <div className="mt-6 space-y-3">
+              {demoStoryboard.map((item) => (
+                <article key={item.time} className="rounded-2xl bg-slate-900/70 p-5 ring-1 ring-white/10">
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300">{item.time}</p>
+                  <p className="mt-2 text-sm font-semibold text-white">{item.scene}</p>
+                  <p className="mt-2 text-sm text-slate-300">{item.voiceover}</p>
+                </article>
+              ))}
             </div>
           </div>
         </motion.section>
@@ -155,7 +220,7 @@ const DemoPage: React.FC = () => {
                 Merchant Onboarding <ArrowRight className="h-4 w-4" />
               </a>
               <a
-                href="https://github.com/QHX0329/bargain-tfg/dashboard.html"
+                href={withBase('docs')}
                 className="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20"
               >
                 Merchant API Docs <ArrowRight className="h-4 w-4" />

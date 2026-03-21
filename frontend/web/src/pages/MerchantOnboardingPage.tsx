@@ -77,6 +77,7 @@ const MerchantOnboardingPage: React.FC = () => {
             <a href="#solucion" className="transition hover:text-emerald-300">Solucion</a>
             <a href="#proceso" className="transition hover:text-emerald-300">Proceso</a>
             <a href="#faq" className="transition hover:text-emerald-300">FAQ</a>
+            <a href={withBase('docs')} className="transition hover:text-emerald-300">Docs</a>
           </div>
           <a
             href={withBase('login')}
