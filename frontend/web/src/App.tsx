@@ -11,6 +11,9 @@ import PricesPage from './pages/PricesPage';
 import ProductsUploadPage from './pages/ProductsUploadPage';
 import PromotionsPage from './pages/PromotionsPage';
 import BusinessProfilePage from './pages/BusinessProfilePage';
+import LandingPage from './pages/LandingPage.tsx';
+import MerchantOnboardingPage from './pages/MerchantOnboardingPage.tsx';
+import DemoPage from './pages/DemoPage.tsx';
 
 /** Auth guard: redirect to /login if no token in localStorage */
 const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -91,6 +94,9 @@ const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
           {/* Public route */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/onboarding" element={<MerchantOnboardingPage />} />
+          <Route path="/demo" element={<DemoPage />} />
           <Route path="/login" element={<LoginPage />} />
 
           {/* Protected routes wrapped in auth + unverified guard + layout */}
@@ -112,7 +118,7 @@ const App: React.FC = () => {
           </Route>
 
           {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>

@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-19 (F4-27 completada + documentación global sincronizada en README/CLAUDE/docs/memory/.planning)
+> Última sincronización: 2026-03-21 (F4-29 completada: onboarding comercios + página demo con Stitch + wiring de enlaces)
 
 ---
 
@@ -160,6 +160,8 @@
 | F4-25 | Alertas de precio + perfil de tienda en mapa + colaboradores de listas | Prices/Stores/Shopping Lists | 🔴 Crítica | ✅ | 8 | 8 | Crear alertas desde pantalla dedicada; abrir perfil de tienda desde mapa (info, favoritos y productos); gestión de colaboradores en detalle de lista |
 | F4-26 | CRUD completo alertas + listas renombrables/plantillas + paginación catálogo + refresco en vivo | Prices/Notifications/Shopping Lists/Products | 🔴 Crítica | ✅ | 10 | 10 | Mostrar nombre de producto y modal editable en alertas; botón eliminar de notificaciones funcional; renombrar listas y crear plantilla desde listas; paginación real en catálogo; refresco automático sin recarga manual |
 | F4-27 | Mejora UX Home/Catálogo/Mapa/Favoritas (CTA listas + paneles plegables + perfil tienda) | Shopping Lists/Products/Stores | 🔴 Crítica | ✅ | 5 | 5 | Botón crear lista cuando no hay listas en Home; filtros de catálogo plegables; panel de tiendas del mapa plegable (native/web); carteles de markers más cuidados; acceso a StoreProfile desde favoritas |
+| F4-28 | Landing web premium marketing + portafolio técnico (Stitch + React/Tailwind + Motion + Pages) | Frontend Web | 🔴 Crítica | ✅ | 8 | 8 | Escaparate público con bento interactivo, storytelling técnico y despliegue en GitHub Pages |
+| F4-29 | Onboarding comercios + página demo (Stitch) y conexión de enlaces de marketing | Frontend Web | 🔴 Crítica | ✅ | 5 | 5 | Nueva página onboarding para PYMEs, nueva página demo y wiring de docs/email en la landing |
 
 ---
 

@@ -1,6 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
+  --landing-void: #060a12;
+  --landing-emerald: #10b981;
+  --landing-indigo: #6366f1;
   --bg-base: #fffcf7;
   --bg-soft: #f6f4ec;
   --bg-section: #fcf9f3;
