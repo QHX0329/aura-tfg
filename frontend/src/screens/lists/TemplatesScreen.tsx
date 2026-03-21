@@ -36,6 +36,7 @@ import type { ListsStackParamList } from "@/navigation/types";
 import type { ListTemplate } from "@/types/domain";
 import { listService } from "@/api/listService";
 import { AppModal } from "@/components/ui/AppModal";
+import { resolveProductNameFromEntity } from "@/utils/entityResolver";
 
 type Nav = NativeStackNavigationProp<ListsStackParamList, "Templates">;
 
@@ -54,7 +55,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
 }) => {
   const preview = template.items
     .slice(0, 3)
-    .map((i) => i.product_name ?? `Producto #${i.product}`)
+    .map((i) => resolveProductNameFromEntity(i.product, i.product_name))
     .join(", ");
   const extra =
     template.item_count > 3 ? ` +${template.item_count - 3} más` : "";
@@ -255,7 +256,7 @@ export const TemplatesScreen: React.FC = () => {
         message={`¿Seguro que quieres eliminar la plantilla "${deleteTarget?.name}"? Esta acción no se puede deshacer.`}
         confirmLabel={deleting ? "Eliminando…" : "Eliminar"}
         cancelLabel="Cancelar"
-        destructive
+        confirmVariant="danger"
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />

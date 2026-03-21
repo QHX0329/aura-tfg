@@ -28,6 +28,7 @@ import { priceService } from "@/api/priceService";
 import { productService } from "@/api/productService";
 import type { HomeStackParamList } from "@/navigation/types";
 import type { PriceAlert, Product } from "@/types/domain";
+import { resolveProductNameFromEntity } from "@/utils/entityResolver";
 import { blurActiveElementOnWeb } from "@/utils/webA11y";
 
 type Props = NativeStackScreenProps<HomeStackParamList, "PriceAlerts">;
@@ -40,14 +41,7 @@ function getAlertProduct(alert: PriceAlert): Product | null {
 }
 
 function getAlertProductName(alert: PriceAlert): string {
-  const product = getAlertProduct(alert);
-  if (product?.name) {
-    return product.name;
-  }
-  if (alert.product_name?.trim()) {
-    return alert.product_name;
-  }
-  return `Producto #${String(alert.product)}`;
+  return resolveProductNameFromEntity(alert.product, alert.product_name);
 }
 
 const PriceAlertRow: React.FC<{

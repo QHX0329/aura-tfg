@@ -1,76 +1,75 @@
 /**
- * Paleta de colores de BargAIn — "Mercado Mediterráneo Digital"
+ * Paleta de colores de BargAIn — "Editorial Mediterranean"
  *
- * Inspirada en los mercados de Sevilla (Triana, Lonja del Barranco):
- * azulejos, naranja sevillano, verde oliva y cerámica artesanal
- * traducidos a interfaz digital cálida y funcional.
+ * Base marfil cálida con primario oliva y secundarios tierra para una
+ * estética premium sin perder legibilidad y contraste.
  */
 
 export const colors = {
   // ─── Identidad de marca ───────────────────────────────────────────────
-  /** Naranja Triana — CTA principal, énfasis de marca */
-  primary: "#E8541A",
-  /** Verde Oliva Macarena — éxito, ahorro, acciones positivas */
-  secondary: "#2D5016",
-  /** Amarillo Azulejo — acento vivo, highlights, badges */
-  accent: "#F5C842",
+  /** Verde oliva editorial — CTA principal */
+  primary: "#3E5219",
+  /** Terracota profunda — acentos cálidos */
+  secondary: "#904D00",
+  /** Ámbar cálido — highlights y foco visual */
+  accent: "#FFA049",
 
   // ─── Fondos y superficies ────────────────────────────────────────────
-  /** Blanco Cálido — fondo raíz de la app */
-  background: "#FAFAF7",
-  /** Crema Cerámica — superficie de cards, modals y paneles */
-  surface: "#FDF6EC",
-  /** Variante de superficie — separadores visuales, input backgrounds */
-  surfaceVariant: "#F2E3D1",
+  /** Lienzo marfil */
+  background: "#FCF9F8",
+  /** Superficie base */
+  surface: "#FFFFFF",
+  /** Superficie secundaria */
+  surfaceVariant: "#F6F3F2",
 
   // ─── Texto ───────────────────────────────────────────────────────────
-  /** Casi Negro cálido — texto principal */
-  text: "#1A1A18",
-  /** Gris Tierra — texto secundario, subtítulos, placeholders */
-  textMuted: "#4F4F47",
+  /** Carbón cálido — texto principal */
+  text: "#1B1C1C",
+  /** Gris oliva apagado — texto secundario */
+  textMuted: "#45483C",
   /** Texto desactivado */
-  textDisabled: "#B0AFA6",
+  textDisabled: "#9AA08F",
 
   // ─── Estados semánticos ──────────────────────────────────────────────
-  /** Verde Ahorro — confirmación, precio reducido, rutas óptimas */
-  success: "#3A7D44",
+  /** Verde de confirmación */
+  success: "#3E6A2A",
   /** Rojo Alerta — errores, precio subido, avisos críticos */
   error: "#C0392B",
-  /** Ámbar Aviso — advertencias, expiración próxima de precio */
-  warning: "#D4850A",
-  /** Azul Informativo — tooltips, estados neutros */
-  info: "#1A6B8A",
+  /** Ámbar aviso */
+  warning: "#A16A19",
+  /** Azul informativo */
+  info: "#2F6577",
 
   // ─── Bordes y separadores ────────────────────────────────────────────
-  /** Borde Suave — contornos de input, separaciones de card */
-  border: "#E8E0D0",
-  /** Divisor ligero — líneas entre ítems de lista */
-  divider: "#EFE9DB",
+  /** Borde suave */
+  border: "#D9DCD1",
+  /** Divisor ligero */
+  divider: "#EAECE3",
 
   // ─── Tintes de primaria (estados interactivos) ───────────────────────
-  primaryTint: "#FCE7DD", // Fondo hover / focus suave
-  primaryLight: "#F5A07A", // Versión clara para estados visuales
-  primaryDark: "#C03E0E", // Pressed / versión profunda
+  primaryTint: "#EDF3E1",
+  primaryLight: "#556B2F",
+  primaryDark: "#2D3D10",
 
   // ─── Tintes de secundaria ────────────────────────────────────────────
-  secondaryTint: "#EAF1E6",
-  secondaryLight: "#5A8A30",
-  secondaryDark: "#1E3610",
+  secondaryTint: "#FFF1E3",
+  secondaryLight: "#B06D26",
+  secondaryDark: "#6E3A00",
 
   // ─── Tintes de acento ────────────────────────────────────────────────
-  accentTint: "#FEF9E7",
-  accentDark: "#C9A20A",
+  accentTint: "#FFF7EF",
+  accentDark: "#A9601C",
 
   // ─── Fondos semánticos con opacidad ──────────────────────────────────
-  successBg: "#EDF5EF",
-  errorBg: "#FBEAEA",
-  warningBg: "#FEF3E2",
-  infoBg: "#E6F3F8",
+  successBg: "#EEF5E9",
+  errorBg: "#FCEAE9",
+  warningBg: "#FFF5E8",
+  infoBg: "#EAF4F8",
 
   // ─── Overlays ────────────────────────────────────────────────────────
-  overlay: "rgba(26, 26, 24, 0.5)",
-  overlayLight: "rgba(26, 26, 24, 0.18)",
-  overlayHeavy: "rgba(26, 26, 24, 0.72)",
+  overlay: "rgba(27, 28, 28, 0.46)",
+  overlayLight: "rgba(27, 28, 28, 0.14)",
+  overlayHeavy: "rgba(27, 28, 28, 0.68)",
 
   // ─── Primitivos ──────────────────────────────────────────────────────
   white: "#FFFFFF",
@@ -86,22 +85,22 @@ export const colors = {
     carrefour: "#004A99",
     dia: "#E30613",
     alcampo: "#E4002B",
-    local: "#E8541A", // Comercio local = primario BargAIn
+    local: "#904D00",
   },
 
   // ─── Compat legacy (v1 theme API) ─────────────────────────────────────
   // Mantiene operativas pantallas que todavía consumen `colors.light.*`.
   light: {
-    background: "#FAFAF7",
-    surface: "#FDF6EC",
-    surfaceVariant: "#F5EDD9",
-    text: "#1A1A18",
-    textSecondary: "#6B6B63",
-    textTertiary: "#B0AFA6",
-    border: "#E8E0D0",
-    divider: "#EFE9DB",
-    tabBar: "#FDF6EC",
-    tabBarInactive: "#6B6B63",
+    background: "#FCF9F8",
+    surface: "#FFFFFF",
+    surfaceVariant: "#F6F3F2",
+    text: "#1B1C1C",
+    textSecondary: "#45483C",
+    textTertiary: "#9AA08F",
+    border: "#D9DCD1",
+    divider: "#EAECE3",
+    tabBar: "#FFFFFF",
+    tabBarInactive: "#75796B",
   },
 } as const;
 

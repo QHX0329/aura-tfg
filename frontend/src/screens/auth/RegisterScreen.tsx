@@ -23,7 +23,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, spacing, textStyles } from "@/theme";
+import { borderRadius, colors, shadows, spacing, textStyles } from "@/theme";
 import { useAuthStore } from "@/store/authStore";
 import { authService } from "@/api/authService";
 import type { AuthStackParamList } from "@/navigation/types";
@@ -140,11 +140,10 @@ export const RegisterScreen: React.FC = () => {
             <Text style={[styles.title, isCompact && styles.titleCompact]}>
               Crea tu cuenta
             </Text>
-            <Text style={styles.subtitle}>
-              Únete a BargAIn y empieza a ahorrar
-            </Text>
+            <Text style={styles.subtitle}>Únete a BargAIn y empieza a ahorrar</Text>
           </View>
 
+          <View style={styles.formCard}>
           <View style={styles.form}>
             {/* Fila usuario */}
             <View
@@ -318,6 +317,7 @@ export const RegisterScreen: React.FC = () => {
               </Text>
             </TouchableOpacity>
           </View>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -335,18 +335,18 @@ const styles = StyleSheet.create({
   inner: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: spacing.xxl,
+    paddingHorizontal: spacing.lg,
   },
   header: {
     alignItems: "center",
-    marginBottom: spacing.xl,
+    marginBottom: spacing.md,
   },
   headerCompact: {
     marginBottom: spacing.md,
   },
   logoImage: {
-    width: 160,
-    height: 80,
+    width: 130,
+    height: 64,
     marginBottom: spacing.sm,
   },
   title: {
@@ -357,9 +357,18 @@ const styles = StyleSheet.create({
     ...textStyles.heading2,
   },
   subtitle: {
-    ...textStyles.body,
+    ...textStyles.bodySmall,
     color: colors.textMuted,
     marginTop: spacing.xs,
+    textAlign: "center",
+  },
+  formCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    ...shadows.card,
   },
   form: {},
   row: {
@@ -384,10 +393,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   input: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceVariant,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     ...textStyles.body,
@@ -412,12 +421,13 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     backgroundColor: colors.primary,
-    paddingVertical: spacing.lg,
-    borderRadius: 12,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
     alignItems: "center",
     marginTop: spacing.sm,
     minHeight: 44,
     justifyContent: "center",
+    ...shadows.button,
   },
   registerButtonDisabled: {
     opacity: 0.7,
@@ -437,7 +447,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   loginTextBold: {
-    color: colors.primary,
+    color: colors.secondary,
     fontWeight: "600",
   },
 });

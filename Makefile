@@ -23,7 +23,7 @@ dev: ## Levantar backend (Docker)
 	@echo "💡 Ejecuta 'make frontend' en otra terminal para el frontend."
 
 frontend: ## Levantar frontend nativo (Expo)
-	cd frontend && npx expo start --web
+	cd frontend && npx expo startj
 
 frontend-install: ## Instalar dependencias frontend nativas
 	cd frontend && npm install

@@ -53,9 +53,9 @@ import { storeService } from "@/api/storeService";
 import { notificationService } from "@/api/notificationService";
 import { priceService } from "@/api/priceService";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { resolveProductNameFromEntity } from "@/utils/entityResolver";
 import type {
   Store,
-  Product,
   PriceAlert,
   ShoppingList,
   Notification,
@@ -292,11 +292,7 @@ const PriceAlertCard: React.FC<{
   alert: PriceAlert;
   onPress: () => void;
 }> = ({ alert, onPress }) => {
-  const productName =
-    alert.product_name ??
-    (typeof alert.product === "object" && alert.product !== null
-      ? (alert.product as Product).name
-      : `Producto #${String(alert.product)}`);
+  const productName = resolveProductNameFromEntity(alert.product, alert.product_name);
 
   return (
     <TouchableOpacity
@@ -511,7 +507,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
   const recentLists = [...lists]
     .sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        new Date(b.updatedAt ?? b.createdAt ?? 0).getTime() -
+        new Date(a.updatedAt ?? a.createdAt ?? 0).getTime(),
     )
     .slice(0, 2);
 
@@ -530,10 +527,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
       color: colors.secondary,
       bg: colors.secondaryTint,
       onPress: () =>
-        navigation.navigate(
-          "ListsTab" as never,
-          { screen: "Templates" } as never,
-        ),
+        (
+          navigation as unknown as {
+            navigate: (route: string, params?: unknown) => void;
+          }
+        ).navigate("ListsTab", { screen: "Templates" }),
     },
     {
       id: "catalog",
@@ -824,13 +822,14 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.md,
+    paddingTop: spacing.xs,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingTop: spacing.xl,
-    paddingBottom: spacing.xs,
+    paddingBottom: spacing.sm,
   },
   headerLeft: {
     flex: 1,
@@ -851,13 +850,16 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   bellButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surfaceVariant,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
+    ...shadows.card,
   },
   badge: {
     position: "absolute",
@@ -884,6 +886,12 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: spacing.lg,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    ...shadows.card,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -894,12 +902,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: fontFamilies.bodySemiBold,
     fontWeight: "600",
-    fontSize: fontSize["13"],
-    color: colors.textMuted,
-    lineHeight: Math.round(fontSize.sm * 1.2),
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: spacing.xs,
+    fontSize: fontSize["15"],
+    color: colors.text,
+    lineHeight: Math.round(fontSize["15"] * 1.25),
   },
   sectionLink: {
     fontFamily: fontFamilies.bodyMedium,
@@ -918,6 +923,7 @@ const styles = StyleSheet.create({
   emptyAlertsWrap: {
     alignItems: "center",
     gap: spacing.xs,
+    paddingVertical: spacing.sm,
   },
   createAlertButton: {
     flexDirection: "row",
@@ -949,13 +955,14 @@ const quickStyles = StyleSheet.create({
     flex: 1,
   },
   tile: {
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.lg,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xs,
     alignItems: "center",
     gap: 6,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
   iconCircle: {
     width: 44,
@@ -976,7 +983,7 @@ const quickStyles = StyleSheet.create({
 
 const recentListStyles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceVariant,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     borderWidth: StyleSheet.hairlineWidth,
@@ -1017,7 +1024,7 @@ const recentListStyles = StyleSheet.create({
 
 const notifCardStyles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceVariant,
     borderRadius: borderRadius.md,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
@@ -1063,7 +1070,7 @@ const notifCardStyles = StyleSheet.create({
 
 const priceAlertStyles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceVariant,
     borderRadius: borderRadius.md,
     padding: spacing.sm,
     borderWidth: StyleSheet.hairlineWidth,
@@ -1096,7 +1103,7 @@ const priceAlertStyles = StyleSheet.create({
 
 const teaserStyles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceVariant,
     borderRadius: borderRadius.md,
     padding: spacing.sm,
     flexDirection: "row",

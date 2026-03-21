@@ -23,7 +23,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, spacing, textStyles } from "@/theme";
+import { borderRadius, colors, shadows, spacing, textStyles } from "@/theme";
 import { useAuthStore } from "@/store/authStore";
 import { authService } from "@/api/authService";
 import type { AuthStackParamList } from "@/navigation/types";
@@ -100,10 +100,12 @@ export const LoginScreen: React.FC = () => {
               style={[styles.logoImage, isCompact && styles.logoImageCompact]}
               resizeMode="contain"
             />
-            <Text style={styles.subtitle}>Tu compra inteligente</Text>
+            <Text style={styles.title}>Bienvenido de vuelta</Text>
+            <Text style={styles.subtitle}>Tu compra inteligente, con estilo premium</Text>
           </View>
 
-          <View style={styles.form}>
+          <View style={styles.formCard}>
+            <View style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Usuario</Text>
               <TextInput
@@ -163,16 +165,26 @@ export const LoginScreen: React.FC = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.registerLink}
+              style={styles.registerButton}
               onPress={() => navigation.navigate("Register")}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               disabled={isLoading}
             >
-              <Text style={styles.registerText}>
-                ¿No tienes cuenta?{" "}
-                <Text style={styles.registerTextBold}>Regístrate</Text>
-              </Text>
+              <Text style={styles.registerButtonText}>Crear una cuenta</Text>
             </TouchableOpacity>
+
+            <View style={styles.socialWrap}>
+              <Text style={styles.socialLabel}>o continúa con</Text>
+              <View style={styles.socialRow}>
+                <View style={styles.socialChip}>
+                  <Text style={styles.socialChipText}>Google</Text>
+                </View>
+                <View style={styles.socialChip}>
+                  <Text style={styles.socialChipText}>Apple</Text>
+                </View>
+              </View>
+            </View>
+            </View>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -191,32 +203,47 @@ const styles = StyleSheet.create({
   inner: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: spacing.xxl,
+    paddingHorizontal: spacing.lg,
   },
   header: {
     alignItems: "center",
-    marginBottom: spacing.xxxl,
+    marginBottom: spacing.xl,
   },
   headerCompact: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   logoImage: {
-    width: 300,
-    height: 180,
-    marginBottom: spacing.lg,
+    width: 220,
+    height: 120,
+    marginBottom: spacing.md,
   },
   logoImageCompact: {
-    width: 200,
-    height: 120,
+    width: 160,
+    height: 96,
     marginBottom: spacing.sm,
   },
+  title: {
+    ...textStyles.heading2,
+    color: colors.text,
+    textAlign: "center",
+  },
   subtitle: {
-    ...textStyles.body,
+    ...textStyles.bodySmall,
     color: colors.textMuted,
+    marginTop: spacing.xs,
+    textAlign: "center",
+  },
+  formCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    ...shadows.card,
   },
   form: {},
   inputGroup: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   label: {
     ...textStyles.label,
@@ -224,10 +251,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   input: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceVariant,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     ...textStyles.body,
@@ -247,12 +274,13 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: colors.primary,
-    paddingVertical: spacing.lg,
-    borderRadius: 12,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
     alignItems: "center",
     marginTop: spacing.md,
     minHeight: 44,
     justifyContent: "center",
+    ...shadows.button,
   },
   loginButtonDisabled: {
     opacity: 0.7,
@@ -269,20 +297,45 @@ const styles = StyleSheet.create({
   },
   forgotText: {
     ...textStyles.caption,
-    color: colors.textMuted,
+    color: colors.secondary,
   },
-  registerLink: {
+  registerButton: {
     marginTop: spacing.sm,
     alignItems: "center",
     minHeight: 44,
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.primaryTint,
   },
-  registerText: {
-    ...textStyles.body,
-    color: colors.textMuted,
-  },
-  registerTextBold: {
+  registerButtonText: {
+    ...textStyles.buttonSmall,
     color: colors.primary,
-    fontWeight: "600",
+  },
+  socialWrap: {
+    marginTop: spacing.md,
+    alignItems: "center",
+  },
+  socialLabel: {
+    ...textStyles.caption,
+    color: colors.textMuted,
+    marginBottom: spacing.sm,
+  },
+  socialRow: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  socialChip: {
+    backgroundColor: colors.surfaceVariant,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.pill,
+  },
+  socialChipText: {
+    ...textStyles.labelSmall,
+    color: colors.text,
   },
 });

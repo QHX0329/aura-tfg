@@ -101,6 +101,7 @@ export const storeService = {
       RawStore[] | PaginatedResponse<RawStore>
     >("/stores/", {
       params: { lat, lng, radius_km },
+      timeout: 30000,
     });
 
     return normalizeCollection(payload);

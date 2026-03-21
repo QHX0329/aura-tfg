@@ -13,6 +13,7 @@
 
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { NativeModules, Platform } from "react-native";
 import {
   getItem as getStoredItem,
   setItem as setStoredItem,
@@ -20,9 +21,95 @@ import {
 
 import { useAuthStore } from "@/store/authStore";
 
-/** URL base de la API — en desarrollo apunta al backend local */
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+/** Normaliza una URL base para asegurar esquema y prefijo /api/v1 */
+const normalizeApiBaseUrl = (value: string): string => {
+  const trimmed = value.trim();
+  const withScheme = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : `http://${trimmed}`;
+  const withoutTrailingSlashes = withScheme.replace(/\/+$/, "");
+  return withoutTrailingSlashes.endsWith("/api/v1")
+    ? withoutTrailingSlashes
+    : `${withoutTrailingSlashes}/api/v1`;
+};
+
+const isLocalOrLoopbackHost = (url: string): boolean =>
+  /https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(url);
+
+const isLikelyVirtualizedHost = (url: string): boolean =>
+  /https?:\/\/172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+(?::\d+)?/i.test(url);
+
+const getMetroDevHost = (): string | null => {
+  if (!__DEV__) {
+    return null;
+  }
+
+  // In Expo/RN dev, scriptURL usually looks like:
+  // http://192.168.x.x:8081/index.bundle?platform=ios...
+  const scriptURL =
+    NativeModules?.SourceCode?.scriptURL as string | undefined;
+
+  if (!scriptURL) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(scriptURL);
+    return parsed.hostname || null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Resuelve URL base de API de forma robusta por plataforma.
+ * - Prioriza EXPO_PUBLIC_API_URL
+ * - En Android, evita localhost (no apunta al host) usando 10.0.2.2 para emulador
+ */
+const resolveApiBaseUrl = (): string => {
+  const fromEnv = process.env.EXPO_PUBLIC_API_URL?.trim();
+  if (fromEnv) {
+    const normalized = normalizeApiBaseUrl(fromEnv);
+
+    if (
+      Platform.OS === "android" &&
+      isLocalOrLoopbackHost(normalized)
+    ) {
+      return "http://10.0.2.2:8000/api/v1";
+    }
+
+    // iOS/Android physical devices cannot typically reach localhost or host-only
+    // virtual networks (e.g. 172.24.x.x from WSL2). Fallback to Metro host.
+    if (
+      Platform.OS !== "web" &&
+      (isLocalOrLoopbackHost(normalized) || isLikelyVirtualizedHost(normalized))
+    ) {
+      const metroHost = getMetroDevHost();
+      if (metroHost) {
+        return `http://${metroHost}:8000/api/v1`;
+      }
+    }
+
+    return normalized;
+  }
+
+  if (Platform.OS === "android") {
+    return "http://10.0.2.2:8000/api/v1";
+  }
+
+  if (Platform.OS === "ios") {
+    return "http://127.0.0.1:8000/api/v1";
+  }
+
+  return "http://localhost:8000/api/v1";
+};
+
+/** URL base de la API */
+const API_BASE_URL = resolveApiBaseUrl();
+
+if (__DEV__) {
+  console.log(`[apiClient] API_BASE_URL=${API_BASE_URL}`);
+}
 
 /** Instancia de Axios con configuración base */
 export const apiClient = axios.create({

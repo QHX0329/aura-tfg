@@ -110,19 +110,19 @@ export const shadows = {
    * card — sombra cálida de cards con tinte naranja BargAIn.
    * 0 2px 12px rgba(232,84,26, 0.08)
    */
-  card: _buildShadow("#E8541A", 0, 2, 6, 0.08, 2),
+  card: _buildShadow("#1B1C1C", 0, 6, 16, 0.06, 3),
 
   /**
    * elevated — sombra profunda para modals, bottom sheets, elements flotantes.
    * 0 8px 32px rgba(26,26,24, 0.12)
    */
-  elevated: _buildShadow("#1A1A18", 0, 8, 16, 0.12, 8),
+  elevated: _buildShadow("#1B1C1C", 0, 12, 24, 0.12, 10),
 
   /**
    * button — sombra para botones primarios en estado rest.
    * 0 4px 16px rgba(232,84,26, 0.28)
    */
-  button: _buildShadow("#E8541A", 0, 4, 8, 0.28, 4),
+  button: _buildShadow("#3E5219", 0, 6, 14, 0.2, 6),
 
   /**
    * tabBar — sombra superior de la barra de navegación.

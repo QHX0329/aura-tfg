@@ -36,6 +36,7 @@ import { listService } from "@/api/listService";
 import type { ListCollaborator } from "@/api/listService";
 import { useListStore } from "@/store/listStore";
 import { SkeletonBox } from "@/components/ui/SkeletonBox";
+import { resolveProductNameFromEntity } from "@/utils/entityResolver";
 import { blurActiveElementOnWeb } from "@/utils/webA11y";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -61,12 +62,7 @@ const ItemRow: React.FC<ItemRowProps> = ({
 }) => {
   // Backend enriched GET returns product_name; POST returns product as integer FK.
   // Support both shapes.
-  const productName =
-    item.product_name ??
-    (typeof item.product === "object" && item.product !== null
-      ? (item.product as { name?: string }).name
-      : undefined) ??
-    "Producto";
+  const productName = resolveProductNameFromEntity(item.product, item.product_name);
   const productUnit =
     typeof item.product === "object" && item.product !== null
       ? (item.product as { unit?: string }).unit
