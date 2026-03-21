@@ -4,7 +4,7 @@
 
 Documento sincronizado con el estado del proyecto a 2026-03-19.
 
-## Acrónimos clave
+## Acronomos clave
 
 | Termino | Significado |
 |---------|-------------|
@@ -40,7 +40,7 @@ Documento sincronizado con el estado del proyecto a 2026-03-19.
 | TASKS | Archivo maestro de seguimiento del backlog |
 | ai-mistakes-log | Registro de errores y reglas derivadas para agentes |
 | modelo hibrido | Backend Docker + frontend host nativo |
-| core backend | Módulos users/products/stores/prices/lists/business/notifications |
+| core backend | Modulos users/products/stores/prices/lists/business/notifications |
 
 ---
 Actualizado: 2026-03-19
