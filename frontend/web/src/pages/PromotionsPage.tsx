@@ -27,7 +27,6 @@ import { useBusinessStore } from '../store/businessStore';
 import type { Promotion } from '../store/businessStore';
 import {
   collectUnresolvedEntityIds,
-  getEntityId,
   resolveEntityName,
   type EntityLike,
 } from '../utils/entityResolver';
