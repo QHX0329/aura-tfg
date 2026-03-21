@@ -1,7 +1,10 @@
-.PHONY: help setup dev stop test test-backend test-backend-cov test-frontend lint lint-backend lint-backend-fix lint-frontend migrate makemigrations seed createsuperuser scrape scrape-mercadona docs build build-dev logs logs-backend logs-frontend deploy-staging clean frontend frontend-install
+.PHONY: help setup dev stop test test-backend test-backend-cov test-frontend lint lint-backend lint-backend-fix lint-frontend migrate makemigrations seed createsuperuser scrape scrape-mercadona docs build build-dev logs logs-backend logs-frontend deploy-staging clean frontend frontend-install frontend-web ip
 
 help: ## Mostrar esta ayuda
 	@python -c "import re, pathlib; mf=pathlib.Path('Makefile'); rows=[]; [rows.append((m.group(1), m.group(2))) for line in mf.read_text(encoding='utf-8').splitlines() if (m:=re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line))]; [print(f'{k:20} {v}') for k, v in sorted(rows)]"
+
+ip: ## Mostrar IP local y publica
+	@powershell -NoProfile -Command "$$local=(Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $$_.IPAddress -notlike '169.254*' -and $$_.IPAddress -ne '127.0.0.1' } | Select-Object -First 1 -ExpandProperty IPAddress); Write-Host ('IP local:   ' + $$local); $$public=(Invoke-RestMethod -Uri 'https://api.ipify.org?format=text'); Write-Host ('IP publica: ' + $$public)"
 
 # ── Entorno ──────────────────────────────────────────
 
@@ -24,6 +27,9 @@ frontend: ## Levantar frontend nativo (Expo)
 
 frontend-install: ## Instalar dependencias frontend nativas
 	cd frontend && npm install
+
+frontend-web: ## Levantar entorno web en frontend/web (Vite)
+	cd frontend/web && npm run dev
 
 stop: ## Detener todos los servicios
 	docker compose -f docker-compose.dev.yml down

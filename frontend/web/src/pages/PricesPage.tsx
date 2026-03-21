@@ -18,6 +18,12 @@ import { PlusOutlined, BarcodeOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { apiClient } from '../api/client';
+import {
+  collectUnresolvedEntityIds,
+  getEntityId,
+  resolveEntityName,
+  type EntityReference,
+} from '../utils/entityResolver';
 
 const { Title } = Typography;
 
@@ -33,11 +39,6 @@ interface StoreOption {
   address?: string;
 }
 
-interface EntityReference {
-  id: string | number;
-  name?: string;
-}
-
 interface PriceRecord {
   id: string;
   product: EntityReference | string | number;
@@ -49,6 +50,11 @@ interface PriceRecord {
   updated_at: string;
 }
 
+interface ProductLookupRecord {
+  id: string | number;
+  name: string;
+}
+
 interface PriceFormValues {
   product_id: string;
   product_name: string;
@@ -58,20 +64,6 @@ interface PriceFormValues {
   offer_price?: number;
   offer_end_date?: dayjs.Dayjs;
 }
-
-const getEntityId = (entity: EntityReference | string | number): string => {
-  if (typeof entity === 'object' && entity !== null && 'id' in entity) {
-    return String(entity.id);
-  }
-  return String(entity);
-};
-
-const getEntityName = (entity: EntityReference | string | number): string => {
-  if (typeof entity === 'object' && entity !== null && 'name' in entity && entity.name) {
-    return entity.name;
-  }
-  return `#${getEntityId(entity)}`;
-};
 
 const PricesPage: React.FC = () => {
   const [prices, setPrices] = useState<PriceRecord[]>([]);
@@ -85,6 +77,7 @@ const PricesPage: React.FC = () => {
   const [barcodeError, setBarcodeError] = useState<string | null>(null);
   const [manualBarcode, setManualBarcode] = useState('');
   const [showBarcodeInput, setShowBarcodeInput] = useState(false);
+  const [productNamesById, setProductNamesById] = useState<Record<string, string>>({});
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [form] = Form.useForm<PriceFormValues>();
@@ -124,6 +117,55 @@ const PricesPage: React.FC = () => {
   useEffect(() => {
     void fetchStores();
   }, []);
+
+  useEffect(() => {
+    const loadMissingProductNames = async () => {
+      const unresolvedIds = collectUnresolvedEntityIds(
+        prices.map((price) => price.product),
+        productNamesById,
+      );
+
+      if (unresolvedIds.length === 0) {
+        return;
+      }
+
+      const lookups = await Promise.allSettled(
+        unresolvedIds.map(async (productId) => {
+          const response = await apiClient.get<ProductLookupRecord>(`/products/${productId}/`);
+          return response.data;
+        }),
+      );
+
+      const resolved = lookups.reduce<Record<string, string>>((acc, result) => {
+        if (result.status === 'fulfilled') {
+          acc[String(result.value.id)] = result.value.name;
+        }
+        return acc;
+      }, {});
+
+      if (Object.keys(resolved).length > 0) {
+        setProductNamesById((previous) => ({ ...previous, ...resolved }));
+      }
+    };
+
+    void loadMissingProductNames();
+  }, [prices, productNamesById]);
+
+  const resolveProductName = (entity: EntityReference | string | number): string => {
+    return resolveEntityName({
+      entity,
+      byId: productNamesById,
+      fallback: 'Producto sin nombre',
+    });
+  };
+
+  const resolveStoreName = (entity: EntityReference | string | number): string => {
+    return resolveEntityName({
+      entity,
+      catalog: storeOptions,
+      fallback: 'Tienda sin nombre',
+    });
+  };
 
   const searchProducts = async (query: string) => {
     if (query.length < 2) return;
@@ -225,7 +267,7 @@ const PricesPage: React.FC = () => {
       const storeId = getEntityId(record.store);
 
       form.setFieldsValue({
-        product_name: getEntityName(record.product),
+        product_name: resolveProductName(record.product),
         product_id: productId,
         store_id: storeId,
         price: parseFloat(record.price),
@@ -282,12 +324,12 @@ const PricesPage: React.FC = () => {
     {
       title: 'Producto',
       key: 'product',
-      render: (_: unknown, record: PriceRecord) => getEntityName(record.product),
+      render: (_: unknown, record: PriceRecord) => resolveProductName(record.product),
     },
     {
       title: 'Tienda',
       key: 'store',
-      render: (_: unknown, record: PriceRecord) => getEntityName(record.store),
+      render: (_: unknown, record: PriceRecord) => resolveStoreName(record.store),
     },
     {
       title: 'Precio',
@@ -320,22 +362,29 @@ const PricesPage: React.FC = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={3} style={{ margin: 0 }}>
-          Gestión de precios
-        </Title>
+      <div className="page-header">
+        <div>
+          <Title level={3} style={{ margin: 0 }}>
+            Gestión de precios
+          </Title>
+          <Typography.Text type="secondary">
+            Controla precios base, unitarios y ofertas por tienda.
+          </Typography.Text>
+        </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer()}>
           Añadir precio
         </Button>
       </div>
 
-      <Table
-        dataSource={prices}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 20 }}
-      />
+      <div className="surface-card" style={{ overflow: 'hidden' }}>
+        <Table
+          dataSource={prices}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{ pageSize: 20 }}
+        />
+      </div>
 
       <Drawer
         title={editingRecord ? 'Editar precio' : 'Añadir precio'}

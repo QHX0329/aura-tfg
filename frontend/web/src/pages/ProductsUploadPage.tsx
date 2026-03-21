@@ -14,7 +14,15 @@ import {
   message,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table';
 import { apiClient } from '../api/client';
+import {
+  collectUnresolvedEntityIds,
+  getEntityId,
+  resolveEntityName,
+  type EntityLike,
+  type EntityReference,
+} from '../utils/entityResolver';
 
 const { Title, Text } = Typography;
 
@@ -35,6 +43,44 @@ interface CategoryNode {
 
 interface ParsedRow extends ProductProposalPayload {
   rowKey: string;
+}
+
+interface BusinessPriceRecord {
+  id: string;
+  product: EntityReference | string | number;
+  store: EntityReference | string | number;
+  price: string;
+  offer_price?: string;
+  verified_at?: string;
+  created_at?: string;
+}
+
+interface PromotionRecord {
+  id: string;
+  product: EntityReference | string | number;
+  is_active: boolean;
+}
+
+interface StoreOption {
+  id: string | number;
+  name: string;
+}
+
+interface ProductLookupRecord {
+  id: string | number;
+  name: string;
+}
+
+interface AssociatedProductRow {
+  key: string;
+  productId: string;
+  productName: string;
+  stores: string;
+  storesCount: number;
+  basePrice: number;
+  offerPrice?: number;
+  activePromotions: number;
+  lastUpdated?: string;
 }
 
 const csvKeyAliases: Record<string, keyof ProductProposalPayload> = {
@@ -188,6 +234,8 @@ const ProductsUploadPage: React.FC = () => {
   const [batchRows, setBatchRows] = useState<ParsedRow[]>([]);
   const [parseError, setParseError] = useState<string | null>(null);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
+  const [associatedProducts, setAssociatedProducts] = useState<AssociatedProductRow[]>([]);
+  const [associatedLoading, setAssociatedLoading] = useState(false);
 
   const categoryOptions = useMemo(
     () =>
@@ -219,6 +267,185 @@ const ProductsUploadPage: React.FC = () => {
 
     void fetchCategories();
   }, []);
+
+  React.useEffect(() => {
+    const loadAssociatedProducts = async () => {
+      setAssociatedLoading(true);
+      try {
+        const [pricesResponse, promotionsResponse, storesResponse] = await Promise.all([
+          apiClient.get<BusinessPriceRecord[] | { results?: BusinessPriceRecord[] }>('/business/prices/'),
+          apiClient.get<PromotionRecord[] | { results?: PromotionRecord[] }>('/business/promotions/'),
+          apiClient.get<StoreOption[]>('/business/prices/stores/'),
+        ]);
+
+        const pricesData = Array.isArray(pricesResponse.data)
+          ? pricesResponse.data
+          : pricesResponse.data?.results ?? [];
+        const promotionsData = Array.isArray(promotionsResponse.data)
+          ? promotionsResponse.data
+          : promotionsResponse.data?.results ?? [];
+        const storesData = Array.isArray(storesResponse.data) ? storesResponse.data : [];
+
+        const storeNamesById = storesData.reduce<Record<string, string>>((acc, store) => {
+          acc[String(store.id)] = store.name;
+          return acc;
+        }, {});
+
+        const productIdsToResolve = collectUnresolvedEntityIds(
+          pricesData.map((item) => item.product),
+        );
+
+        const productLookups = await Promise.allSettled(
+          productIdsToResolve.map(async (productId) => {
+            const response = await apiClient.get<ProductLookupRecord>(`/products/${productId}/`);
+            return response.data;
+          }),
+        );
+
+        const productNamesById = productLookups.reduce<Record<string, string>>((acc, result) => {
+          if (result.status === 'fulfilled') {
+            acc[String(result.value.id)] = result.value.name;
+          }
+          return acc;
+        }, {});
+
+        const promotionsByProduct = promotionsData.reduce<Record<string, number>>((acc, promo) => {
+          if (!promo.is_active) {
+            return acc;
+          }
+          const productId = getEntityId(promo.product);
+          acc[productId] = (acc[productId] ?? 0) + 1;
+          return acc;
+        }, {});
+
+        type MutableAggregate = {
+          productId: string;
+          productName: string;
+          stores: Set<string>;
+          basePrice: number;
+          offerPrice?: number;
+          lastUpdated?: string;
+        };
+
+        const byProduct = pricesData.reduce<Map<string, MutableAggregate>>((acc, item) => {
+          const productId = getEntityId(item.product);
+          const productName = resolveEntityName({
+            entity: item.product as EntityLike,
+            byId: productNamesById,
+            fallback: 'Producto sin nombre',
+          });
+          const storeName = resolveEntityName({
+            entity: item.store as EntityLike,
+            byId: storeNamesById,
+            fallback: 'Tienda sin nombre',
+          });
+          const itemBasePrice = Number.parseFloat(item.price);
+          const itemOfferPrice = item.offer_price ? Number.parseFloat(item.offer_price) : undefined;
+          const itemUpdatedAt = item.verified_at ?? item.created_at;
+
+          const current = acc.get(productId);
+          if (!current) {
+            acc.set(productId, {
+              productId,
+              productName,
+              stores: new Set([storeName]),
+              basePrice: itemBasePrice,
+              offerPrice: itemOfferPrice,
+              lastUpdated: itemUpdatedAt,
+            });
+            return acc;
+          }
+
+          current.stores.add(storeName);
+          if (Number.isFinite(itemBasePrice)) {
+            current.basePrice = Math.min(current.basePrice, itemBasePrice);
+          }
+
+          if (itemOfferPrice !== undefined && Number.isFinite(itemOfferPrice)) {
+            current.offerPrice =
+              current.offerPrice !== undefined
+                ? Math.min(current.offerPrice, itemOfferPrice)
+                : itemOfferPrice;
+          }
+
+          if (itemUpdatedAt && (!current.lastUpdated || new Date(itemUpdatedAt) > new Date(current.lastUpdated))) {
+            current.lastUpdated = itemUpdatedAt;
+          }
+
+          return acc;
+        }, new Map());
+
+        const rows: AssociatedProductRow[] = Array.from(byProduct.values())
+          .map((aggregate) => ({
+            key: aggregate.productId,
+            productId: aggregate.productId,
+            productName: aggregate.productName,
+            stores: Array.from(aggregate.stores).sort((a, b) => a.localeCompare(b, 'es')).join(', '),
+            storesCount: aggregate.stores.size,
+            basePrice: aggregate.basePrice,
+            offerPrice: aggregate.offerPrice,
+            activePromotions: promotionsByProduct[aggregate.productId] ?? 0,
+            lastUpdated: aggregate.lastUpdated,
+          }))
+          .sort((a, b) => a.productName.localeCompare(b.productName, 'es'));
+
+        setAssociatedProducts(rows);
+      } catch {
+        setAssociatedProducts([]);
+      } finally {
+        setAssociatedLoading(false);
+      }
+    };
+
+    void loadAssociatedProducts();
+  }, []);
+
+  const associatedColumns: ColumnsType<AssociatedProductRow> = [
+    {
+      title: 'Producto',
+      dataIndex: 'productName',
+      key: 'productName',
+    },
+    {
+      title: 'Tiendas',
+      dataIndex: 'stores',
+      key: 'stores',
+    },
+    {
+      title: 'N. tiendas',
+      dataIndex: 'storesCount',
+      key: 'storesCount',
+      width: 120,
+    },
+    {
+      title: 'Precio base min.',
+      dataIndex: 'basePrice',
+      key: 'basePrice',
+      width: 150,
+      render: (value: number) => `${value.toFixed(2)} EUR`,
+    },
+    {
+      title: 'Mejor oferta',
+      dataIndex: 'offerPrice',
+      key: 'offerPrice',
+      width: 140,
+      render: (value?: number) => (value !== undefined ? `${value.toFixed(2)} EUR` : '-'),
+    },
+    {
+      title: 'Promociones activas',
+      dataIndex: 'activePromotions',
+      key: 'activePromotions',
+      width: 170,
+    },
+    {
+      title: 'Última actualización',
+      dataIndex: 'lastUpdated',
+      key: 'lastUpdated',
+      width: 170,
+      render: (value?: string) =>
+        value ? new Date(value).toLocaleDateString('es-ES') : '-',
+    },
+  ];
 
   const submitProposal = async (payload: ProductProposalPayload): Promise<void> => {
     await apiClient.post('/products/proposals/', payload);
@@ -297,11 +524,13 @@ const ProductsUploadPage: React.FC = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={3} style={{ margin: 0 }}>
-          Subida de productos
-        </Title>
-        <Text type="secondary">Alta manual o importación desde archivo CSV/JSON</Text>
+      <div className="page-header">
+        <div>
+          <Title level={3} style={{ margin: 0 }}>
+            Subida de productos
+          </Title>
+          <Text type="secondary">Alta manual o importación desde archivo CSV/JSON</Text>
+        </div>
       </div>
 
       <Tabs
@@ -310,7 +539,7 @@ const ProductsUploadPage: React.FC = () => {
             key: 'manual',
             label: 'Manual',
             children: (
-              <Card>
+              <Card className="surface-card">
                 <Form<ProductProposalPayload>
                   form={manualForm}
                   layout="vertical"
@@ -367,7 +596,7 @@ const ProductsUploadPage: React.FC = () => {
             label: 'Archivo',
             children: (
               <Space orientation="vertical" style={{ width: '100%' }} size={16}>
-                <Card>
+                <Card className="surface-card">
                   <Upload
                     accept=".csv,.json"
                     maxCount={1}
@@ -386,7 +615,7 @@ const ProductsUploadPage: React.FC = () => {
 
                 {parseError && <Alert type="warning" message={parseError} />}
 
-                <Card title="Previsualización">
+                <Card className="surface-card" title="Previsualización">
                   <Table<ParsedRow>
                     dataSource={batchRows}
                     rowKey="rowKey"
@@ -413,6 +642,20 @@ const ProductsUploadPage: React.FC = () => {
           },
         ]}
       />
+
+      <Card
+        className="surface-card"
+        title="Productos asociados a tu negocio"
+        style={{ marginTop: 16 }}
+      >
+        <Table<AssociatedProductRow>
+          dataSource={associatedProducts}
+          columns={associatedColumns}
+          loading={associatedLoading}
+          pagination={{ pageSize: 10 }}
+          locale={{ emptyText: 'Todavia no hay productos asociados por precios o promociones.' }}
+        />
+      </Card>
     </div>
   );
 };

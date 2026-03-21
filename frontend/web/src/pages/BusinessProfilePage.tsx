@@ -122,10 +122,15 @@ const BusinessProfilePage: React.FC = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={3} style={{ margin: 0 }}>
-          Perfil del negocio
-        </Title>
+      <div className="page-header">
+        <div>
+          <Title level={3} style={{ margin: 0 }}>
+            Perfil del negocio
+          </Title>
+          <Typography.Text type="secondary">
+            Mantén actualizada la identidad y datos clave de tu comercio.
+          </Typography.Text>
+        </div>
         {!editing && (
           <Button type="primary" icon={<EditOutlined />} onClick={startEditing}>
             Editar
@@ -134,7 +139,7 @@ const BusinessProfilePage: React.FC = () => {
       </div>
 
       {!editing ? (
-        <Card>
+        <Card className="surface-card">
           <Descriptions column={1} bordered>
             <Descriptions.Item label="Nombre del negocio">
               {profile.business_name}
@@ -164,7 +169,7 @@ const BusinessProfilePage: React.FC = () => {
           </Descriptions>
         </Card>
       ) : (
-        <Card>
+        <Card className="surface-card">
           <Form<ProfileFormValues> form={form} layout="vertical" onFinish={onFinish}>
             <Form.Item
               name="business_name"

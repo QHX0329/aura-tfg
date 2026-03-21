@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from django.db.models import Avg, Max, Min
+from django.db.models import Avg, F, Max, Min
 from django.db.models.functions import TruncDay
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
@@ -132,6 +132,7 @@ class PriceCompareView(APIView):
         promo_lookup: dict[int, object] = {p.store_id: p for p in promo_qs}
 
         results = []
+        promo_ids_to_increment: set[int] = set()
         for price_obj in price_list:
             store_id = price_obj.store_id
             promo = promo_lookup.get(store_id)
@@ -154,6 +155,7 @@ class PriceCompareView(APIView):
                     "title": promo.title,
                     "end_date": promo.end_date,
                 }
+                promo_ids_to_increment.add(promo.id)
 
             results.append(
                 {
@@ -169,6 +171,10 @@ class PriceCompareView(APIView):
                     "verified_at": price_obj.verified_at,
                 }
             )
+
+        # Contabiliza una visualización por promoción incluida en la respuesta.
+        if promo_ids_to_increment:
+            Promotion.objects.filter(id__in=promo_ids_to_increment).update(views=F("views") + 1)
 
         serializer = PriceCompareSerializer(results, many=True)
         return success_response(serializer.data)

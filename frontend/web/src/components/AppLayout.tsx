@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Button, Typography, theme } from 'antd';
+import React, { useMemo, useState } from 'react';
+import { Layout, Menu, Button, Typography } from 'antd';
 import {
   DashboardOutlined,
   ShoppingOutlined,
@@ -17,9 +17,15 @@ const { Title } = Typography;
 const AppLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useBusinessStore();
+  const { logout, profile } = useBusinessStore();
   const [collapsed, setCollapsed] = useState(false);
-  const { token: designToken } = theme.useToken();
+
+  const headerSubtitle = useMemo(() => {
+    if (profile?.business_name) {
+      return profile.business_name;
+    }
+    return 'Portal Business';
+  }, [profile?.business_name]);
 
   const menuItems = [
     {
@@ -55,22 +61,16 @@ const AppLayout: React.FC = () => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-        <div
-          style={{
-            height: 32,
-            margin: 16,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: collapsed ? 'center' : 'flex-start',
-          }}
-        >
-          {!collapsed && (
-            <Title level={5} style={{ color: 'white', margin: 0 }}>
-              BarGAIN
-            </Title>
-          )}
+    <Layout className="business-shell">
+      <Sider
+        className="business-sider"
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
+        width={250}
+      >
+        <div className="business-brand">
+          {collapsed ? 'B' : 'BarGAIN Business'}
         </div>
         <Menu
           theme="dark"
@@ -81,19 +81,13 @@ const AppLayout: React.FC = () => {
         />
       </Sider>
       <Layout>
-        <Header
-          style={{
-            background: designToken.colorBgContainer,
-            padding: '0 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottom: `1px solid ${designToken.colorBorderSecondary}`,
-          }}
-        >
-          <Title level={4} style={{ margin: 0 }}>
-            BarGAIN Business
-          </Title>
+        <Header className="business-main-header">
+          <div className="header-title-block">
+            <Title level={4} style={{ margin: 0, fontFamily: 'Manrope, sans-serif' }}>
+              Centro de Operaciones
+            </Title>
+            <Typography.Text className="header-kicker">{headerSubtitle}</Typography.Text>
+          </div>
           <Button
             type="text"
             icon={<LogoutOutlined />}
@@ -103,7 +97,7 @@ const AppLayout: React.FC = () => {
             Cerrar sesión
           </Button>
         </Header>
-        <Content style={{ margin: '24px 16px', padding: 24, background: designToken.colorBgContainer }}>
+        <Content className="business-main-content">
           <Outlet />
         </Content>
       </Layout>

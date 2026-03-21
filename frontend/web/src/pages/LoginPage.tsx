@@ -59,59 +59,75 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#f0f2f5',
-      }}
-    >
-      <Card style={{ width: 400, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <Title level={2} style={{ margin: 0 }}>
+    <div className="auth-page">
+      <section className="auth-story">
+        <div>
+          <Typography.Text style={{ color: 'rgba(255,255,255,0.78)' }}>
             BarGAIN Business
-          </Title>
-          <Typography.Text type="secondary">Portal de gestión para empresas PYME</Typography.Text>
+          </Typography.Text>
+          <h1>Impulsa el crecimiento de tu negocio local</h1>
+          <p>
+            Centraliza precios, promociones y catálogo con una experiencia de gestión
+            profesional, diseñada para decisiones rápidas y fiables.
+          </p>
         </div>
-        <Form<LoginFormValues>
-          name="login"
-          layout="vertical"
-          onFinish={onFinish}
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Nombre de usuario"
-            name="username"
-            rules={[
-              { required: true, message: 'Introduce tu nombre de usuario' },
-            ]}
-          >
-            <Input placeholder="empresa_pyme" size="large" />
-          </Form.Item>
+        <Typography.Text style={{ color: 'rgba(255,255,255,0.72)' }}>
+          Inteligencia comercial para comercios y PYMEs
+        </Typography.Text>
+      </section>
 
-          <Form.Item
-            label="Contraseña"
-            name="password"
-            rules={[{ required: true, message: 'Introduce tu contraseña' }]}
-          >
-            <Input.Password placeholder="Contraseña" size="large" />
-          </Form.Item>
+      <section className="auth-content">
+        <Card className="auth-card">
+          <div style={{ marginBottom: 26 }}>
+            <Title level={2} style={{ margin: 0, fontFamily: 'Manrope, sans-serif' }}>
+              Acceso business
+            </Title>
+            <Typography.Text type="secondary">
+              Gestiona tu operación diaria desde un único panel.
+            </Typography.Text>
+          </div>
 
-          <Form.Item style={{ marginBottom: 0 }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              loading={loading}
-              style={{ width: '100%' }}
+          <Form<LoginFormValues>
+            name="login"
+            layout="vertical"
+            onFinish={onFinish}
+            autoComplete="off"
+          >
+            <Form.Item
+              label="Nombre de usuario"
+              name="username"
+              rules={[{ required: true, message: 'Introduce tu nombre de usuario' }]}
             >
-              Iniciar sesión
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
+              <Input placeholder="empresa_pyme" size="large" />
+            </Form.Item>
+
+            <Form.Item
+              label="Contraseña"
+              name="password"
+              rules={[{ required: true, message: 'Introduce tu contraseña' }]}
+            >
+              <Input.Password placeholder="Contraseña" size="large" />
+            </Form.Item>
+
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                loading={loading}
+                style={{ width: '100%' }}
+              >
+                Entrar al portal
+              </Button>
+            </Form.Item>
+          </Form>
+
+          <div className="auth-trust">
+            <div className="auth-trust-item">Seguridad reforzada para datos de negocio</div>
+            <div className="auth-trust-item">Privacidad y control de acceso por rol</div>
+          </div>
+        </Card>
+      </section>
     </div>
   );
 };

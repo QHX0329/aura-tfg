@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Table,
   Button,
@@ -13,19 +13,40 @@ import {
   Tag,
   Input,
   message,
+  Row,
+  Col,
+  Card,
+  Statistic,
+  Progress,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, RiseOutlined, PercentageOutlined, EyeOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { apiClient } from '../api/client';
 import { useBusinessStore } from '../store/businessStore';
 import type { Promotion } from '../store/businessStore';
+import {
+  collectUnresolvedEntityIds,
+  getEntityId,
+  resolveEntityName,
+  type EntityLike,
+} from '../utils/entityResolver';
 
 const { Title } = Typography;
 const { TextArea } = Input;
 
 interface ProductOption {
   id: string;
+  name: string;
+}
+
+interface StoreOption {
+  id: string | number;
+  name: string;
+}
+
+interface ProductLookupRecord {
+  id: string | number;
   name: string;
 }
 
@@ -41,6 +62,28 @@ interface PromotionFormValues {
   description?: string;
 }
 
+type PromotionStatus = 'active' | 'pending' | 'inactive';
+
+const resolvePromotionStatus = (promotion: Promotion): PromotionStatus => {
+  if (!promotion.is_active) {
+    return 'inactive';
+  }
+
+  const now = new Date();
+  const start = new Date(promotion.start_date);
+  const end = promotion.end_date ? new Date(promotion.end_date) : null;
+
+  if (start > now) {
+    return 'pending';
+  }
+
+  if (end && end < now) {
+    return 'inactive';
+  }
+
+  return 'active';
+};
+
 const PromotionsPage: React.FC = () => {
   const { profile } = useBusinessStore();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -48,6 +91,8 @@ const PromotionsPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [productOptions, setProductOptions] = useState<{ value: string; label: string; id: string }[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [stores, setStores] = useState<StoreOption[]>([]);
+  const [productNamesById, setProductNamesById] = useState<Record<string, string>>({});
   const [form] = Form.useForm<PromotionFormValues>();
 
   const fetchPromotions = async () => {
@@ -70,6 +115,68 @@ const PromotionsPage: React.FC = () => {
   useEffect(() => {
     void fetchPromotions();
   }, []);
+
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const response = await apiClient.get<StoreOption[]>('/business/prices/stores/');
+        setStores(Array.isArray(response.data) ? response.data : []);
+      } catch {
+        setStores([]);
+      }
+    };
+
+    void fetchStores();
+  }, []);
+
+  useEffect(() => {
+    const unresolvedProductIds = collectUnresolvedEntityIds(
+      promotions.map((promotion) => promotion.product as unknown as EntityLike),
+      productNamesById,
+    );
+
+    if (unresolvedProductIds.length === 0) {
+      return;
+    }
+
+    const resolveNames = async () => {
+      const lookups = await Promise.allSettled(
+        unresolvedProductIds.map(async (productId) => {
+          const response = await apiClient.get<ProductLookupRecord>(`/products/${productId}/`);
+          return response.data;
+        }),
+      );
+
+      const resolved = lookups.reduce<Record<string, string>>((acc, result) => {
+        if (result.status === 'fulfilled') {
+          acc[String(result.value.id)] = result.value.name;
+        }
+        return acc;
+      }, {});
+
+      if (Object.keys(resolved).length > 0) {
+        setProductNamesById((previous) => ({ ...previous, ...resolved }));
+      }
+    };
+
+    void resolveNames();
+  }, [promotions, productNamesById]);
+
+  const resolveProductName = (product: Promotion['product']): string => {
+    return resolveEntityName({
+      entity: product as unknown as EntityLike,
+      byId: productNamesById,
+      fallback: 'Producto sin nombre',
+    });
+  };
+
+  const resolveStoreName = (store: Promotion['store']): string => {
+    return resolveEntityName({
+      entity: store as unknown as EntityLike,
+      catalog: stores,
+      fallback: 'Tienda sin nombre',
+    });
+  };
 
   const searchProducts = async (query: string) => {
     if (query.length < 2) return;
@@ -126,16 +233,45 @@ const PromotionsPage: React.FC = () => {
     }
   };
 
+  const promotionStats = useMemo(() => {
+    const summary = {
+      active: 0,
+      pending: 0,
+      inactive: 0,
+      totalViews: 0,
+      avgDiscount: 0,
+    };
+
+    promotions.forEach((promotion) => {
+      summary[resolvePromotionStatus(promotion)] += 1;
+      summary.totalViews += promotion.views ?? 0;
+      summary.avgDiscount += promotion.discount_type === 'percentage'
+        ? promotion.discount_value
+        : Math.min(30, promotion.discount_value * 2);
+    });
+
+    if (promotions.length > 0) {
+      summary.avgDiscount = Number((summary.avgDiscount / promotions.length).toFixed(1));
+    }
+
+    return summary;
+  }, [promotions]);
+
+  const maxViews = useMemo(
+    () => Math.max(1, ...promotions.map((promotion) => promotion.views ?? 0)),
+    [promotions],
+  );
+
   const columns: ColumnsType<Promotion> = [
     {
       title: 'Producto',
-      dataIndex: ['product', 'name'],
       key: 'product',
+      render: (_: unknown, record: Promotion) => resolveProductName(record.product),
     },
     {
       title: 'Tienda',
-      dataIndex: ['store', 'name'],
       key: 'store',
+      render: (_: unknown, record: Promotion) => resolveStoreName(record.store),
     },
     {
       title: 'Descuento',
@@ -160,17 +296,34 @@ const PromotionsPage: React.FC = () => {
     {
       title: 'Estado',
       key: 'status',
-      render: (_: unknown, record: Promotion) =>
-        record.is_active ? (
-          <Tag color="green">Activa</Tag>
-        ) : (
-          <Tag color="default">Inactiva</Tag>
-        ),
+      render: (_: unknown, record: Promotion) => {
+        const status = resolvePromotionStatus(record);
+        if (status === 'active') {
+          return <Tag color="success">Activa</Tag>;
+        }
+        if (status === 'pending') {
+          return <Tag color="warning">Pendiente</Tag>;
+        }
+        return <Tag>Inactiva</Tag>;
+      },
     },
     {
       title: 'Vistas',
       dataIndex: 'views',
       key: 'views',
+    },
+    {
+      title: 'Rendimiento',
+      key: 'performance',
+      width: 170,
+      render: (_: unknown, record: Promotion) => (
+        <Progress
+          percent={Math.round(((record.views ?? 0) / maxViews) * 100)}
+          showInfo={false}
+          size="small"
+          strokeColor="#6f6350"
+        />
+      ),
     },
     {
       title: 'Acciones',
@@ -186,22 +339,89 @@ const PromotionsPage: React.FC = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={3} style={{ margin: 0 }}>
-          Gestión de promociones
-        </Title>
+      <div className="page-header">
+        <div>
+          <Title level={3} style={{ margin: 0 }}>
+            Promotions analytics
+          </Title>
+          <Typography.Text type="secondary">
+            Diseña campañas con contexto y sigue su salud comercial desde un solo panel.
+          </Typography.Text>
+        </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
           Nueva promoción
         </Button>
       </div>
 
-      <Table
-        dataSource={promotions}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 20 }}
-      />
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="surface-card kpi-card">
+            <Statistic
+              title="Promociones activas"
+              value={promotionStats.active}
+              prefix={<RiseOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="surface-card kpi-card">
+            <Statistic
+              title="Descuento medio"
+              value={promotionStats.avgDiscount}
+              suffix="%"
+              prefix={<PercentageOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="surface-card kpi-card">
+            <Statistic
+              title="Interes total"
+              value={promotionStats.totalViews}
+              prefix={<EyeOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="surface-card" style={{ height: '100%' }}>
+            <Typography.Text type="secondary">Distribución de estado</Typography.Text>
+            <div style={{ marginTop: 8 }}>
+              <Typography.Text>Activas ({promotionStats.active})</Typography.Text>
+              <Progress
+                percent={Math.round((promotionStats.active / Math.max(1, promotions.length)) * 100)}
+                showInfo={false}
+                strokeColor="#5a7d66"
+              />
+            </div>
+            <div>
+              <Typography.Text>Pendientes ({promotionStats.pending})</Typography.Text>
+              <Progress
+                percent={Math.round((promotionStats.pending / Math.max(1, promotions.length)) * 100)}
+                showInfo={false}
+                strokeColor="#8f6d43"
+              />
+            </div>
+            <div>
+              <Typography.Text>Inactivas ({promotionStats.inactive})</Typography.Text>
+              <Progress
+                percent={Math.round((promotionStats.inactive / Math.max(1, promotions.length)) * 100)}
+                showInfo={false}
+                strokeColor="#9b8f80"
+              />
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      <div className="surface-card" style={{ overflow: 'hidden' }}>
+        <Table
+          dataSource={promotions}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{ pageSize: 20 }}
+        />
+      </div>
 
       <Modal
         title="Nueva promoción"

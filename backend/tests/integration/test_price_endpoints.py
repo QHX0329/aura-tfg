@@ -6,8 +6,10 @@ Cubre: compare, list-total, history, alerts, crowdsource.
 
 import pytest
 from django.contrib.gis.geos import Point
+from django.utils import timezone
 from rest_framework import status
 
+from apps.business.models import Promotion
 from apps.prices.models import Price, PriceAlert
 from apps.products.models import Product
 from apps.stores.models import Store
@@ -148,6 +150,30 @@ class TestPriceCompare:
 
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json()["data"]) >= 1
+
+    def test_compare_increments_promotion_views(self, api_client, product, store_nearby, price_nearby):
+        """Cada compare que devuelve una promo incrementa su contador de views."""
+        promo = Promotion.objects.create(
+            product=product,
+            store=store_nearby,
+            discount_type=Promotion.DiscountType.PERCENTAGE,
+            discount_value="10.00",
+            start_date=timezone.now().date(),
+            is_active=True,
+            views=0,
+        )
+
+        url = f"/api/v1/prices/compare/?product={product.id}&lat={SEVILLE_LAT}&lng={SEVILLE_LNG}"
+
+        first_response = api_client.get(url)
+        assert first_response.status_code == status.HTTP_200_OK
+        promo.refresh_from_db()
+        assert promo.views == 1
+
+        second_response = api_client.get(url)
+        assert second_response.status_code == status.HTTP_200_OK
+        promo.refresh_from_db()
+        assert promo.views == 2
 
 
 # ── TestListTotal ─────────────────────────────────────────────────────────────
