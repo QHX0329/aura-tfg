@@ -3,12 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-last_updated: "2026-03-23T18:21:28.086Z"
+stopped_at: Checkpoint 04-02-PLAN.md Task 4 (human-verify)
+last_updated: "2026-03-23T18:32:04.611Z"
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 16
-  completed_plans: 15
+  completed_plans: 16
 ---
 
 # Project State
@@ -43,10 +44,12 @@ Plan: 2 of 2
 - 04-01: Silent fail for Google Places API proxy — errors return {} to prevent frontend breakage
 - 04-01: Redis cache key format places_detail:{pk} with 24h TTL to protect API quota
 - 04-01: google_place_id nullable to keep existing stores unaffected
+- 04-02: Autocomplete type=establishment (not supermarket) — supermarket is not a valid autocomplete collection type per library docs
+- 04-02: DB-match threshold 50m for Places-to-store proximity; discovery markers are ephemeral client state only
 
 ## Last Session
 
-- **Stopped at:** Completed 04-01-PLAN.md
+- **Stopped at:** Checkpoint 04-02-PLAN.md Task 4 (human-verify)
 - **Date:** 2026-03-23
 
 ---
