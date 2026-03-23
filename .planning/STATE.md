@@ -1,28 +1,22 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: bargain-tfg
-status: in_progress
-stopped_at: F4-27 completada; documentacion global sincronizada
-last_updated: "2026-03-19T23:59:00Z"
-last_activity: "2026-03-19 - F4-27 completada; README/CLAUDE/TASKS/docs/memory/.planning alineados"
+milestone_name: milestone
+status: Ready to execute
+last_updated: "2026-03-23T18:21:28.086Z"
 progress:
-  total_phases: 6
+  total_phases: 4
   completed_phases: 3
-  current_phase: 4
-  total_plans: 6
-  completed_plans: 3
-  percent: 62
+  total_plans: 16
+  completed_plans: 15
 ---
 
 # Project State
 
 ## Current Position
 
-- Phase: 4/6 (Frontend)
-- Status: En progreso
-- Last milestone: F4-27 completada
-- Next milestone: inicio de F5 (optimizer/scraping/OCR/LLM)
+Phase: 04 (frontend-advanced) — EXECUTING
+Plan: 2 of 2
 
 ## Summary
 
@@ -44,5 +38,16 @@ progress:
 2. Ejecutar bloque tecnico F5 por incrementos: scraping, optimizer, OCR, assistant.
 3. Consolidar pruebas finales y cierre documental F6.
 
+## Key Decisions
+
+- 04-01: Silent fail for Google Places API proxy — errors return {} to prevent frontend breakage
+- 04-01: Redis cache key format places_detail:{pk} with 24h TTL to protect API quota
+- 04-01: google_place_id nullable to keep existing stores unaffected
+
+## Last Session
+
+- **Stopped at:** Completed 04-01-PLAN.md
+- **Date:** 2026-03-23
+
 ---
-Last updated: 2026-03-19
+Last updated: 2026-03-23

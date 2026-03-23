@@ -21,10 +21,10 @@ Roadmap operativo sincronizado a 2026-03-21. El proyecto tiene F1, F2 y F3 final
 
 **Requirements:** [STORE-04]
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 04-01-PLAN.md — Backend Places enrichment proxy (Store model + endpoint + Redis cache + tests)
+- [x] 04-01-PLAN.md — Backend Places enrichment proxy (Store model + endpoint + Redis cache + tests)
 - [ ] 04-02-PLAN.md — Frontend Places integration (autocomplete + discovery markers + StoreProfile enrichment)
 
 ### Phase 5 (next)
