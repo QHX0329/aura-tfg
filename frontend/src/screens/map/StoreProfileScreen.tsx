@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Linking,
   RefreshControl,
   StyleSheet,
   Text,
@@ -23,7 +24,8 @@ import type { MapStackParamList } from "@/navigation/types";
 import { storeService } from "@/api/storeService";
 import { productService } from "@/api/productService";
 import { priceService } from "@/api/priceService";
-import type { PriceCompare, Product, Store } from "@/types/domain";
+import type { PlacesDetail, PriceCompare, Product, Store } from "@/types/domain";
+import { SkeletonBox } from "@/components/ui/SkeletonBox";
 
 type Props = NativeStackScreenProps<MapStackParamList, "StoreProfile">;
 
@@ -64,6 +66,10 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+
+  // ── Google Places enrichment ──────────────────────────────────────────────
+  const [placesDetail, setPlacesDetail] = useState<PlacesDetail | null>(null);
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
 
   const loadStoreProfile = useCallback(async () => {
     setIsLoading(true);
@@ -128,6 +134,16 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
   useEffect(() => {
     void loadStoreProfile();
   }, [loadStoreProfile]);
+
+  // Fetch Places enrichment independently (silent fail, does not block profile)
+  useEffect(() => {
+    setIsLoadingPlaces(true);
+    storeService
+      .getPlacesDetail(storeId)
+      .then(setPlacesDetail)
+      .catch(() => {})
+      .finally(() => setIsLoadingPlaces(false));
+  }, [storeId]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -251,6 +267,87 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
               <Text style={styles.hoursTitle}>Horario</Text>
               <Text style={styles.hoursText}>{openingHoursText}</Text>
             </View>
+
+            {/* ── Google Places enrichment sections ──────────────────── */}
+            {isLoadingPlaces ? (
+              <View style={styles.placesLoadingRow}>
+                <SkeletonBox width="60%" height={14} />
+                <SkeletonBox width="40%" height={14} />
+              </View>
+            ) : (
+              <>
+                {/* Rating */}
+                {placesDetail?.rating != null && (
+                  <View style={styles.placesRow}>
+                    <Ionicons
+                      name="star"
+                      size={14}
+                      color={colors.warning}
+                    />
+                    <Text style={styles.placesRatingText}>
+                      {placesDetail.rating.toFixed(1)}
+                      {placesDetail.user_rating_count != null
+                        ? ` (${placesDetail.user_rating_count} valoraciones)`
+                        : ""}
+                    </Text>
+                  </View>
+                )}
+
+                {/* Opening hours from Places */}
+                {placesDetail?.opening_hours != null && (
+                  <View style={styles.placesOpenHoursBox}>
+                    {placesDetail.opening_hours.openNow != null && (
+                      <View
+                        style={[
+                          styles.openNowBadge,
+                          placesDetail.opening_hours.openNow
+                            ? styles.openNowBadgeOpen
+                            : styles.openNowBadgeClosed,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.openNowBadgeText,
+                            placesDetail.opening_hours.openNow
+                              ? styles.openNowBadgeTextOpen
+                              : styles.openNowBadgeTextClosed,
+                          ]}
+                        >
+                          {placesDetail.opening_hours.openNow
+                            ? "Abierto ahora"
+                            : "Cerrado"}
+                        </Text>
+                      </View>
+                    )}
+                    {placesDetail.opening_hours.weekdayDescriptions?.map(
+                      (line, i) => (
+                        <Text key={i} style={styles.placesHoursLine}>
+                          {line}
+                        </Text>
+                      ),
+                    )}
+                  </View>
+                )}
+
+                {/* Website */}
+                {placesDetail?.website_url != null && (
+                  <TouchableOpacity
+                    style={styles.placesRow}
+                    onPress={() =>
+                      Linking.openURL(placesDetail.website_url!).catch(() => {})
+                    }
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons
+                      name="globe-outline"
+                      size={14}
+                      color={colors.primary}
+                    />
+                    <Text style={styles.placesLinkText}>Sitio web oficial</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
 
             <Text style={styles.productsTitle}>
               Productos detectados en esta tienda
@@ -449,6 +546,62 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.textMuted,
     marginTop: 2,
+  },
+  // ── Google Places enrichment styles ────────────────────────────────────────
+  placesLoadingRow: {
+    marginTop: spacing.sm,
+    gap: spacing.xs,
+  },
+  placesRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+  },
+  placesRatingText: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  placesOpenHoursBox: {
+    marginTop: spacing.sm,
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.background,
+  },
+  openNowBadge: {
+    alignSelf: "flex-start",
+    borderRadius: borderRadius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    marginBottom: spacing.xs,
+  },
+  openNowBadgeOpen: {
+    backgroundColor: "#D1FAE5",
+  },
+  openNowBadgeClosed: {
+    backgroundColor: "#FEE2E2",
+  },
+  openNowBadgeText: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.sm,
+  },
+  openNowBadgeTextOpen: {
+    color: "#065F46",
+  },
+  openNowBadgeTextClosed: {
+    color: "#991B1B",
+  },
+  placesHoursLine: {
+    fontFamily: fontFamilies.body,
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    lineHeight: 20,
+  },
+  placesLinkText: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.primary,
   },
 });
 
