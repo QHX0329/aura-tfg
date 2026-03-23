@@ -1,6 +1,9 @@
 """Tests unitarios del módulo de tiendas."""
 
+from unittest.mock import MagicMock, call, patch
+
 import pytest
+from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import Distance
 
 from apps.stores.models import Store, StoreChain
@@ -104,3 +107,58 @@ class TestStoreListSerializer:
         serializer = StoreListSerializer(store)
         data = serializer.data
         assert data["distance_km"] is None
+
+
+@pytest.fixture
+def store_with_google_place_id(db, seville_point) -> Store:
+    """Tienda con google_place_id configurado."""
+    chain = StoreChain.objects.create(name="Mercadona Cache Test", slug="mercadona-cache-test")
+    return Store.objects.create(
+        name="Mercadona Cache",
+        chain=chain,
+        address="Calle Cache 1, Sevilla",
+        location=seville_point,
+        is_local_business=False,
+        is_active=True,
+        google_place_id="ChIJcache123",
+    )
+
+
+class TestPlacesDetailCache:
+    """Tests para el comportamiento de caché del endpoint places-detail."""
+
+    PLACES_API_RESPONSE = {
+        "currentOpeningHours": {"openNow": True},
+        "rating": 4.2,
+        "userRatingCount": 99,
+        "websiteUri": "https://mercadona.es",
+    }
+
+    def test_places_detail_cache_hit(
+        self, authenticated_client, store_with_google_place_id, settings
+    ):
+        """Segunda llamada al endpoint usa caché y no llama a Google API dos veces."""
+        settings.GOOGLE_PLACES_API_KEY = "test-api-key"
+
+        mock_response = MagicMock()
+        mock_response.json.return_value = self.PLACES_API_RESPONSE
+        mock_response.raise_for_status.return_value = None
+
+        store_id = store_with_google_place_id.id
+
+        with patch("apps.stores.views.http_requests.get", return_value=mock_response) as mock_get:
+            # Primera llamada — llama a Google API
+            response1 = authenticated_client.get(
+                f"/api/v1/stores/{store_id}/places-detail/"
+            )
+            # Segunda llamada — debe usar caché
+            response2 = authenticated_client.get(
+                f"/api/v1/stores/{store_id}/places-detail/"
+            )
+
+        assert response1.status_code == 200
+        assert response2.status_code == 200
+        assert response1.data["data"]["rating"] == 4.2
+        assert response2.data["data"]["rating"] == 4.2
+        # Google API sólo debe llamarse una vez (la segunda respuesta viene del caché)
+        mock_get.assert_called_once()

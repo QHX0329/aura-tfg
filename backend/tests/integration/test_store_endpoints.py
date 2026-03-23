@@ -1,5 +1,7 @@
 """Tests de integración para los endpoints del módulo de tiendas."""
 
+from unittest.mock import MagicMock, patch
+
 import pytest
 from django.contrib.gis.geos import Point
 from rest_framework import status
@@ -58,6 +60,19 @@ def store_seville_center(db, mercadona_chain) -> Store:
         address="Plaza Nueva 1, Sevilla",
         location=Point(SEVILLE_LNG, SEVILLE_LAT, srid=4326),
         is_active=True,
+    )
+
+
+@pytest.fixture
+def store_with_place_id(db, mercadona_chain) -> Store:
+    """Tienda con google_place_id configurado."""
+    return Store.objects.create(
+        name="Mercadona Test Places",
+        chain=mercadona_chain,
+        address="Calle Test 1, Sevilla",
+        location=Point(SEVILLE_LNG, SEVILLE_LAT, srid=4326),
+        is_active=True,
+        google_place_id="ChIJtest123abc",
     )
 
 
@@ -234,3 +249,81 @@ class TestFavorites:
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.data["is_favorite"] is True
+
+
+class TestPlacesDetail:
+    """Tests para el endpoint places-detail."""
+
+    PLACES_API_RESPONSE = {
+        "currentOpeningHours": {"openNow": True, "periods": []},
+        "rating": 4.5,
+        "userRatingCount": 123,
+        "websiteUri": "https://www.mercadona.es",
+    }
+
+    def test_places_detail_endpoint(
+        self, authenticated_client, store_with_place_id, settings
+    ):
+        """GET /places-detail/ con google_place_id devuelve datos normalizados de Places."""
+        settings.GOOGLE_PLACES_API_KEY = "test-api-key"
+
+        mock_response = MagicMock()
+        mock_response.json.return_value = self.PLACES_API_RESPONSE
+        mock_response.raise_for_status.return_value = None
+
+        with patch("apps.stores.views.http_requests.get", return_value=mock_response):
+            response = authenticated_client.get(
+                f"/api/v1/stores/{store_with_place_id.id}/places-detail/"
+            )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["success"] is True
+        data = response.data["data"]
+        assert data["rating"] == 4.5
+        assert data["user_rating_count"] == 123
+        assert data["website_url"] == "https://www.mercadona.es"
+        assert data["opening_hours"] is not None
+
+    def test_places_detail_no_place_id(self, authenticated_client, store_nearby):
+        """GET /places-detail/ sin google_place_id devuelve objeto vacío."""
+        response = authenticated_client.get(
+            f"/api/v1/stores/{store_nearby.id}/places-detail/"
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["success"] is True
+        assert response.data["data"] == {}
+
+    def test_places_detail_unauthenticated(self, api_client, store_with_place_id):
+        """Usuario no autenticado recibe 401."""
+        response = api_client.get(
+            f"/api/v1/stores/{store_with_place_id.id}/places-detail/"
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_places_detail_no_api_key(
+        self, authenticated_client, store_with_place_id, settings
+    ):
+        """Sin GOOGLE_PLACES_API_KEY devuelve objeto vacío."""
+        settings.GOOGLE_PLACES_API_KEY = ""
+
+        response = authenticated_client.get(
+            f"/api/v1/stores/{store_with_place_id.id}/places-detail/"
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["data"] == {}
+
+    def test_places_detail_google_api_error(
+        self, authenticated_client, store_with_place_id, settings
+    ):
+        """Cuando Google API falla, devuelve objeto vacío (silent fail)."""
+        settings.GOOGLE_PLACES_API_KEY = "test-api-key"
+
+        with patch(
+            "apps.stores.views.http_requests.get", side_effect=Exception("Network error")
+        ):
+            response = authenticated_client.get(
+                f"/api/v1/stores/{store_with_place_id.id}/places-detail/"
+            )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["data"] == {}

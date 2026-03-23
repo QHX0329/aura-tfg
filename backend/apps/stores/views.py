@@ -1,8 +1,11 @@
 """Vistas del módulo de tiendas con búsqueda geoespacial."""
 
+import requests as http_requests
+from django.conf import settings
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from django.core.cache import cache
 from django.http import Http404
 from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
 from rest_framework import serializers as drf_serializers
@@ -90,7 +93,7 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
             BargainAPIException: Si faltan lat o lng en la acción list.
         """
         # Para detail/retrieve no aplicamos filtro geoespacial — sólo buscamos por PK.
-        if self.action in ("retrieve", "favorite"):
+        if self.action in ("retrieve", "favorite", "places_detail"):
             return Store.objects.filter(is_active=True).select_related("chain")
 
         request: Request = self.request
@@ -150,6 +153,81 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == "retrieve":
             return StoreDetailSerializer
         return StoreListSerializer
+
+    @extend_schema(
+        summary="Detalle de Places de Google",
+        description=(
+            "Devuelve datos enriquecidos de la tienda desde Google Places API "
+            "(horario, valoración, número de reseñas, URL web), con caché Redis de 24h. "
+            "Devuelve `{}` si la tienda no tiene `google_place_id`, si falta la API key, "
+            "o si Google Places falla (silent fail)."
+        ),
+        responses={
+            200: inline_serializer(
+                "PlacesDetailResponse",
+                fields={
+                    "opening_hours": drf_serializers.JSONField(allow_null=True),
+                    "rating": drf_serializers.FloatField(allow_null=True),
+                    "user_rating_count": drf_serializers.IntegerField(allow_null=True),
+                    "website_url": drf_serializers.CharField(allow_null=True),
+                },
+            )
+        },
+    )
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path="places-detail",
+        permission_classes=[IsAuthenticated],
+    )
+    def places_detail(self, request: Request, pk: str | None = None) -> Response:
+        """
+        Devuelve datos enriquecidos de la tienda desde Google Places API con caché 24h.
+
+        GET /api/v1/stores/<id>/places-detail/
+        Returns:
+            {"opening_hours": ..., "rating": ..., "user_rating_count": ..., "website_url": ...}
+            o {} si no hay google_place_id, api key o falla Google.
+        """
+        cache_key = f"places_detail:{pk}"
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return success_response(cached)
+
+        try:
+            store = Store.objects.get(pk=pk, is_active=True)
+        except Store.DoesNotExist as exc:
+            raise Http404 from exc
+
+        if not store.google_place_id:
+            return success_response({})
+
+        api_key = settings.GOOGLE_PLACES_API_KEY
+        if not api_key:
+            return success_response({})
+
+        try:
+            response = http_requests.get(
+                f"https://places.googleapis.com/v1/places/{store.google_place_id}",
+                headers={
+                    "X-Goog-Api-Key": api_key,
+                    "X-Goog-FieldMask": "currentOpeningHours,rating,userRatingCount,websiteUri",
+                },
+                timeout=5,
+            )
+            response.raise_for_status()
+            data = response.json()
+        except Exception:
+            return success_response({})
+
+        normalized = {
+            "opening_hours": data.get("currentOpeningHours"),
+            "rating": data.get("rating"),
+            "user_rating_count": data.get("userRatingCount"),
+            "website_url": data.get("websiteUri"),
+        }
+        cache.set(cache_key, normalized, timeout=60 * 60 * 24)
+        return success_response(normalized)
 
     @extend_schema(
         request=None,
