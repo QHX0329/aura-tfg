@@ -51,6 +51,12 @@ class Store(models.Model):
         verbose_name="Perfil de negocio",
     )
     is_active = models.BooleanField(default=True, verbose_name="Activa")
+    google_place_id = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name="Google Place ID",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
