@@ -20,24 +20,26 @@ logger = structlog.get_logger(__name__)
 
 _OCR_TIMEOUT_SECONDS = 30
 _MIN_HEIGHT_PX = 1000  # upscale si la imagen es más pequeña
+_MIN_WORD_CONFIDENCE = 40  # confianza mínima por palabra (escala tesseract 0-100)
 
 
 def extract_text_from_image(image_bytes: bytes, lang: str = "spa+eng") -> list[str]:
     """Extrae líneas de texto de una imagen usando pytesseract.
 
-    Preprocesa la imagen en escala de grises con autocontraste, nitidez y
-    upscale opcional antes de ejecutar OCR. Filtra líneas vacías del resultado.
+    Usa image_to_data para obtener confianza por palabra y descartar ruido.
+    Solo se devuelven palabras con confianza >= 40 (escala tesseract 0-100),
+    agrupadas por línea. Imágenes sin texto real generan OCRProcessingError.
 
     Args:
         image_bytes: Contenido binario de la imagen.
         lang: Idioma(s) de tesseract, p.ej. "spa+eng".
 
     Returns:
-        Lista de líneas de texto no vacías extraídas de la imagen.
+        Lista de líneas de texto no vacías con confianza suficiente.
 
     Raises:
-        OCRProcessingError: Si no se pudo extraer ningún texto de la imagen
-            o si tesseract supera el timeout de 30 segundos.
+        OCRProcessingError: Si no hay palabras con confianza >= 40 o si
+            tesseract supera el timeout de 30 segundos.
     """
     image = Image.open(io.BytesIO(image_bytes)).convert("L")
     image = ImageOps.autocontrast(image)
@@ -50,16 +52,28 @@ def extract_text_from_image(image_bytes: bytes, lang: str = "spa+eng") -> list[s
         image = image.resize(new_size, Image.LANCZOS)
 
     try:
-        # psm 4: columna única de texto de tamaño variable — idóneo para listas de compra
-        # timeout evita que tesseract cuelgue en imágenes problemáticas
-        raw_text = pytesseract.image_to_string(
-            image, lang=lang, config="--psm 4 --oem 3", timeout=_OCR_TIMEOUT_SECONDS
+        # image_to_data devuelve confianza por palabra (0-100); filtramos el ruido
+        data = pytesseract.image_to_data(
+            image,
+            lang=lang,
+            config="--psm 4 --oem 3",
+            output_type=pytesseract.Output.DICT,
+            timeout=_OCR_TIMEOUT_SECONDS,
         )
     except RuntimeError as exc:
         logger.warning("ocr.tesseract_timeout", timeout=_OCR_TIMEOUT_SECONDS)
         raise OCRProcessingError("Tesseract tardó demasiado procesando la imagen") from exc
 
-    lines = [line.strip() for line in raw_text.split("\n") if line.strip()]
+    # Agrupar palabras de alta confianza por línea lógica
+    lines_dict: dict[tuple, list[str]] = {}
+    for i, word in enumerate(data["text"]):
+        word = word.strip()
+        conf = int(data["conf"][i])
+        if word and conf >= _MIN_WORD_CONFIDENCE:
+            line_key = (data["page_num"][i], data["block_num"][i], data["par_num"][i], data["line_num"][i])
+            lines_dict.setdefault(line_key, []).append(word)
+
+    lines = [" ".join(words) for words in lines_dict.values() if words]
 
     if not lines:
         logger.warning("ocr.no_text_extracted", image_size=len(image_bytes))

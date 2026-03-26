@@ -15,18 +15,30 @@ import pytest
 class TestExtractTextFromImage:
     """Tests de la función extract_text_from_image."""
 
+    def _mock_image_to_data(self, words: list[str], conf: int = 90) -> dict:
+        """Genera un dict simulando la salida de pytesseract.image_to_data."""
+        return {
+            "text": words + [""],
+            "conf": [conf] * len(words) + [-1],
+            "page_num": [1] * (len(words) + 1),
+            "block_num": [1] * (len(words) + 1),
+            "par_num": [1] * (len(words) + 1),
+            "line_num": list(range(1, len(words) + 1)) + [0],
+        }
+
     def test_extract_text_returns_lines(self):
         """Debe devolver líneas no vacías al extraer texto de la imagen."""
         from apps.ocr.services import extract_text_from_image
 
         fake_image_bytes = b"\x89PNG\r\n\x1a\n"
+        mock_data = self._mock_image_to_data(["Leche", "Pan", "Aceite"], conf=90)
 
         with patch(
-            "apps.ocr.services.pytesseract.image_to_string",
-            return_value="Leche entera\nPan integral\n\nAceite oliva",
+            "apps.ocr.services.pytesseract.image_to_data",
+            return_value=mock_data,
         ), patch("apps.ocr.services.Image") as mock_image:
             mock_img = MagicMock()
-            mock_img.height = 2000  # mayor que _MIN_HEIGHT_PX, evita upscale
+            mock_img.height = 2000
             mock_image.open.return_value.convert.return_value = mock_img
             mock_img.filter.return_value = mock_img
 
@@ -35,21 +47,23 @@ class TestExtractTextFromImage:
 
                 result = extract_text_from_image(fake_image_bytes)
 
-        assert result == ["Leche entera", "Pan integral", "Aceite oliva"]
+        assert result == ["Leche", "Pan", "Aceite"]
 
     def test_extract_text_raises_on_empty_image(self):
-        """Debe lanzar OCRProcessingError si no se extrae ningún texto."""
+        """Debe lanzar OCRProcessingError si todas las palabras tienen baja confianza."""
         from apps.core.exceptions import OCRProcessingError
         from apps.ocr.services import extract_text_from_image
 
         fake_image_bytes = b"\x89PNG\r\n\x1a\n"
+        # Palabras con confianza baja (ruido): deben descartarse → OCRProcessingError
+        mock_data = self._mock_image_to_data(["ou", "oe", "oo"], conf=20)
 
         with patch(
-            "apps.ocr.services.pytesseract.image_to_string",
-            return_value="",
+            "apps.ocr.services.pytesseract.image_to_data",
+            return_value=mock_data,
         ), patch("apps.ocr.services.Image") as mock_image:
             mock_img = MagicMock()
-            mock_img.height = 2000  # mayor que _MIN_HEIGHT_PX, evita upscale
+            mock_img.height = 2000
             mock_image.open.return_value.convert.return_value = mock_img
             mock_img.filter.return_value = mock_img
 
