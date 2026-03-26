@@ -4,9 +4,8 @@ Cada spider se ejecuta en un proceso separado para aislar el reactor
 de Twisted de Celery y evitar conflictos de event loop.
 """
 
-import importlib
-import multiprocessing
 import os
+import subprocess
 import sys
 
 import structlog
@@ -14,7 +13,6 @@ from celery import shared_task
 
 logger = structlog.get_logger(__name__)
 
-# ── Mapa de spiders disponibles ───────────────────────────────────────────────
 
 SPIDER_MAP: dict[str, str] = {
     "mercadona": "bargain_scraping.spiders.mercadona.MercadonaSpider",
@@ -24,73 +22,52 @@ SPIDER_MAP: dict[str, str] = {
 }
 
 
-# ── Función de proceso hijo ───────────────────────────────────────────────────
+def _resolve_backend_dir() -> str:
+    """Resuelve la raiz del proyecto Django dentro del contenedor."""
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 
-def _run_spider_process(spider_cls_path: str) -> None:
-    """Ejecuta un spider de Scrapy en un proceso hijo aislado.
+def _resolve_scraping_dir() -> str:
+    """Localiza el proyecto Scrapy con validacion explicita.
 
-    Al ejecutarse en un proceso aparte, el reactor Twisted de Scrapy no
-    interfiere con el event loop de Celery.
-
-    Args:
-        spider_cls_path: Ruta dotted al spider, ej.
-            ``bargain_scraping.spiders.mercadona.MercadonaSpider``.
+    La busqueda por candidatos evita depender de una estructura de paths
+    fragil entre entorno local y contenedores Docker.
     """
-    # Configurar Django en el proceso hijo
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
+    backend_dir = _resolve_backend_dir()
+    repo_root = os.path.abspath(os.path.join(backend_dir, ".."))
 
-    # Añadir backend al path para que Django encuentre apps/ y config/
-    _backend_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..")
+    candidates: list[str] = []
+    env_dir = os.environ.get("SCRAPING_PROJECT_DIR")
+    if env_dir:
+        candidates.append(env_dir)
+
+    candidates.extend(
+        [
+            os.path.join(repo_root, "scraping"),
+            "/scraping",
+        ]
     )
-    if _backend_dir not in sys.path:
-        sys.path.insert(0, _backend_dir)
 
-    import django
+    for candidate in candidates:
+        scrapy_cfg = os.path.join(candidate, "scrapy.cfg")
+        package_dir = os.path.join(candidate, "bargain_scraping")
+        if os.path.isfile(scrapy_cfg) and os.path.isdir(package_dir):
+            return candidate
 
-    django.setup()
-
-    from scrapy.crawler import CrawlerProcess
-    from scrapy.utils.project import get_project_settings
-
-    # Configurar settings de Scrapy (desde scraping/)
-    _scraping_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..", "scraping")
+    checked = ", ".join(candidates)
+    raise FileNotFoundError(
+        "No se encontro el proyecto Scrapy. "
+        f"Rutas comprobadas: {checked}. "
+        "Monta ./scraping en el contenedor o define SCRAPING_PROJECT_DIR."
     )
-    if _scraping_dir not in sys.path:
-        sys.path.insert(0, _scraping_dir)
-
-    os.chdir(_scraping_dir)
-
-    settings = get_project_settings()
-    process = CrawlerProcess(settings)
-
-    # Importar dinámicamente la clase del spider
-    module_path, class_name = spider_cls_path.rsplit(".", 1)
-    module = importlib.import_module(module_path)
-    spider_cls = getattr(module, class_name)
-
-    process.crawl(spider_cls)
-    process.start()
-
-
-# ── Tarea Celery principal ────────────────────────────────────────────────────
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=300)
 def run_spider(self, spider_name: str) -> dict[str, str]:
-    """Lanza un spider de Scrapy en un proceso hijo separado.
+    """Lanza un spider de Scrapy en un proceso hijo separado via subprocess.
 
-    Args:
-        spider_name: Nombre del spider a lanzar (mercadona, carrefour, lidl, dia).
-
-    Returns:
-        Dict con ``{"status": "ok", "spider": spider_name}``.
-
-    Raises:
-        ValueError: Si el nombre del spider no existe en SPIDER_MAP.
-        self.retry: Si el proceso hijo termina con código de error (!= 0).
+    subprocess.Popen no tiene la restriccion de multiprocessing.Process
+    sobre procesos daemonicos, lo que permite su uso desde workers Celery.
     """
     if spider_name not in SPIDER_MAP:
         raise ValueError(
@@ -99,17 +76,32 @@ def run_spider(self, spider_name: str) -> dict[str, str]:
         )
 
     spider_path = SPIDER_MAP[spider_name]
+    backend_dir = _resolve_backend_dir()
+    scraping_dir = _resolve_scraping_dir()
+    runner = os.path.join(os.path.dirname(__file__), "runner.py")
 
     logger.info("Iniciando spider", spider=spider_name, path=spider_path)
 
-    p = multiprocessing.Process(target=_run_spider_process, args=(spider_path,))
-    p.start()
-    p.join(timeout=3600)  # Máximo 1 hora por ejecución
+    env = os.environ.copy()
+    env.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
 
-    if p.exitcode != 0:
-        exit_code = p.exitcode
-        error_msg = f"Spider '{spider_name}' terminó con código {exit_code}"
-        logger.error("Spider falló", spider=spider_name, exit_code=exit_code)
+    proc = subprocess.Popen(
+        [sys.executable, runner, spider_path, scraping_dir, backend_dir],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        env=env,
+    )
+    try:
+        stdout, _ = proc.communicate(timeout=3600)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.communicate()
+        raise RuntimeError(f"Spider '{spider_name}' timeout tras 3600s")
+
+    if proc.returncode != 0:
+        output = stdout.decode(errors="replace")[-2000:]
+        error_msg = f"Spider '{spider_name}' termino con codigo {proc.returncode}"
+        logger.error("Spider fallo", spider=spider_name, exit_code=proc.returncode, output=output)
         raise self.retry(exc=RuntimeError(error_msg))
 
     logger.info("Spider completado exitosamente", spider=spider_name)
