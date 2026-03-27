@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-26 (F5-14 completada: spiders de Costco, Alcampo e Hipercor)
+> Última sincronización: 2026-03-27 (F5-15 completada: spiders de Eroski, Spar, Consum y Coviran)
 
 ---
 
@@ -176,6 +176,7 @@
 | F5-02 | Spider Carrefour | Scraping | 🟠 Alta | ⬜ | 3 |
 | F5-03 | Spider Lidl + DIA | Scraping | 🟠 Alta | ⬜ | 4 |
 | F5-14 | Spiders Costco + Alcampo + Hipercor | Scraping | 🟠 Alta | ✅ | 3 |
+| F5-15 | Spiders Eroski + Spar + Consum + Coviran | Scraping | 🟠 Alta | ✅ | 4 |
 | F5-04 | Pipeline normalización e inserción en BD | Scraping | 🔴 Crítica | ⬜ | 3 |
 | F5-05 | Programación tareas con Celery Beat | Scraping | 🟠 Alta | ⬜ | 2 |
 | F5-06 | Implementación función de scoring multicriterio | Optimizer | 🔴 Crítica | ⬜ | 5 |

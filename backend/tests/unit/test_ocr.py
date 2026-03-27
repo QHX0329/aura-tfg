@@ -35,10 +35,13 @@ class TestExtractTextFromImage:
             ]
         }
 
-        with patch(
-            "apps.ocr.services._preprocess_image_for_ocr",
-            return_value=b"processed-image",
-        ), patch("apps.ocr.services.requests.post", return_value=mock_response) as mock_post:
+        with (
+            patch(
+                "apps.ocr.services._preprocess_image_for_ocr",
+                return_value=b"processed-image",
+            ),
+            patch("apps.ocr.services.requests.post", return_value=mock_response) as mock_post,
+        ):
             result = extract_text_from_image(b"fake-image")
 
         assert result == ["Leche", "Pan", "Aceite"]
@@ -69,12 +72,15 @@ class TestExtractTextFromImage:
             ]
         }
 
-        with patch(
-            "apps.ocr.services._preprocess_image_for_ocr",
-            return_value=b"processed-image",
-        ), patch("apps.ocr.services.requests.post", return_value=mock_response):
-            with pytest.raises(OCRProcessingError):
-                extract_text_from_image(b"fake-image")
+        with (
+            patch(
+                "apps.ocr.services._preprocess_image_for_ocr",
+                return_value=b"processed-image",
+            ),
+            patch("apps.ocr.services.requests.post", return_value=mock_response),
+            pytest.raises(OCRProcessingError),
+        ):
+            extract_text_from_image(b"fake-image")
 
     @override_settings(GOOGLE_CLOUD_VISION_API_KEY="test-vision-key")
     def test_extract_text_raises_on_provider_error(self):
@@ -96,12 +102,15 @@ class TestExtractTextFromImage:
             ]
         }
 
-        with patch(
-            "apps.ocr.services._preprocess_image_for_ocr",
-            return_value=b"processed-image",
-        ), patch("apps.ocr.services.requests.post", return_value=mock_response):
-            with pytest.raises(OCRProcessingError, match="Google Vision no pudo procesar la imagen"):
-                extract_text_from_image(b"fake-image")
+        with (
+            patch(
+                "apps.ocr.services._preprocess_image_for_ocr",
+                return_value=b"processed-image",
+            ),
+            patch("apps.ocr.services.requests.post", return_value=mock_response),
+            pytest.raises(OCRProcessingError, match="Google Vision no pudo procesar la imagen"),
+        ):
+            extract_text_from_image(b"fake-image")
 
     @override_settings(
         GOOGLE_CLOUD_VISION_API_KEY="",
@@ -136,10 +145,13 @@ class TestExtractTextFromImage:
             ]
         }
 
-        with patch(
-            "apps.ocr.services._preprocess_image_for_ocr",
-            return_value=b"processed-image",
-        ), patch("apps.ocr.services.requests.post", return_value=mock_response) as mock_post:
+        with (
+            patch(
+                "apps.ocr.services._preprocess_image_for_ocr",
+                return_value=b"processed-image",
+            ),
+            patch("apps.ocr.services.requests.post", return_value=mock_response) as mock_post,
+        ):
             result = extract_text_from_image(b"fake-image")
 
         assert result == ["Leche"]
@@ -160,12 +172,15 @@ class TestExtractTextFromImage:
         mock_response = MagicMock()
         mock_response.raise_for_status.side_effect = http_error
 
-        with patch(
-            "apps.ocr.services._preprocess_image_for_ocr",
-            return_value=b"processed-image",
-        ), patch("apps.ocr.services.requests.post", return_value=mock_response):
-            with pytest.raises(ImproperlyConfigured, match="invalida o no tiene permisos"):
-                extract_text_from_image(b"fake-image")
+        with (
+            patch(
+                "apps.ocr.services._preprocess_image_for_ocr",
+                return_value=b"processed-image",
+            ),
+            patch("apps.ocr.services.requests.post", return_value=mock_response),
+            pytest.raises(ImproperlyConfigured, match="invalida o no tiene permisos"),
+        ):
+            extract_text_from_image(b"fake-image")
 
 
 @pytest.mark.django_db

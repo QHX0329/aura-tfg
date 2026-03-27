@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
-import json
 from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
@@ -142,9 +142,7 @@ class Command(BaseCommand):
             return
 
         stores = list(Store.objects.filter(chain=chain, is_active=True).order_by("id"))
-        self.stdout.write(
-            f"[CHAIN] {chain.name}: rows={len(rows)} stores={len(stores)}"
-        )
+        self.stdout.write(f"[CHAIN] {chain.name}: rows={len(rows)} stores={len(stores)}")
 
         for row in rows:
             if not isinstance(row, dict):
@@ -230,7 +228,9 @@ class Command(BaseCommand):
     ) -> bool:
         if row_category_name:
             category = get_or_create_category_pair("Importadas", row_category_name)
-            if product.category_id != category.id:
+            product_category_pk = getattr(product, "category_id", None)
+            category_pk = getattr(category, "pk", None)
+            if product_category_pk != category_pk:
                 product.category = category
                 product.save(update_fields=["category", "updated_at"])
                 return True

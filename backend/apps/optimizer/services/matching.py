@@ -15,7 +15,6 @@ from apps.prices.models import Price
 from apps.products.models import Product
 from apps.shopping_lists.utils import normalize_list_text
 
-
 TOP_PRODUCT_CANDIDATES = 20
 TOP_SIMILAR_MATCHES = 3
 
@@ -84,14 +83,15 @@ def _score_candidate(query_text: str, price_obj: Price) -> float:
     ]
     normalized_variants = [normalize_list_text(value) for value in product_variants if value]
     product_score = max(
-        max(fuzz.token_set_ratio(normalized_query, variant), fuzz.partial_ratio(normalized_query, variant))
+        max(
+            fuzz.token_set_ratio(normalized_query, variant),
+            fuzz.partial_ratio(normalized_query, variant),
+        )
         for variant in normalized_variants
     )
 
     store_context = " ".join(
-        part
-        for part in [store.name, store.chain.name if store.chain else None]
-        if part
+        part for part in [store.name, store.chain.name if store.chain else None] if part
     )
     store_score = 0
     if store_context:
@@ -133,7 +133,11 @@ def _get_item_candidates(item, candidate_stores) -> list[CandidateMatch]:
             )
             for price_obj in price_candidates
         ),
-        key=lambda match: (-match.similarity_score, match.effective_price, -match.price_obj.verified_at.timestamp()),
+        key=lambda match: (
+            -match.similarity_score,
+            match.effective_price,
+            -match.price_obj.verified_at.timestamp(),
+        ),
     )[:TOP_SIMILAR_MATCHES]
 
     return [
@@ -208,18 +212,22 @@ def resolve_list_items(items, candidate_stores, max_stops: int | None = None) ->
         candidates_by_item[item.id] = candidates
 
     assignments = {
-        item_id: _pick_cheapest(candidates)
-        for item_id, candidates in candidates_by_item.items()
+        item_id: _pick_cheapest(candidates) for item_id, candidates in candidates_by_item.items()
     }
     assignments = _reduce_store_count(assignments, candidates_by_item, max_stops=max_stops)
 
     selected_store_ids = {match.price_obj.store_id for match in assignments.values()}
     savings_by_store: dict[int, Decimal] = {}
     for item_id, selected in assignments.items():
-        alternatives = [candidate for candidate in candidates_by_item[item_id] if candidate != selected]
+        alternatives = [
+            candidate for candidate in candidates_by_item[item_id] if candidate != selected
+        ]
         if not alternatives:
             continue
-        next_best = min(alternatives, key=lambda candidate: (candidate.effective_price, -candidate.similarity_score))
+        next_best = min(
+            alternatives,
+            key=lambda candidate: (candidate.effective_price, -candidate.similarity_score),
+        )
         savings_by_store[selected.price_obj.store_id] = savings_by_store.get(
             selected.price_obj.store_id,
             Decimal("0.00"),

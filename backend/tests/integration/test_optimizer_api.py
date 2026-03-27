@@ -13,8 +13,6 @@ from unittest.mock import patch
 
 import pytest
 from django.contrib.gis.geos import Point
-from rest_framework.test import APIClient
-
 
 OPTIMIZE_URL = "/api/v1/optimize/"
 
@@ -149,7 +147,7 @@ def test_optimize_404_no_stores_in_radius(
         OPTIMIZE_URL,
         data={
             "shopping_list_id": shopping_list_with_items.id,
-            "lat": 0.0,    # Ubicacion en el Atlantico
+            "lat": 0.0,  # Ubicacion en el Atlantico
             "lng": -30.0,
             "max_distance_km": 1.0,
             "max_stops": 2,

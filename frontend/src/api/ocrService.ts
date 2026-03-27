@@ -7,7 +7,7 @@
  * - Error 422: { success: false, error: { code: "OCR_PROCESSING_ERROR", message: "..." } }
  */
 
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export interface OCRItem {
   raw_text: string;
@@ -23,12 +23,12 @@ export interface OCRScanResponse {
 
 export const scanImage = (imageUri: string) => {
   const formData = new FormData();
-  formData.append('image', {
+  formData.append("image", {
     uri: imageUri,
-    type: 'image/jpeg',
-    name: 'scan.jpg',
+    type: "image/jpeg",
+    name: "scan.jpg",
   } as any);
-  return apiClient.post<OCRScanResponse>('/ocr/scan/', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+  return apiClient.post<OCRScanResponse>("/ocr/scan/", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
 };

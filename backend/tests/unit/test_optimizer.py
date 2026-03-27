@@ -7,14 +7,11 @@ Cubre:
 - optimize_shopping_list: excepcion cuando no hay tiendas
 """
 
-from unittest.mock import MagicMock, patch
-
 import pytest
 
 from apps.core.exceptions import StoreNotFoundError
 from apps.optimizer.serializers import OptimizeRequestSerializer
 from apps.optimizer.services.solver import solve_route
-
 
 # ── solve_route ────────────────────────────────────────────────────────────────
 

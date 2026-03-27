@@ -3,7 +3,12 @@
  */
 
 import { apiClient } from "./client";
-import type { PlacesDetail, PlacesPrediction, PlacesResolved, Store } from "@/types/domain";
+import type {
+  PlacesDetail,
+  PlacesPrediction,
+  PlacesResolved,
+  Store,
+} from "@/types/domain";
 
 interface RawStoreChain {
   id?: number;
@@ -151,10 +156,10 @@ export const storeService = {
     lng: number,
   ): Promise<PlacesPrediction[]> => {
     try {
-      const payload = await apiClient.get<never, { predictions: PlacesPrediction[] }>(
-        "/stores/places-autocomplete/",
-        { params: { input, lat, lng } },
-      );
+      const payload = await apiClient.get<
+        never,
+        { predictions: PlacesPrediction[] }
+      >("/stores/places-autocomplete/", { params: { input, lat, lng } });
       return payload?.predictions ?? [];
     } catch {
       return [];
@@ -162,9 +167,7 @@ export const storeService = {
   },
 
   /** GET /stores/places-resolve/?place_id=X — resuelve Place ID a coordenadas */
-  placesResolve: async (
-    placeId: string,
-  ): Promise<PlacesResolved | null> => {
+  placesResolve: async (placeId: string): Promise<PlacesResolved | null> => {
     try {
       const payload = await apiClient.get<never, PlacesResolved>(
         "/stores/places-resolve/",

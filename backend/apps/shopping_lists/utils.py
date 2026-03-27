@@ -7,7 +7,6 @@ from __future__ import annotations
 import re
 import unicodedata
 
-
 _MULTISPACE_RE = re.compile(r"\s+")
 _NON_ALNUM_RE = re.compile(r"[^a-z0-9\s]")
 

@@ -145,8 +145,7 @@ def optimize_shopping_list(
     if resolution["unmatched_items"]:
         raise StoreNotFoundError(
             detail=(
-                "No se encontraron coincidencias para: "
-                + ", ".join(resolution["unmatched_items"])
+                "No se encontraron coincidencias para: " + ", ".join(resolution["unmatched_items"])
             )
         )
 
@@ -158,7 +157,10 @@ def optimize_shopping_list(
     for assignment in assignments:
         assignments_by_store.setdefault(assignment.price_obj.store_id, []).append(assignment)
 
-    raw_savings = [float(resolution["savings_by_store"].get(store.id, Decimal("0.00"))) for store in selected_stores]
+    raw_savings = [
+        float(resolution["savings_by_store"].get(store.id, Decimal("0.00")))
+        for store in selected_stores
+    ]
     max_saving = max(raw_savings) if raw_savings else 0.0
     normalized_savings = [saving / max_saving if max_saving > 0 else 0.0 for saving in raw_savings]
 
@@ -206,7 +208,9 @@ def optimize_shopping_list(
         time_from_prev = time_matrix[prev_node][route_index]
 
         products = [assignment.as_route_product() for assignment in store_assignments]
-        subtotal = sum((assignment.extended_price for assignment in store_assignments), Decimal("0.00"))
+        subtotal = sum(
+            (assignment.extended_price for assignment in store_assignments), Decimal("0.00")
+        )
         total_price += subtotal
         total_distance_km += dist_from_prev
         estimated_time_minutes += time_from_prev

@@ -7,7 +7,6 @@ truncado de historial y logging estructurado.
 
 import structlog
 from django.conf import settings
-
 from google import genai
 from google.genai import errors as genai_errors
 from google.genai import types
@@ -97,9 +96,7 @@ def chat_with_assistant(messages: list[dict]) -> str:
                 "El asistente ha alcanzado el límite de solicitudes. Intente más tarde."
             ) from exc
         log.error("assistant_client_error", error=str(exc))
-        raise AssistantError(
-            "Error en el servicio del asistente. Intente más tarde."
-        ) from exc
+        raise AssistantError("Error en el servicio del asistente. Intente más tarde.") from exc
     except genai_errors.ServerError as exc:
         log.error("assistant_connection_error", error=str(exc))
         raise AssistantError(
@@ -107,6 +104,4 @@ def chat_with_assistant(messages: list[dict]) -> str:
         ) from exc
     except genai_errors.APIError as exc:
         log.error("assistant_api_error", error=str(exc))
-        raise AssistantError(
-            "Error en el servicio del asistente. Intente más tarde."
-        ) from exc
+        raise AssistantError("Error en el servicio del asistente. Intente más tarde.") from exc

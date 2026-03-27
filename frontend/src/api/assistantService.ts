@@ -7,17 +7,17 @@
  * - Error 503: { success: false, error: { code: "ASSISTANT_UNAVAILABLE", message: "..." } }
  */
 
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export interface ChatMessage {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 }
 
 export interface ChatResponse {
-  role: 'assistant';
+  role: "assistant";
   content: string;
 }
 
 export const sendChatMessage = (messages: ChatMessage[]) =>
-  apiClient.post<ChatResponse>('/assistant/chat/', { messages });
+  apiClient.post<ChatResponse>("/assistant/chat/", { messages });

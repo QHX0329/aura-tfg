@@ -13,7 +13,7 @@
  *  6. Error de red → tarjeta de error con mensaje genérico
  */
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Alert,
   Modal,
@@ -22,22 +22,29 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import Slider from '@react-native-community/slider';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { RouteProp } from '@react-navigation/native';
-import * as Location from 'expo-location';
+} from "react-native";
+import Slider from "@react-native-community/slider";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import type { RouteProp } from "@react-navigation/native";
+import * as Location from "expo-location";
 
-import { borderRadius, colors, fontFamilies, fontSize, shadows, spacing } from '@/theme';
-import type { ListsStackParamList } from '@/navigation/types';
-import { SkeletonBox } from '@/components/ui/SkeletonBox';
-import { optimizeRoute } from '@/api/optimizerService';
-import type { OptimizeResponse, RouteStop } from '@/api/optimizerService';
+import {
+  borderRadius,
+  colors,
+  fontFamilies,
+  fontSize,
+  shadows,
+  spacing,
+} from "@/theme";
+import type { ListsStackParamList } from "@/navigation/types";
+import { SkeletonBox } from "@/components/ui/SkeletonBox";
+import { optimizeRoute } from "@/api/optimizerService";
+import type { OptimizeResponse, RouteStop } from "@/api/optimizerService";
 
-type RouteP = RouteProp<ListsStackParamList, 'Route'>;
+type RouteP = RouteProp<ListsStackParamList, "Route">;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -49,16 +56,6 @@ const CHAIN_COLORS: Record<string, string> = {
   dia: colors.chains.dia,
   alcampo: colors.chains.alcampo,
   local: colors.chains.local,
-};
-
-const CHAIN_INITIALS: Record<string, string> = {
-  mercadona: 'M',
-  lidl: 'L',
-  aldi: 'A',
-  carrefour: 'C',
-  dia: 'D',
-  alcampo: 'Al',
-  local: '🏪',
 };
 
 // ─── Weight Config Modal ───────────────────────────────────────────────────────
@@ -76,7 +73,12 @@ interface WeightModalProps {
   onClose: () => void;
 }
 
-const WeightModal: React.FC<WeightModalProps> = ({ visible, weights, onApply, onClose }) => {
+const WeightModal: React.FC<WeightModalProps> = ({
+  visible,
+  weights,
+  onApply,
+  onClose,
+}) => {
   const [local, setLocal] = useState(weights);
 
   const handleApply = () => {
@@ -85,17 +87,22 @@ const WeightModal: React.FC<WeightModalProps> = ({ visible, weights, onApply, on
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
       <View style={weightStyles.overlay}>
         <View style={weightStyles.card}>
           <View style={weightStyles.accentBar} />
           <Text style={weightStyles.title}>Ajustar preferencias</Text>
 
-          {(['w_precio', 'w_distancia', 'w_tiempo'] as const).map((key) => {
+          {(["w_precio", "w_distancia", "w_tiempo"] as const).map((key) => {
             const labels: Record<string, string> = {
-              w_precio: 'Precio',
-              w_distancia: 'Distancia',
-              w_tiempo: 'Tiempo',
+              w_precio: "Precio",
+              w_distancia: "Distancia",
+              w_tiempo: "Tiempo",
             };
             return (
               <View key={key} style={weightStyles.row}>
@@ -106,7 +113,9 @@ const WeightModal: React.FC<WeightModalProps> = ({ visible, weights, onApply, on
                   maximumValue={100}
                   step={1}
                   value={local[key]}
-                  onValueChange={(v: number) => setLocal((prev) => ({ ...prev, [key]: v }))}
+                  onValueChange={(v: number) =>
+                    setLocal((prev) => ({ ...prev, [key]: v }))
+                  }
                   minimumTrackTintColor={colors.primary}
                   maximumTrackTintColor={colors.border}
                   thumbTintColor={colors.primary}
@@ -120,7 +129,10 @@ const WeightModal: React.FC<WeightModalProps> = ({ visible, weights, onApply, on
             <TouchableOpacity style={weightStyles.cancelBtn} onPress={onClose}>
               <Text style={weightStyles.cancelText}>Cancelar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={weightStyles.applyBtn} onPress={handleApply}>
+            <TouchableOpacity
+              style={weightStyles.applyBtn}
+              onPress={handleApply}
+            >
               <Text style={weightStyles.applyText}>Aplicar</Text>
             </TouchableOpacity>
           </View>
@@ -132,18 +144,32 @@ const WeightModal: React.FC<WeightModalProps> = ({ visible, weights, onApply, on
 
 // ─── Route Stop Row ────────────────────────────────────────────────────────────
 
-const RouteStopRow: React.FC<{ stop: RouteStop; index: number }> = ({ stop, index }) => {
+const RouteStopRow: React.FC<{ stop: RouteStop; index: number }> = ({
+  stop,
+  index,
+}) => {
   const chainColor = CHAIN_COLORS[stop.chain.toLowerCase()] ?? colors.primary;
-  const initial = CHAIN_INITIALS[stop.chain.toLowerCase()] ?? stop.chain[0]?.toUpperCase() ?? '?';
   return (
-    <Animated.View entering={FadeInDown.delay(100 + index * 80).springify()} style={stopRowStyles.container}>
-      <View style={[stopRowStyles.dot, { backgroundColor: chainColor }]} accessibilityLabel={stop.store_name} />
+    <Animated.View
+      entering={FadeInDown.delay(100 + index * 80).springify()}
+      style={stopRowStyles.container}
+    >
+      <View
+        style={[stopRowStyles.dot, { backgroundColor: chainColor }]}
+        accessibilityLabel={stop.store_name}
+      />
       <View style={stopRowStyles.body}>
-        <Text style={stopRowStyles.storeName} numberOfLines={1}>{stop.store_name}</Text>
+        <Text style={stopRowStyles.storeName} numberOfLines={1}>
+          {stop.store_name}
+        </Text>
         <View style={stopRowStyles.meta}>
-          <Text style={stopRowStyles.metaText}>{stop.distance_km.toFixed(1)} km</Text>
+          <Text style={stopRowStyles.metaText}>
+            {stop.distance_km.toFixed(1)} km
+          </Text>
           <Text style={stopRowStyles.metaDot}>·</Text>
-          <Text style={stopRowStyles.metaText}>~{Math.round(stop.time_minutes)} min</Text>
+          <Text style={stopRowStyles.metaText}>
+            ~{Math.round(stop.time_minutes)} min
+          </Text>
         </View>
       </View>
       <View style={stopRowStyles.priceCol}>
@@ -151,7 +177,8 @@ const RouteStopRow: React.FC<{ stop: RouteStop; index: number }> = ({ stop, inde
           <Text style={stopRowStyles.priceText}>
             {stop.products
               .reduce((acc, p) => acc + p.price * p.quantity, 0)
-              .toFixed(2)} €
+              .toFixed(2)}{" "}
+            €
           </Text>
         )}
       </View>
@@ -168,8 +195,14 @@ export const RouteScreen: React.FC = () => {
 
   const [result, setResult] = useState<OptimizeResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<{ code: string; message: string } | null>(null);
-  const [weights, setWeights] = useState<WeightConfig>({ w_precio: 50, w_distancia: 30, w_tiempo: 20 });
+  const [error, setError] = useState<{ code: string; message: string } | null>(
+    null,
+  );
+  const [weights, setWeights] = useState<WeightConfig>({
+    w_precio: 50,
+    w_distancia: 30,
+    w_tiempo: 20,
+  });
   const [maxStops, setMaxStops] = useState(3);
   const [showWeightModal, setShowWeightModal] = useState(false);
 
@@ -180,16 +213,18 @@ export const RouteScreen: React.FC = () => {
 
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      if (status !== "granted") {
         Alert.alert(
-          'Ubicación requerida',
-          'Activa la ubicación para calcular la ruta óptima.',
+          "Ubicación requerida",
+          "Activa la ubicación para calcular la ruta óptima.",
         );
         setLoading(false);
         return;
       }
 
-      const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const loc = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
 
       const response = await optimizeRoute({
         shopping_list_id: parseInt(listId, 10),
@@ -204,16 +239,18 @@ export const RouteScreen: React.FC = () => {
 
       setResult(response as unknown as OptimizeResponse);
     } catch (err: any) {
-      const code = err?.response?.data?.error?.code ?? '';
-      if (code === 'OPTIMIZER_NO_STORES_IN_RADIUS') {
+      const code = err?.response?.data?.error?.code ?? "";
+      if (code === "OPTIMIZER_NO_STORES_IN_RADIUS") {
         setError({
-          code: 'OPTIMIZER_NO_STORES_IN_RADIUS',
-          message: 'No hay tiendas en tu radio de búsqueda. Prueba ampliando el radio o activa la ubicación.',
+          code: "OPTIMIZER_NO_STORES_IN_RADIUS",
+          message:
+            "No hay tiendas en tu radio de búsqueda. Prueba ampliando el radio o activa la ubicación.",
         });
       } else {
         setError({
-          code: 'NETWORK',
-          message: 'No se pudo calcular la ruta. Comprueba tu conexión e inténtalo de nuevo.',
+          code: "NETWORK",
+          message:
+            "No se pudo calcular la ruta. Comprueba tu conexión e inténtalo de nuevo.",
         });
       }
     } finally {
@@ -225,17 +262,25 @@ export const RouteScreen: React.FC = () => {
     <SafeAreaView style={styles.safe} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.back}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>Ruta optimizada</Text>
-          <Text style={styles.headerSub} numberOfLines={1}>{listName}</Text>
+          <Text style={styles.headerSub} numberOfLines={1}>
+            {listName}
+          </Text>
         </View>
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Configuración de preferencias */}
         <TouchableOpacity
           style={styles.prefRow}
@@ -246,7 +291,8 @@ export const RouteScreen: React.FC = () => {
           <Ionicons name="options-outline" size={18} color={colors.primary} />
           <Text style={styles.prefText}>Ajustar preferencias</Text>
           <Text style={styles.prefHint}>
-            Precio {weights.w_precio} · Distancia {weights.w_distancia} · Tiempo {weights.w_tiempo}
+            Precio {weights.w_precio} · Distancia {weights.w_distancia} · Tiempo{" "}
+            {weights.w_tiempo}
           </Text>
           <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
         </TouchableOpacity>
@@ -258,11 +304,17 @@ export const RouteScreen: React.FC = () => {
             {[2, 3, 4, 5].map((n) => (
               <TouchableOpacity
                 key={n}
-                style={[styles.stopsOption, maxStops === n && styles.stopsOptionActive]}
+                style={[
+                  styles.stopsOption,
+                  maxStops === n && styles.stopsOptionActive,
+                ]}
                 onPress={() => setMaxStops(n)}
               >
                 <Text
-                  style={[styles.stopsOptionText, maxStops === n && styles.stopsOptionTextActive]}
+                  style={[
+                    styles.stopsOptionText,
+                    maxStops === n && styles.stopsOptionTextActive,
+                  ]}
                 >
                   {n}
                 </Text>
@@ -299,18 +351,25 @@ export const RouteScreen: React.FC = () => {
 
         {/* Error state */}
         {!loading && error && (
-          <Animated.View entering={FadeInDown.springify()} style={styles.errorCard}>
-            <Ionicons name="alert-circle-outline" size={24} color={colors.error} />
+          <Animated.View
+            entering={FadeInDown.springify()}
+            style={styles.errorCard}
+          >
+            <Ionicons
+              name="alert-circle-outline"
+              size={24}
+              color={colors.error}
+            />
             <Text style={styles.errorText}>{error.message}</Text>
-            {error.code === 'OPTIMIZER_NO_STORES_IN_RADIUS' && (
+            {error.code === "OPTIMIZER_NO_STORES_IN_RADIUS" && (
               <TouchableOpacity
                 style={styles.errorCta}
                 onPress={() => {
                   // Ampliar radio — en la siguiente versión se conectará al perfil
                   Alert.alert(
-                    'Ampliar radio',
-                    'Ve a tu perfil → Preferencias para aumentar el radio de búsqueda.',
-                    [{ text: 'Entendido' }],
+                    "Ampliar radio",
+                    "Ve a tu perfil → Preferencias para aumentar el radio de búsqueda.",
+                    [{ text: "Entendido" }],
                   );
                 }}
               >
@@ -324,9 +383,12 @@ export const RouteScreen: React.FC = () => {
         {!loading && !error && !result && (
           <View style={styles.emptyState}>
             <Ionicons name="map-outline" size={64} color={colors.textMuted} />
-            <Text style={styles.emptyTitle}>No tienes ninguna ruta calculada</Text>
+            <Text style={styles.emptyTitle}>
+              No tienes ninguna ruta calculada
+            </Text>
             <Text style={styles.emptyBody}>
-              Abre una lista de la compra y pulsa «Optimizar ruta» para encontrar la mejor combinación de tiendas.
+              Abre una lista de la compra y pulsa «Optimizar ruta» para
+              encontrar la mejor combinación de tiendas.
             </Text>
           </View>
         )}
@@ -337,19 +399,39 @@ export const RouteScreen: React.FC = () => {
             {/* Hero price card */}
             <View style={styles.heroCard}>
               <Text style={styles.heroPriceLabel}>Precio total estimado</Text>
-              <Text style={styles.heroPrice}>{result.total_price.toFixed(2)} €</Text>
+              <Text style={styles.heroPrice}>
+                {result.total_price.toFixed(2)} €
+              </Text>
               <View style={styles.heroMeta}>
                 <View style={styles.heroMetaItem}>
-                  <Ionicons name="navigate-outline" size={14} color={colors.textMuted} />
-                  <Text style={styles.heroMetaText}>{result.total_distance_km.toFixed(1)} km</Text>
+                  <Ionicons
+                    name="navigate-outline"
+                    size={14}
+                    color={colors.textMuted}
+                  />
+                  <Text style={styles.heroMetaText}>
+                    {result.total_distance_km.toFixed(1)} km
+                  </Text>
                 </View>
                 <View style={styles.heroMetaItem}>
-                  <Ionicons name="time-outline" size={14} color={colors.textMuted} />
-                  <Text style={styles.heroMetaText}>~{Math.round(result.estimated_time_minutes)} min</Text>
+                  <Ionicons
+                    name="time-outline"
+                    size={14}
+                    color={colors.textMuted}
+                  />
+                  <Text style={styles.heroMetaText}>
+                    ~{Math.round(result.estimated_time_minutes)} min
+                  </Text>
                 </View>
                 <View style={styles.heroMetaItem}>
-                  <Ionicons name="storefront-outline" size={14} color={colors.textMuted} />
-                  <Text style={styles.heroMetaText}>{result.route.length} paradas</Text>
+                  <Ionicons
+                    name="storefront-outline"
+                    size={14}
+                    color={colors.textMuted}
+                  />
+                  <Text style={styles.heroMetaText}>
+                    {result.route.length} paradas
+                  </Text>
                 </View>
               </View>
             </View>
@@ -387,8 +469,8 @@ export const RouteScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     backgroundColor: colors.surface,
@@ -411,8 +493,8 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   prefRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.md,
@@ -431,8 +513,8 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   stopsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.md,
@@ -446,15 +528,15 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   stopsSegmented: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.xs,
   },
   stopsOption: {
     width: 36,
     height: 36,
     borderRadius: borderRadius.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.surfaceVariant,
   },
   stopsOptionActive: {
@@ -469,9 +551,9 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   ctaBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
     backgroundColor: colors.primary,
     borderRadius: borderRadius.md,
@@ -495,7 +577,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.errorBg,
     borderRadius: borderRadius.md,
     padding: spacing.md,
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.sm,
     ...shadows.card,
   },
@@ -503,7 +585,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.body,
     fontSize: fontSize.sm,
     color: colors.error,
-    textAlign: 'center',
+    textAlign: "center",
   },
   errorCta: {
     backgroundColor: colors.primary,
@@ -518,8 +600,8 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: spacing.xl,
     gap: spacing.md,
   },
@@ -527,20 +609,20 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.display,
     fontSize: fontSize.lg,
     color: colors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   emptyBody: {
     fontFamily: fontFamilies.body,
     fontSize: fontSize.sm,
     color: colors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 22,
   },
   heroCard: {
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.sm,
     ...shadows.card,
   },
@@ -555,12 +637,12 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   heroMeta: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
   },
   heroMetaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   heroMetaText: {
@@ -572,15 +654,15 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.bodySemiBold,
     fontSize: fontSize.sm,
     color: colors.textMuted,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.6,
     marginTop: spacing.sm,
     marginBottom: spacing.xs,
   },
   mapBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
     borderWidth: 1.5,
     borderColor: colors.primary,
@@ -598,8 +680,8 @@ const styles = StyleSheet.create({
 
 const stopRowStyles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     height: 56,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.md,
@@ -624,8 +706,8 @@ const stopRowStyles = StyleSheet.create({
     color: colors.text,
   },
   meta: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   metaText: {
@@ -639,7 +721,7 @@ const stopRowStyles = StyleSheet.create({
     color: colors.textMuted,
   },
   priceCol: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   priceText: {
     fontFamily: fontFamilies.display,
@@ -652,16 +734,16 @@ const weightStyles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: spacing.xl,
   },
   card: {
-    width: '100%',
+    width: "100%",
     maxWidth: 400,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
     ...shadows.elevated,
   },
   accentBar: {
@@ -677,8 +759,8 @@ const weightStyles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: spacing.lg,
     marginBottom: spacing.sm,
     gap: spacing.sm,
@@ -698,11 +780,11 @@ const weightStyles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.text,
     width: 32,
-    textAlign: 'right',
+    textAlign: "right",
   },
   actions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     gap: spacing.sm,
     margin: spacing.lg,
   },
@@ -730,4 +812,3 @@ const weightStyles = StyleSheet.create({
     color: colors.white,
   },
 });
-

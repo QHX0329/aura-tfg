@@ -174,26 +174,29 @@ export const ProfileScreen: React.FC = () => {
   const [notifyNewPromos, setNotifyNewPromos] = useState(true);
   const [notifySharedListChanges, setNotifySharedListChanges] = useState(true);
 
-  const loadProfile = useCallback(async (showSkeleton: boolean) => {
-    if (showSkeleton) {
-      setIsLoading(true);
-    }
-    try {
-      const p = await authService.getProfile();
-      setProfile(p);
-      setWeightPrice(p.weightPrice);
-      setWeightDistance(p.weightDistance);
-      setWeightTime(p.weightTime);
-      setSearchRadiusKm(p.searchRadiusKm);
-      setMaxStops(p.maxStops);
-    } catch {
-      // Conservar valores del store si falla la carga
-    } finally {
+  const loadProfile = useCallback(
+    async (showSkeleton: boolean) => {
       if (showSkeleton) {
-        setIsLoading(false);
+        setIsLoading(true);
       }
-    }
-  }, [setProfile]);
+      try {
+        const p = await authService.getProfile();
+        setProfile(p);
+        setWeightPrice(p.weightPrice);
+        setWeightDistance(p.weightDistance);
+        setWeightTime(p.weightTime);
+        setSearchRadiusKm(p.searchRadiusKm);
+        setMaxStops(p.maxStops);
+      } catch {
+        // Conservar valores del store si falla la carga
+      } finally {
+        if (showSkeleton) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [setProfile],
+  );
 
   // ── Cargar perfil al montar ──────────────────────────────────────────────
 

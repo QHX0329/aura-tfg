@@ -2,10 +2,10 @@
 Tests unitarios para el pipeline de scraping y la tarea Celery run_spider.
 """
 
-from decimal import Decimal
 import os
 import subprocess
 import sys
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
@@ -27,6 +27,10 @@ def test_spider_map_contains_all_supported_spiders():
         "costco",
         "alcampo",
         "hipercor",
+        "eroski",
+        "spar",
+        "consum",
+        "coviran",
     }
 
 
@@ -88,7 +92,9 @@ def test_run_spider_raises_timeout_with_output(monkeypatch):
     monkeypatch.setattr("apps.scraping.tasks._resolve_backend_dir", lambda: "/app")
     monkeypatch.setattr("apps.scraping.tasks._resolve_scraping_dir", lambda: "/scraping")
     monkeypatch.setattr("apps.scraping.tasks._resolve_spider_timeout_seconds", lambda spider: 5)
-    monkeypatch.setattr("apps.scraping.tasks.subprocess.Popen", lambda *args, **kwargs: FakeProcess())
+    monkeypatch.setattr(
+        "apps.scraping.tasks.subprocess.Popen", lambda *args, **kwargs: FakeProcess()
+    )
 
     with pytest.raises(RuntimeError, match="timeout tras 5s"):
         run_spider.run("lidl")

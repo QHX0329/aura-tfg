@@ -10,7 +10,13 @@
  * - Estado vacío y skeletons de carga
  */
 
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Alert,
   Modal,
@@ -567,9 +573,3 @@ const modalStyles = StyleSheet.create({
 });
 
 export default NotificationScreen;
-
-
-
-
-
-

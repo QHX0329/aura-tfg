@@ -83,8 +83,7 @@ class OptimizeView(APIView):
                     "error": {
                         "code": "OPTIMIZER_NO_STORES_IN_RADIUS",
                         "message": (
-                            "No hay tiendas en tu radio de busqueda. "
-                            "Prueba ampliando el radio."
+                            "No hay tiendas en tu radio de busqueda. Prueba ampliando el radio."
                         ),
                         "details": {},
                     },

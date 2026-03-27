@@ -290,10 +290,7 @@ export const MainTabs: React.FC = () => {
     >
       <Tab.Screen name="HomeTab" component={HomeStackNavigator} />
       <Tab.Screen name="ListsTab" component={ListsStackNavigator} />
-      <Tab.Screen
-        name="MapTab"
-        component={MapStackNavigator}
-      />
+      <Tab.Screen name="MapTab" component={MapStackNavigator} />
       <Tab.Screen name="AssistantTab" component={AssistantStackNavigator} />
       <Tab.Screen name="ProfileTab" component={ProfileStackNavigator} />
     </Tab.Navigator>

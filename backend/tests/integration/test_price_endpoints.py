@@ -151,7 +151,9 @@ class TestPriceCompare:
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json()["data"]) >= 1
 
-    def test_compare_increments_promotion_views(self, api_client, product, store_nearby, price_nearby):
+    def test_compare_increments_promotion_views(
+        self, api_client, product, store_nearby, price_nearby
+    ):
         """Cada compare que devuelve una promo incrementa su contador de views."""
         promo = Promotion.objects.create(
             product=product,

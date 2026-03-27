@@ -161,9 +161,7 @@ class Command(BaseCommand):
             self._seed_store_network(stats)
 
         self.stdout.write(
-            self.style.SUCCESS(
-                "Seed ejecutado: solo usuarios y tiendas reales de scraping."
-            )
+            self.style.SUCCESS("Seed ejecutado: solo usuarios y tiendas reales de scraping.")
         )
         self.stdout.write(f"Registros creados: {stats.created}")
         self.stdout.write(f"Registros actualizados: {stats.updated}")

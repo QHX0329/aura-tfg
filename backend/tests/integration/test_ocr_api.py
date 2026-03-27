@@ -29,7 +29,9 @@ def _create_test_image_bytes(text: str = "Leche entera") -> bytes:
     return buffer.getvalue()
 
 
-def _make_uploaded_image(text: str = "Leche entera", filename: str = "test.png") -> SimpleUploadedFile:
+def _make_uploaded_image(
+    text: str = "Leche entera", filename: str = "test.png"
+) -> SimpleUploadedFile:
     """Crea un SimpleUploadedFile con una imagen PNG para tests multipart."""
     return SimpleUploadedFile(
         name=filename,
@@ -46,9 +48,10 @@ class TestOCRScanEndpoint:
         """POST con imagen valida y usuario autenticado devuelve 200."""
         uploaded_image = _make_uploaded_image("Leche entera")
 
-        with patch("apps.ocr.views.extract_text_from_image") as mock_extract, patch(
-            "apps.ocr.views.match_products"
-        ) as mock_match:
+        with (
+            patch("apps.ocr.views.extract_text_from_image") as mock_extract,
+            patch("apps.ocr.views.match_products") as mock_match,
+        ):
             mock_extract.return_value = ["Leche entera"]
             mock_match.return_value = [
                 {
@@ -96,9 +99,10 @@ class TestOCRScanEndpoint:
         """Cada item de la respuesta debe tener raw_text, confidence y quantity."""
         uploaded_image = _make_uploaded_image("Pan integral")
 
-        with patch("apps.ocr.views.extract_text_from_image") as mock_extract, patch(
-            "apps.ocr.views.match_products"
-        ) as mock_match:
+        with (
+            patch("apps.ocr.views.extract_text_from_image") as mock_extract,
+            patch("apps.ocr.views.match_products") as mock_match,
+        ):
             mock_extract.return_value = ["Pan integral"]
             mock_match.return_value = [
                 {

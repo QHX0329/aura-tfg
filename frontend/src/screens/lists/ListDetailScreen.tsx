@@ -171,7 +171,7 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [addPanelVisible, setAddPanelVisible] = useState(false);
-  const [quickAddName, setQuickAddName] = useState('');
+  const [quickAddName, setQuickAddName] = useState("");
   const [isQuickAdding, setIsQuickAdding] = useState(false);
   const [collabModalVisible, setCollabModalVisible] = useState(false);
   const [collaborators, setCollaborators] = useState<ListCollaborator[]>([]);
@@ -423,11 +423,11 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     setIsQuickAdding(true);
     try {
       await listService.addItem(listId, { name, quantity: 1 });
-      setQuickAddName('');
+      setQuickAddName("");
       setAddPanelVisible(false);
       await loadList();
     } catch {
-      Alert.alert('Error', 'No se pudo añadir el producto.');
+      Alert.alert("Error", "No se pudo añadir el producto.");
     } finally {
       setIsQuickAdding(false);
     }
@@ -544,13 +544,18 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
                 autoFocus
               />
               <TouchableOpacity
-                style={[styles.quickAddBtn, !quickAddName.trim() && styles.quickAddBtnDisabled]}
+                style={[
+                  styles.quickAddBtn,
+                  !quickAddName.trim() && styles.quickAddBtnDisabled,
+                ]}
                 onPress={handleQuickAdd}
                 disabled={isQuickAdding || !quickAddName.trim()}
               >
-                {isQuickAdding
-                  ? <ActivityIndicator size="small" color={colors.white} />
-                  : <Ionicons name="checkmark" size={18} color={colors.white} />}
+                {isQuickAdding ? (
+                  <ActivityIndicator size="small" color={colors.white} />
+                ) : (
+                  <Ionicons name="checkmark" size={18} color={colors.white} />
+                )}
               </TouchableOpacity>
             </View>
 
@@ -569,8 +574,14 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
               }}
             >
               <Ionicons name="cube-outline" size={20} color={colors.primary} />
-              <Text style={styles.catalogOptionText}>Buscar en el catálogo</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              <Text style={styles.catalogOptionText}>
+                Buscar en el catálogo
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={colors.textMuted}
+              />
             </TouchableOpacity>
           </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -964,9 +975,3 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
 });
-
-
-
-
-
-

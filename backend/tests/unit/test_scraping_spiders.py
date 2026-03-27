@@ -110,7 +110,10 @@ def test_carrefour_extract_products_from_home_card():
     assert str(item["price"]) == "0.86"
     assert str(item["unit_price"]) == "0.86"
     assert item["barcode"] == "VC4AECOMM-700248"
-    assert item["url"] == "https://www.carrefour.es/supermercado/leche-semidesnatada/R-VC4AECOMM-700248/p"
+    assert (
+        item["url"]
+        == "https://www.carrefour.es/supermercado/leche-semidesnatada/R-VC4AECOMM-700248/p"
+    )
 
 
 def test_alcampo_extract_product_rows_from_ssr_html():
@@ -195,3 +198,108 @@ def test_hipercor_extract_offer_links_and_price_items():
     assert len(items) == 1
     assert items[0]["product_name"].startswith("Cerveza rubia")
     assert str(items[0]["price"]) == "5.49"
+
+
+def test_eroski_extract_product_from_json_ld_html():
+    from bargain_scraping.spiders.eroski import _extract_product_from_html
+
+    html = """
+    <html>
+      <head>
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "Refresco cola zero 2L",
+            "gtin13": "1234567890123",
+            "offers": {
+              "@type": "Offer",
+              "price": "1,79"
+            }
+          }
+        </script>
+      </head>
+    </html>
+    """
+
+    item = _extract_product_from_html(
+        html,
+        "https://supermercado.eroski.es/es/productdetail/123/",
+    )
+
+    assert item is not None
+    assert item["store_chain"] == "Eroski"
+    assert item["product_name"] == "Refresco cola zero 2L"
+    assert str(item["price"]) == "1.79"
+    assert item["barcode"] == "1234567890123"
+
+
+def test_spar_extract_product_from_html_with_price_token():
+    from bargain_scraping.spiders.spar import _extract_product_from_html
+
+    html = """
+    <html>
+      <body>
+        <h1>AGUA MINERAL CON GAS SPAR 1,5 L.</h1>
+        <div class="price">0,89 €</div>
+      </body>
+    </html>
+    """
+
+    item = _extract_product_from_html(html, "https://spar.es/productos-spar/bebidas/agua/")
+
+    assert item is not None
+    assert item["store_chain"] == "Spar"
+    assert item["product_name"] == "AGUA MINERAL CON GAS SPAR 1,5 L."
+    assert str(item["price"]) == "0.89"
+
+
+def test_consum_extract_product_from_json_ld_html():
+    from bargain_scraping.spiders.consum import _extract_product_from_html
+
+    html = """
+    <html>
+      <head>
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "aceite de oliva virgen extra",
+            "gtin13": "8437000000001",
+            "offers": {
+              "@type": "Offer",
+              "price": "4.59"
+            }
+          }
+        </script>
+      </head>
+    </html>
+    """
+
+    item = _extract_product_from_html(
+        html,
+        "https://tienda.consum.es/es/p/aceite-de-oliva-virgen-extra/7264617",
+    )
+
+    assert item is not None
+    assert item["store_chain"] == "Consum"
+    assert item["product_name"] == "aceite de oliva virgen extra"
+    assert str(item["price"]) == "4.59"
+    assert item["barcode"] == "8437000000001"
+
+
+def test_coviran_extract_rows_from_pdf_text_price_lines():
+    from bargain_scraping.spiders.coviran import _extract_rows_from_pdf_text
+
+    full_text = """
+    ACEITE OLIVA VIRGEN EXTRA COVIRAN 1L 5,29 €
+    ATUN CLARO EN ACEITE COVIRAN PACK 3 2,79 €
+    """
+
+    rows = _extract_rows_from_pdf_text(full_text)
+
+    assert len(rows) == 2
+    assert rows[0]["name"] == "ACEITE OLIVA VIRGEN EXTRA COVIRAN 1L"
+    assert str(rows[0]["price"]) == "5.29"
+    assert rows[1]["name"] == "ATUN CLARO EN ACEITE COVIRAN PACK 3"
+    assert str(rows[1]["price"]) == "2.79"

@@ -27,7 +27,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import MapView, { Callout, Marker, type Region } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
@@ -51,7 +54,6 @@ import type { PlacesPrediction, Store, StoreChain } from "@/types/domain";
 /** Coordenadas de Sevilla centro como fallback en __DEV__ */
 const SEVILLE_COORDS = { lat: 37.3886, lng: -5.9823 };
 const EARTH_RADIUS_KM = 6371;
-
 
 const CHAIN_COLORS: Record<StoreChain, string> = {
   mercadona: colors.chains.mercadona,
@@ -234,7 +236,9 @@ export const MapScreen: React.FC = () => {
   const [placesMarkers, setPlacesMarkers] = useState<PlacesMarker[]>([]);
   const [, setSelectedPlacesMarker] = useState<PlacesMarker | null>(null);
   const [placesSearchText, setPlacesSearchText] = useState("");
-  const [placesPredictions, setPlacesPredictions] = useState<PlacesPrediction[]>([]);
+  const [placesPredictions, setPlacesPredictions] = useState<
+    PlacesPrediction[]
+  >([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isResolvingPlace, setIsResolvingPlace] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -248,11 +252,14 @@ export const MapScreen: React.FC = () => {
     });
   }, []);
 
-  const showPlacesMarkerCallout = useCallback((placeId: string, delayMs = 0) => {
-    setTimeout(() => {
-      placesMarkerRefs.current[placeId]?.showCallout?.();
-    }, delayMs);
-  }, []);
+  const showPlacesMarkerCallout = useCallback(
+    (placeId: string, delayMs = 0) => {
+      setTimeout(() => {
+        placesMarkerRefs.current[placeId]?.showCallout?.();
+      }, delayMs);
+    },
+    [],
+  );
 
   const showStoreMarkerCallout = useCallback((storeId: string, delayMs = 0) => {
     setTimeout(() => {
@@ -470,7 +477,11 @@ export const MapScreen: React.FC = () => {
       }
 
       debounceRef.current = setTimeout(async () => {
-        const results = await storeService.placesAutocomplete(text.trim(), userLat, userLng);
+        const results = await storeService.placesAutocomplete(
+          text.trim(),
+          userLat,
+          userLng,
+        );
         setPlacesPredictions(results);
       }, 350);
     },
@@ -516,9 +527,14 @@ export const MapScreen: React.FC = () => {
       // Mercadona 150m away when the user actually searched for a McDonald's).
       if (!matchingStore) {
         const nameLC = (resolved.name ?? "").toLowerCase();
-        const isKnownChain = ["mercadona", "lidl", "carrefour", "aldi", "dia", "alcampo"].some(
-          (c) => nameLC.includes(c),
-        );
+        const isKnownChain = [
+          "mercadona",
+          "lidl",
+          "carrefour",
+          "aldi",
+          "dia",
+          "alcampo",
+        ].some((c) => nameLC.includes(c));
         if (isKnownChain) {
           matchingStore = stores.find((store) => {
             if (!store.location?.coordinates) return false;
@@ -533,7 +549,12 @@ export const MapScreen: React.FC = () => {
         setSelectedStore(matchingStore);
         // Use Google's coordinates (more accurate than DB seed coords)
         mapRef.current?.animateToRegion(
-          { latitude: lat, longitude: lngVal, latitudeDelta: 0.01, longitudeDelta: 0.01 },
+          {
+            latitude: lat,
+            longitude: lngVal,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
           500,
         );
         showStoreMarkerCallout(String(matchingStore.id), 550);
@@ -546,17 +567,29 @@ export const MapScreen: React.FC = () => {
           lng: lngVal,
         };
         setPlacesMarkers((prev) =>
-          prev.some((m) => m.placeId === marker.placeId) ? prev : [...prev, marker],
+          prev.some((m) => m.placeId === marker.placeId)
+            ? prev
+            : [...prev, marker],
         );
         setSelectedPlacesMarker(marker);
         mapRef.current?.animateToRegion(
-          { latitude: lat, longitude: lngVal, latitudeDelta: 0.01, longitudeDelta: 0.01 },
+          {
+            latitude: lat,
+            longitude: lngVal,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
           500,
         );
         showPlacesMarkerCallout(marker.placeId, 550);
       }
     },
-    [clearSelectedPlacesMarker, showPlacesMarkerCallout, showStoreMarkerCallout, stores],
+    [
+      clearSelectedPlacesMarker,
+      showPlacesMarkerCallout,
+      showStoreMarkerCallout,
+      stores,
+    ],
   );
 
   const handleOpenGoogleMaps = useCallback(() => {
@@ -691,12 +724,16 @@ export const MapScreen: React.FC = () => {
             <Callout
               tooltip={false}
               onPress={() => {
-                Linking.openURL(buildGoogleMapsPlaceUrl(marker)).catch(() => {});
+                Linking.openURL(buildGoogleMapsPlaceUrl(marker)).catch(
+                  () => {},
+                );
               }}
             >
               <View style={styles.markerCalloutContent}>
                 <Text style={styles.markerCalloutTitle}>{marker.name}</Text>
-                <Text style={styles.markerCalloutMeta}>Tienda no disponible en BargAIn</Text>
+                <Text style={styles.markerCalloutMeta}>
+                  Tienda no disponible en BargAIn
+                </Text>
                 <Text style={styles.markerCalloutAddress} numberOfLines={2}>
                   {marker.address}
                 </Text>
@@ -717,7 +754,10 @@ export const MapScreen: React.FC = () => {
       </MapView>
 
       {/* ── Google Places autocomplete bar (backend proxy) ──────── */}
-      <View style={[styles.autocompleteContainer, { top: insets.top + spacing.sm }]} pointerEvents="box-none">
+      <View
+        style={[styles.autocompleteContainer, { top: insets.top + spacing.sm }]}
+        pointerEvents="box-none"
+      >
         {/* Search input */}
         <View style={styles.autocompleteInputRow}>
           <Ionicons name="search" size={18} color={colors.textMuted} />
@@ -739,7 +779,11 @@ export const MapScreen: React.FC = () => {
               }}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Ionicons name="close-circle" size={18} color={colors.textMuted} />
+              <Ionicons
+                name="close-circle"
+                size={18}
+                color={colors.textMuted}
+              />
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -761,7 +805,12 @@ export const MapScreen: React.FC = () => {
                 onPress={() => handlePredictionSelect(p)}
                 activeOpacity={0.7}
               >
-                <Ionicons name="location-outline" size={16} color={colors.textMuted} style={{ marginTop: 2 }} />
+                <Ionicons
+                  name="location-outline"
+                  size={16}
+                  color={colors.textMuted}
+                  style={{ marginTop: 2 }}
+                />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.predictionMain} numberOfLines={1}>
                     {p.structured.main_text}

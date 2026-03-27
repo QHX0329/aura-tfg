@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('stores', '0002_store_business_profile'),
+        ("stores", "0002_store_business_profile"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='store',
-            name='google_place_id',
-            field=models.CharField(blank=True, max_length=200, null=True, verbose_name='Google Place ID'),
+            model_name="store",
+            name="google_place_id",
+            field=models.CharField(
+                blank=True, max_length=200, null=True, verbose_name="Google Place ID"
+            ),
         ),
     ]

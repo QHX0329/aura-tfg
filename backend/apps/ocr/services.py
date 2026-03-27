@@ -60,9 +60,7 @@ def _get_google_vision_api_key() -> str:
         if candidate and candidate.strip():
             return candidate.strip()
 
-    raise ImproperlyConfigured(
-        "No hay ninguna API key de Google configurada para el OCR"
-    )
+    raise ImproperlyConfigured("No hay ninguna API key de Google configurada para el OCR")
 
 
 def _build_language_hints(lang: str) -> list[str]:
@@ -234,10 +232,9 @@ def extract_text_from_image(image_bytes: bytes, lang: str = "spa+eng") -> list[s
     processed_image_bytes = _preprocess_image_for_ocr(image_bytes)
     response = _request_google_vision(processed_image_bytes, lang)
 
-    raw_text = (
-        response.get("fullTextAnnotation", {}).get("text")
-        or (response.get("textAnnotations") or [{}])[0].get("description", "")
-    )
+    raw_text = response.get("fullTextAnnotation", {}).get("text") or (
+        response.get("textAnnotations") or [{}]
+    )[0].get("description", "")
     lines = _extract_candidate_lines(raw_text)
 
     if not lines:

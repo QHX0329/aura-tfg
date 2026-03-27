@@ -6,7 +6,6 @@ mediante PostGIS cuando Graphhopper no esta disponible.
 """
 
 import math
-from typing import Optional
 
 import requests
 import structlog
@@ -27,13 +26,13 @@ def _haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     Returns:
         Distancia en kilometros.
     """
-    R = 6371.0  # Radio de la Tierra en km
+    earth_radius_km = 6371.0  # Radio de la Tierra en km
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
     dlambda = math.radians(lng2 - lng1)
     a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
-    return 2 * R * math.asin(math.sqrt(a))
+    return 2 * earth_radius_km * math.asin(math.sqrt(a))
 
 
 def _fallback_matrices(
@@ -76,7 +75,7 @@ def _fallback_matrices(
 
 def get_distance_matrix(
     points: list[tuple[float, float]],
-    graphhopper_url: Optional[str] = None,
+    graphhopper_url: str | None = None,
 ) -> tuple[list[list[float]], list[list[float]]]:
     """
     Obtiene la matriz de distancias y tiempos entre todos los puntos dados.

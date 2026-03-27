@@ -261,9 +261,7 @@ class TestPlacesDetail:
         "websiteUri": "https://www.mercadona.es",
     }
 
-    def test_places_detail_endpoint(
-        self, authenticated_client, store_with_place_id, settings
-    ):
+    def test_places_detail_endpoint(self, authenticated_client, store_with_place_id, settings):
         """GET /places-detail/ con google_place_id devuelve datos normalizados de Places."""
         settings.GOOGLE_PLACES_API_KEY = "test-api-key"
 
@@ -286,23 +284,17 @@ class TestPlacesDetail:
 
     def test_places_detail_no_place_id(self, authenticated_client, store_nearby):
         """GET /places-detail/ sin google_place_id devuelve objeto vacío."""
-        response = authenticated_client.get(
-            f"/api/v1/stores/{store_nearby.id}/places-detail/"
-        )
+        response = authenticated_client.get(f"/api/v1/stores/{store_nearby.id}/places-detail/")
         assert response.status_code == status.HTTP_200_OK
         assert response.data["success"] is True
         assert response.data["data"] == {}
 
     def test_places_detail_unauthenticated(self, api_client, store_with_place_id):
         """Usuario no autenticado recibe 401."""
-        response = api_client.get(
-            f"/api/v1/stores/{store_with_place_id.id}/places-detail/"
-        )
+        response = api_client.get(f"/api/v1/stores/{store_with_place_id.id}/places-detail/")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_places_detail_no_api_key(
-        self, authenticated_client, store_with_place_id, settings
-    ):
+    def test_places_detail_no_api_key(self, authenticated_client, store_with_place_id, settings):
         """Sin GOOGLE_PLACES_API_KEY devuelve objeto vacío."""
         settings.GOOGLE_PLACES_API_KEY = ""
 
@@ -318,9 +310,7 @@ class TestPlacesDetail:
         """Cuando Google API falla, devuelve objeto vacío (silent fail)."""
         settings.GOOGLE_PLACES_API_KEY = "test-api-key"
 
-        with patch(
-            "apps.stores.views.http_requests.get", side_effect=Exception("Network error")
-        ):
+        with patch("apps.stores.views.http_requests.get", side_effect=Exception("Network error")):
             response = authenticated_client.get(
                 f"/api/v1/stores/{store_with_place_id.id}/places-detail/"
             )

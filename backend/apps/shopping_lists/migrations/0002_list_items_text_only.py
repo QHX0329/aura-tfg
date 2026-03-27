@@ -5,7 +5,6 @@ import unicodedata
 
 from django.db import migrations, models
 
-
 _MULTISPACE_RE = re.compile(r"\s+")
 _NON_ALNUM_RE = re.compile(r"[^a-z0-9\s]")
 
@@ -37,8 +36,8 @@ def copy_product_names(apps, schema_editor) -> None:
         normalized_name = ""
         if getattr(template_item, "product_id", None):
             name = template_item.product.name
-            normalized_name = (
-                getattr(template_item.product, "normalized_name", "") or _normalize(name)
+            normalized_name = getattr(template_item.product, "normalized_name", "") or _normalize(
+                name
             )
         template_item.name = name
         template_item.normalized_name = normalized_name

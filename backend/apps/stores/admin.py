@@ -18,7 +18,14 @@ class StoreChainAdmin(admin.ModelAdmin):
 class StoreAdmin(admin.ModelAdmin):
     """Admin para tiendas con filtros geoespaciales."""
 
-    list_display = ["name", "chain", "address", "is_local_business", "is_active", "google_place_id"]
+    list_display = [
+        "name",
+        "chain",
+        "address",
+        "is_local_business",
+        "is_active",
+        "google_place_id",
+    ]
     list_filter = ["is_local_business", "is_active", "chain"]
     search_fields = ["name", "address", "google_place_id"]
     readonly_fields = ["created_at", "updated_at"]

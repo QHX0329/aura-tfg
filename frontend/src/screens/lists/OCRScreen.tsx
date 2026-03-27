@@ -11,7 +11,7 @@
  *  6. CTA "Añadir a mi lista" → añade items seleccionados a la lista
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -20,29 +20,36 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { RouteProp } from '@react-navigation/native';
-import * as ImagePicker from 'expo-image-picker';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import type { RouteProp } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
 
-import { borderRadius, colors, fontFamilies, fontSize, shadows, spacing } from '@/theme';
-import type { ListsStackParamList } from '@/navigation/types';
-import { SkeletonBox } from '@/components/ui/SkeletonBox';
-import { scanImage } from '@/api/ocrService';
-import type { OCRItem } from '@/api/ocrService';
-import { listService } from '@/api/listService';
+import {
+  borderRadius,
+  colors,
+  fontFamilies,
+  fontSize,
+  shadows,
+  spacing,
+} from "@/theme";
+import type { ListsStackParamList } from "@/navigation/types";
+import { SkeletonBox } from "@/components/ui/SkeletonBox";
+import { scanImage } from "@/api/ocrService";
+import type { OCRItem } from "@/api/ocrService";
+import { listService } from "@/api/listService";
 
-type RouteP = RouteProp<ListsStackParamList, 'OCR'>;
+type RouteP = RouteProp<ListsStackParamList, "OCR">;
 
 // ─── Types locaux ──────────────────────────────────────────────────────────────
 
 interface LocalOCRItem extends OCRItem {
   localId: string;
   localQuantity: number;
-  localName: string;   // nombre editable por el usuario
+  localName: string; // nombre editable por el usuario
   checked: boolean;
 }
 
@@ -66,23 +73,50 @@ const OCRItemRow: React.FC<OCRItemRowProps> = ({
 
   return (
     <TouchableOpacity
-      style={[itemRowStyles.container, item.checked && itemRowStyles.containerChecked]}
+      style={[
+        itemRowStyles.container,
+        item.checked && itemRowStyles.containerChecked,
+      ]}
       onPress={() => onToggle(item.localId)}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: item.checked }}
       accessibilityLabel={item.localName}
     >
       {/* Checkbox */}
-      <View style={[itemRowStyles.checkbox, item.checked && itemRowStyles.checkboxChecked]}>
-        {item.checked && <Ionicons name="checkmark" size={14} color={colors.white} />}
+      <View
+        style={[
+          itemRowStyles.checkbox,
+          item.checked && itemRowStyles.checkboxChecked,
+        ]}
+      >
+        {item.checked && (
+          <Ionicons name="checkmark" size={14} color={colors.white} />
+        )}
       </View>
 
       {/* Left: raw text + confidence badge */}
       <View style={itemRowStyles.leftCol}>
-        <Text style={itemRowStyles.rawText} numberOfLines={1}>{item.raw_text}</Text>
-        <View style={[itemRowStyles.confBadge, isHighConf ? itemRowStyles.confBadgeHigh : itemRowStyles.confBadgeLow]}>
-          <Text style={[itemRowStyles.confText, isHighConf ? itemRowStyles.confTextHigh : itemRowStyles.confTextLow]}>
-            {isHighConf ? 'Coincidencia' : 'Sin coincidencia'} · {Math.round(item.confidence * 100)}%
+        <Text style={itemRowStyles.rawText} numberOfLines={1}>
+          {item.raw_text}
+        </Text>
+        <View
+          style={[
+            itemRowStyles.confBadge,
+            isHighConf
+              ? itemRowStyles.confBadgeHigh
+              : itemRowStyles.confBadgeLow,
+          ]}
+        >
+          <Text
+            style={[
+              itemRowStyles.confText,
+              isHighConf
+                ? itemRowStyles.confTextHigh
+                : itemRowStyles.confTextLow,
+            ]}
+          >
+            {isHighConf ? "Coincidencia" : "Sin coincidencia"} ·{" "}
+            {Math.round(item.confidence * 100)}%
           </Text>
         </View>
       </View>
@@ -116,7 +150,10 @@ const OCRItemRow: React.FC<OCRItemRowProps> = ({
             style={itemRowStyles.stepBtn}
             onPress={(e) => {
               e.stopPropagation?.();
-              onQuantityChange(item.localId, Math.max(1, item.localQuantity - 1));
+              onQuantityChange(
+                item.localId,
+                Math.max(1, item.localQuantity - 1),
+              );
             }}
           >
             <Ionicons name="remove" size={14} color={colors.text} />
@@ -155,18 +192,23 @@ export const OCRScreen: React.FC = () => {
       const response = await scanImage(uri);
       const rawItems = (response as any)?.items ?? [];
 
-      const localItems: LocalOCRItem[] = rawItems.map((item: OCRItem, idx: number) => ({
-        ...item,
-        localId: `ocr-${idx}`,
-        localQuantity: item.quantity ?? 1,
-        localName: item.matched_product_name ?? item.raw_text,
-        checked: Boolean(item.matched_product_id),
-      }));
+      const localItems: LocalOCRItem[] = rawItems.map(
+        (item: OCRItem, idx: number) => ({
+          ...item,
+          localId: `ocr-${idx}`,
+          localQuantity: item.quantity ?? 1,
+          localName: item.matched_product_name ?? item.raw_text,
+          checked: Boolean(item.matched_product_id),
+        }),
+      );
 
       setItems(localItems);
       setScanDone(true);
-    } catch (err: any) {
-      Alert.alert('Error', 'Error al procesar la imagen. Inténtalo de nuevo con otra foto.');
+    } catch {
+      Alert.alert(
+        "Error",
+        "Error al procesar la imagen. Inténtalo de nuevo con otra foto.",
+      );
     } finally {
       setLoading(false);
     }
@@ -174,15 +216,18 @@ export const OCRScreen: React.FC = () => {
 
   const handleScanPress = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
+    if (status !== "granted") {
       const camStatus = await ImagePicker.requestCameraPermissionsAsync();
-      if (camStatus.status !== 'granted') {
-        Alert.alert('Permisos requeridos', 'Necesitamos acceso a la cámara o galería para escanear tu lista.');
+      if (camStatus.status !== "granted") {
+        Alert.alert(
+          "Permisos requeridos",
+          "Necesitamos acceso a la cámara o galería para escanear tu lista.",
+        );
         return;
       }
     }
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ["images"],
       quality: 0.8,
       allowsEditing: false,
     });
@@ -192,37 +237,52 @@ export const OCRScreen: React.FC = () => {
 
   const handleCameraPress = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permisos requeridos', 'Necesitamos acceso a la cámara para escanear tu lista.');
+    if (status !== "granted") {
+      Alert.alert(
+        "Permisos requeridos",
+        "Necesitamos acceso a la cámara para escanear tu lista.",
+      );
       return;
     }
-    const pickerResult = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+    const pickerResult = await ImagePicker.launchCameraAsync({
+      mediaTypes: ["images"],
+      quality: 0.8,
+    });
     if (pickerResult.canceled || !pickerResult.assets?.[0]) return;
     await processPickerResult(pickerResult.assets[0].uri);
   };
 
   const handleToggle = (localId: string) => {
     setItems((prev) =>
-      prev.map((item) => (item.localId === localId ? { ...item, checked: !item.checked } : item)),
+      prev.map((item) =>
+        item.localId === localId ? { ...item, checked: !item.checked } : item,
+      ),
     );
   };
 
   const handleQuantityChange = (localId: string, quantity: number) => {
     setItems((prev) =>
-      prev.map((item) => (item.localId === localId ? { ...item, localQuantity: quantity } : item)),
+      prev.map((item) =>
+        item.localId === localId ? { ...item, localQuantity: quantity } : item,
+      ),
     );
   };
 
   const handleNameChange = (localId: string, name: string) => {
     setItems((prev) =>
-      prev.map((item) => (item.localId === localId ? { ...item, localName: name } : item)),
+      prev.map((item) =>
+        item.localId === localId ? { ...item, localName: name } : item,
+      ),
     );
   };
 
   const handleAddToList = async () => {
     const checked = items.filter((i) => i.checked);
     if (checked.length === 0) {
-      Alert.alert('Sin selección', 'Selecciona al menos un producto para añadir a la lista.');
+      Alert.alert(
+        "Sin selección",
+        "Selecciona al menos un producto para añadir a la lista.",
+      );
       return;
     }
 
@@ -237,12 +297,12 @@ export const OCRScreen: React.FC = () => {
         ),
       );
       Alert.alert(
-        'Productos añadidos',
-        `Se han añadido ${checked.length} producto${checked.length !== 1 ? 's' : ''} a tu lista.`,
-        [{ text: 'OK', onPress: () => navigation.goBack() }],
+        "Productos añadidos",
+        `Se han añadido ${checked.length} producto${checked.length !== 1 ? "s" : ""} a tu lista.`,
+        [{ text: "OK", onPress: () => navigation.goBack() }],
       );
     } catch {
-      Alert.alert('Error', 'No se pudieron añadir los productos a la lista.');
+      Alert.alert("Error", "No se pudieron añadir los productos a la lista.");
     } finally {
       setLoading(false);
     }
@@ -252,7 +312,10 @@ export const OCRScreen: React.FC = () => {
     <SafeAreaView style={styles.safe} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.back}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Escanear lista</Text>
@@ -276,16 +339,26 @@ export const OCRScreen: React.FC = () => {
       {/* Empty state: initial */}
       {!loading && !scanDone && (
         <View style={styles.emptyState}>
-          <Animated.View entering={FadeInDown.springify()} style={styles.illustration}>
+          <Animated.View
+            entering={FadeInDown.springify()}
+            style={styles.illustration}
+          >
             <Ionicons name="receipt-outline" size={64} color={colors.primary} />
           </Animated.View>
-          <Animated.View entering={FadeInDown.delay(80).springify()} style={styles.textBlock}>
+          <Animated.View
+            entering={FadeInDown.delay(80).springify()}
+            style={styles.textBlock}
+          >
             <Text style={styles.emptyTitle}>Escanea tu lista o ticket</Text>
             <Text style={styles.emptyBody}>
-              Haz una foto a tu lista de compra escrita o a un ticket anterior. Reconoceremos los productos automáticamente.
+              Haz una foto a tu lista de compra escrita o a un ticket anterior.
+              Reconoceremos los productos automáticamente.
             </Text>
           </Animated.View>
-          <Animated.View entering={FadeInDown.delay(160).springify()} style={styles.ctaGroup}>
+          <Animated.View
+            entering={FadeInDown.delay(160).springify()}
+            style={styles.ctaGroup}
+          >
             <TouchableOpacity
               style={styles.ctaPrimary}
               onPress={handleCameraPress}
@@ -299,7 +372,11 @@ export const OCRScreen: React.FC = () => {
               onPress={handleScanPress}
               accessibilityLabel="Escanear lista desde galería"
             >
-              <Ionicons name="images-outline" size={20} color={colors.primary} />
+              <Ionicons
+                name="images-outline"
+                size={20}
+                color={colors.primary}
+              />
               <Text style={styles.ctaSecondaryText}>Escanear lista</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -312,7 +389,8 @@ export const OCRScreen: React.FC = () => {
           <Ionicons name="search-outline" size={64} color={colors.textMuted} />
           <Text style={styles.emptyTitle}>No encontramos productos</Text>
           <Text style={styles.emptyBody}>
-            La imagen no contiene texto legible. Prueba con mejor iluminación o escribe los artículos manualmente.
+            La imagen no contiene texto legible. Prueba con mejor iluminación o
+            escribe los artículos manualmente.
           </Text>
           <TouchableOpacity style={styles.ctaPrimary} onPress={handleScanPress}>
             <Ionicons name="camera" size={20} color={colors.white} />
@@ -331,7 +409,9 @@ export const OCRScreen: React.FC = () => {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             renderItem={({ item, index }) => (
-              <Animated.View entering={FadeInDown.delay(index * 40).springify()}>
+              <Animated.View
+                entering={FadeInDown.delay(index * 40).springify()}
+              >
                 <OCRItemRow
                   item={item}
                   onToggle={handleToggle}
@@ -340,7 +420,9 @@ export const OCRScreen: React.FC = () => {
                 />
               </Animated.View>
             )}
-            ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
+            ItemSeparatorComponent={() => (
+              <View style={{ height: spacing.sm }} />
+            )}
           />
 
           {/* Footer CTA */}
@@ -349,10 +431,18 @@ export const OCRScreen: React.FC = () => {
               {items.filter((i) => i.checked).length} seleccionados
             </Text>
             <TouchableOpacity
-              style={[styles.addBtn, items.filter((i) => i.checked).length === 0 && styles.addBtnDisabled]}
+              style={[
+                styles.addBtn,
+                items.filter((i) => i.checked).length === 0 &&
+                  styles.addBtnDisabled,
+              ]}
               onPress={handleAddToList}
             >
-              <Ionicons name="add-circle-outline" size={18} color={colors.white} />
+              <Ionicons
+                name="add-circle-outline"
+                size={18}
+                color={colors.white}
+              />
               <Text style={styles.addBtnText}>Añadir a mi lista</Text>
             </TouchableOpacity>
           </View>
@@ -367,8 +457,8 @@ export const OCRScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     backgroundColor: colors.surface,
@@ -387,8 +477,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.pill,
     minWidth: 22,
     height: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: spacing.xs,
   },
   badgeText: {
@@ -398,8 +488,8 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
     padding: spacing.xl,
   },
@@ -407,51 +497,51 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.body,
     fontSize: fontSize.md,
     color: colors.text,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: spacing.md,
   },
   emptyState: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: spacing.lg,
     gap: spacing.md,
   },
   illustration: {
     width: 120,
     height: 120,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.primaryTint,
     borderRadius: borderRadius.lg,
   },
   textBlock: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.xs,
   },
   emptyTitle: {
     fontFamily: fontFamilies.display,
     fontSize: fontSize.xl,
     color: colors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   emptyBody: {
     fontFamily: fontFamilies.body,
     fontSize: fontSize.sm,
     color: colors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 22,
     maxWidth: 300,
   },
   ctaGroup: {
-    width: '100%',
+    width: "100%",
     gap: spacing.sm,
     maxWidth: 320,
   },
   ctaPrimary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
     backgroundColor: colors.primary,
     borderRadius: borderRadius.md,
@@ -464,9 +554,9 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   ctaSecondary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
     borderWidth: 1.5,
     borderColor: colors.primary,
@@ -484,9 +574,9 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: spacing.md,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
@@ -499,8 +589,8 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   addBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
     backgroundColor: colors.primary,
     borderRadius: borderRadius.md,
@@ -520,8 +610,8 @@ const styles = StyleSheet.create({
 
 const itemRowStyles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: borderRadius.md,
     padding: spacing.sm,
@@ -539,8 +629,8 @@ const itemRowStyles = StyleSheet.create({
     borderRadius: borderRadius.sm,
     borderWidth: 2,
     borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     flexShrink: 0,
   },
   checkboxChecked: {
@@ -557,7 +647,7 @@ const itemRowStyles = StyleSheet.create({
     color: colors.textMuted,
   },
   confBadge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     borderRadius: borderRadius.pill,
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,
@@ -579,13 +669,13 @@ const itemRowStyles = StyleSheet.create({
     color: colors.textMuted,
   },
   rightCol: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     gap: 4,
     minWidth: 110,
   },
   nameEditRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     maxWidth: 140,
   },
@@ -600,8 +690,8 @@ const itemRowStyles = StyleSheet.create({
     minHeight: 28,
   },
   stepper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
     backgroundColor: colors.surfaceVariant,
     borderRadius: borderRadius.sm,
@@ -611,14 +701,14 @@ const itemRowStyles = StyleSheet.create({
   stepBtn: {
     width: 24,
     height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   stepValue: {
     fontFamily: fontFamilies.bodyMedium,
     fontSize: fontSize.sm,
     color: colors.text,
     minWidth: 24,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

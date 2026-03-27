@@ -7,7 +7,7 @@
  * - Error 404: { success: false, error: { code: "OPTIMIZER_NO_STORES_IN_RADIUS", message: "..." } }
  */
 
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export interface OptimizeRequest {
   shopping_list_id: number;
@@ -53,4 +53,4 @@ export interface OptimizeResponse {
 }
 
 export const optimizeRoute = (data: OptimizeRequest) =>
-  apiClient.post<OptimizeResponse>('/optimize/', data);
+  apiClient.post<OptimizeResponse>("/optimize/", data);

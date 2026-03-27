@@ -14,7 +14,6 @@ from django.utils.text import slugify
 
 from apps.stores.models import Store, StoreChain
 
-
 KNOWN_CHAIN_NAMES = [
     "Mercadona",
     "Carrefour",
@@ -44,7 +43,6 @@ FOOD_KEYWORDS = {
     "mayorista",
     "aliment",
     "mercado",
-    "fruteria",
     "fruteria",
     "carniceria",
     "pescaderia",

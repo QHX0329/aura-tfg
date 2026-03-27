@@ -93,7 +93,13 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
             BargainAPIException: Si faltan lat o lng en la acción list.
         """
         # Para detail/retrieve no aplicamos filtro geoespacial — sólo buscamos por PK.
-        if self.action in ("retrieve", "favorite", "places_detail", "places_autocomplete", "places_resolve"):
+        if self.action in (
+            "retrieve",
+            "favorite",
+            "places_detail",
+            "places_autocomplete",
+            "places_resolve",
+        ):
             return Store.objects.filter(is_active=True).select_related("chain")
 
         request: Request = self.request
@@ -245,9 +251,7 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
             200: inline_serializer(
                 "PlacesAutocompleteResponse",
                 fields={
-                    "predictions": drf_serializers.ListField(
-                        child=drf_serializers.DictField()
-                    ),
+                    "predictions": drf_serializers.ListField(child=drf_serializers.DictField()),
                 },
             )
         },
@@ -319,18 +323,20 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
             place = s.get("placePrediction", {})
             if not place:
                 continue
-            predictions.append({
-                "place_id": place.get("placeId", ""),
-                "description": place.get("text", {}).get("text", ""),
-                "structured": {
-                    "main_text": place.get("structuredFormat", {})
-                    .get("mainText", {})
-                    .get("text", ""),
-                    "secondary_text": place.get("structuredFormat", {})
-                    .get("secondaryText", {})
-                    .get("text", ""),
-                },
-            })
+            predictions.append(
+                {
+                    "place_id": place.get("placeId", ""),
+                    "description": place.get("text", {}).get("text", ""),
+                    "structured": {
+                        "main_text": place.get("structuredFormat", {})
+                        .get("mainText", {})
+                        .get("text", ""),
+                        "secondary_text": place.get("structuredFormat", {})
+                        .get("secondaryText", {})
+                        .get("text", ""),
+                    },
+                }
+            )
 
         cache.set(cache_key, predictions, timeout=60 * 60)  # 1h TTL
         return success_response({"predictions": predictions})
@@ -407,9 +413,11 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
         cache.set(cache_key, result, timeout=60 * 60 * 24)  # 24h TTL
 
         # Check if a DB store matches this google_place_id (not cached — DB may change)
-        matched = Store.objects.filter(
-            google_place_id=place_id, is_active=True
-        ).values_list("pk", flat=True).first()
+        matched = (
+            Store.objects.filter(google_place_id=place_id, is_active=True)
+            .values_list("pk", flat=True)
+            .first()
+        )
         if matched is not None:
             result["matched_store_id"] = str(matched)
 

@@ -24,6 +24,10 @@ SPIDER_MAP: dict[str, str] = {
     "costco": "bargain_scraping.spiders.costco.CostcoSpider",
     "alcampo": "bargain_scraping.spiders.alcampo.AlcampoSpider",
     "hipercor": "bargain_scraping.spiders.hipercor.HipercorSpider",
+    "eroski": "bargain_scraping.spiders.eroski.EroskiSpider",
+    "spar": "bargain_scraping.spiders.spar.SparSpider",
+    "consum": "bargain_scraping.spiders.consum.ConsumSpider",
+    "coviran": "bargain_scraping.spiders.coviran.CoviranSpider",
 }
 
 
@@ -120,8 +124,7 @@ def run_spider(self, spider_name: str) -> dict[str, str]:
     """
     if spider_name not in SPIDER_MAP:
         raise ValueError(
-            f"Spider desconocido: '{spider_name}'. "
-            f"Spiders disponibles: {list(SPIDER_MAP.keys())}"
+            f"Spider desconocido: '{spider_name}'. Spiders disponibles: {list(SPIDER_MAP.keys())}"
         )
 
     spider_path = SPIDER_MAP[spider_name]
@@ -148,7 +151,7 @@ def run_spider(self, spider_name: str) -> dict[str, str]:
     )
     try:
         stdout, _ = proc.communicate(timeout=timeout_seconds)
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as exc:
         proc.kill()
         stdout, _ = proc.communicate()
         output = _decode_output_tail(stdout)
@@ -161,7 +164,7 @@ def run_spider(self, spider_name: str) -> dict[str, str]:
         raise RuntimeError(
             f"Spider '{spider_name}' timeout tras {timeout_seconds}s. "
             f"Ultima salida: {output or 'sin salida'}"
-        )
+        ) from exc
 
     if proc.returncode != 0:
         output = _decode_output_tail(stdout)

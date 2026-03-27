@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import unicodedata
+from dataclasses import dataclass
 
 from django.utils.text import slugify
 
@@ -116,9 +116,11 @@ def get_or_create_category_pair(parent_name: str, child_name: str) -> Category:
             "parent": parent,
         },
     )
-    if child.parent_id != parent.id:
-        child.parent = parent
-        child.save(update_fields=["parent"])
+    child_parent_pk = getattr(child, "parent_id", None)
+    parent_pk = getattr(parent, "pk", None)
+    if child_parent_pk != parent_pk:
+        Category.objects.filter(pk=child.pk).update(parent=parent)
+        child.refresh_from_db(fields=["parent"])
     return child
 
 
@@ -132,7 +134,8 @@ def auto_assign_category_to_product(product: Product, overwrite: bool = False) -
     Returns:
         bool: True si el producto fue actualizado.
     """
-    if product.category_id and not overwrite:
+    product_category_pk = getattr(product, "category_id", None)
+    if product_category_pk and not overwrite:
         return False
 
     inferred = infer_category_pair(product.name)
@@ -140,7 +143,8 @@ def auto_assign_category_to_product(product: Product, overwrite: bool = False) -
         return False
 
     category = get_or_create_category_pair(*inferred)
-    if product.category_id == category.id:
+    category_pk = getattr(category, "pk", None)
+    if product_category_pk == category_pk:
         return False
 
     product.category = category

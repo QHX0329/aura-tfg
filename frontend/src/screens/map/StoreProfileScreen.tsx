@@ -25,7 +25,12 @@ import type { MapStackParamList } from "@/navigation/types";
 import { storeService } from "@/api/storeService";
 import { productService } from "@/api/productService";
 import { priceService } from "@/api/priceService";
-import type { PlacesDetail, PriceCompare, Product, Store } from "@/types/domain";
+import type {
+  PlacesDetail,
+  PriceCompare,
+  Product,
+  Store,
+} from "@/types/domain";
 import { SkeletonBox } from "@/components/ui/SkeletonBox";
 
 type Props = NativeStackScreenProps<MapStackParamList, "StoreProfile">;
@@ -39,7 +44,12 @@ interface StoreProductOffer {
 
 const PRODUCT_SCAN_LIMIT = 60;
 
-function haversineDistanceKm(aLat: number, aLng: number, bLat: number, bLng: number): number {
+function haversineDistanceKm(
+  aLat: number,
+  aLng: number,
+  bLat: number,
+  bLng: number,
+): number {
   const toRad = (v: number) => (v * Math.PI) / 180;
   const dLat = toRad(bLat - aLat);
   const dLng = toRad(bLng - aLng);
@@ -308,11 +318,7 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
                 {/* Rating */}
                 {placesDetail?.rating != null && (
                   <View style={styles.placesRow}>
-                    <Ionicons
-                      name="star"
-                      size={14}
-                      color={colors.warning}
-                    />
+                    <Ionicons name="star" size={14} color={colors.warning} />
                     <Text style={styles.placesRatingText}>
                       {placesDetail.rating.toFixed(1)}
                       {placesDetail.user_rating_count != null
@@ -635,9 +641,3 @@ const styles = StyleSheet.create({
 });
 
 export default StoreProfileScreen;
-
-
-
-
-
-

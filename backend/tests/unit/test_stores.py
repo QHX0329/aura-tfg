@@ -1,9 +1,8 @@
 """Tests unitarios del módulo de tiendas."""
 
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
-from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import Distance
 
 from apps.stores.models import Store, StoreChain
@@ -148,13 +147,9 @@ class TestPlacesDetailCache:
 
         with patch("apps.stores.views.http_requests.get", return_value=mock_response) as mock_get:
             # Primera llamada — llama a Google API
-            response1 = authenticated_client.get(
-                f"/api/v1/stores/{store_id}/places-detail/"
-            )
+            response1 = authenticated_client.get(f"/api/v1/stores/{store_id}/places-detail/")
             # Segunda llamada — debe usar caché
-            response2 = authenticated_client.get(
-                f"/api/v1/stores/{store_id}/places-detail/"
-            )
+            response2 = authenticated_client.get(f"/api/v1/stores/{store_id}/places-detail/")
 
         assert response1.status_code == 200
         assert response2.status_code == 200

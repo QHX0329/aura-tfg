@@ -22,13 +22,9 @@ class ChatRequestSerializer(serializers.Serializer):
     def validate_messages(self, value: list[dict]) -> list[dict]:
         """Valida que el último mensaje sea del rol 'user'."""
         if not value:
-            raise serializers.ValidationError(
-                "El historial de mensajes no puede estar vacío."
-            )
+            raise serializers.ValidationError("El historial de mensajes no puede estar vacío.")
         if value[-1]["role"] != "user":
-            raise serializers.ValidationError(
-                "El último mensaje debe ser del usuario."
-            )
+            raise serializers.ValidationError("El último mensaje debe ser del usuario.")
         return value
 
 

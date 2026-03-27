@@ -363,7 +363,9 @@ class ShoppingListViewSet(viewsets.ModelViewSet):
     def from_template(self, request, template_pk=None):
         """POST: crea nueva lista desde plantilla; sujeto al límite de 20 activas."""
         try:
-            template = ListTemplate.objects.prefetch_related("items").get(pk=template_pk, owner=request.user)
+            template = ListTemplate.objects.prefetch_related("items").get(
+                pk=template_pk, owner=request.user
+            )
         except ListTemplate.DoesNotExist:
             return Response(
                 {"detail": "Plantilla no encontrada."}, status=status.HTTP_404_NOT_FOUND

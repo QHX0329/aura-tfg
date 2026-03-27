@@ -12,7 +12,6 @@ from google.genai import errors as genai_errors
 
 from apps.core.exceptions import AssistantError
 
-
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 

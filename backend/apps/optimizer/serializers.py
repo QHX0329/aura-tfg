@@ -54,9 +54,7 @@ class OptimizeRequestSerializer(serializers.Serializer):
         total = w_p + w_d + w_t
 
         if total <= 0:
-            raise serializers.ValidationError(
-                "La suma de los pesos debe ser mayor que 0."
-            )
+            raise serializers.ValidationError("La suma de los pesos debe ser mayor que 0.")
 
         attrs["w_precio"] = w_p / total
         attrs["w_distancia"] = w_d / total
