@@ -185,37 +185,45 @@ package "apps.optimizer" as pkg_optimizer #FCE4EC {
     class OptimizationResult {
         +id: BigAutoField
         +shopping_list: FK(ShoppingList)
-        +user: FK(User)
         +user_location: PointField
         +max_distance_km: FloatField
+        +max_stops: SmallIntegerField
         +optimization_mode: CharField
-        +weight_price: FloatField
-        +weight_distance: FloatField
-        +weight_time: FloatField
+        +w_precio: FloatField
+        +w_distancia: FloatField
+        +w_tiempo: FloatField
         +total_price: DecimalField
         +total_distance_km: FloatField
-        +estimated_time_min: IntegerField
-        +savings_amount: DecimalField
-        +savings_percent: FloatField
+        +estimated_time_minutes: FloatField
         +route_data: JSONField
         +created_at: DateTimeField
     }
 
-    class RouteStop {
+    class OptimizationRouteStop {
         +id: BigAutoField
         +optimization_result: FK(OptimizationResult)
+        +shopping_list: FK(ShoppingList)
         +store: FK(Store)
-        +order: IntegerField
-        +subtotal: DecimalField
-        +distance_from_previous: FloatField
+        +stop_order: PositiveSmallIntegerField
+        +distance_km: FloatField
+        +time_minutes: FloatField
+        +subtotal_price: DecimalField
+        +created_at: DateTimeField
     }
 
-    class RouteStopItem {
+    class OptimizationRouteStopItem {
         +id: BigAutoField
-        +route_stop: FK(RouteStop)
-        +product: FK(Product)
-        +price: DecimalField
-        +quantity: DecimalField
+        +stop: FK(OptimizationRouteStop)
+        +product: FK(Product) [optional]
+        +price: FK(Price) [optional]
+        +query_text: CharField
+        +matched_product_name: CharField
+        +quantity: PositiveSmallIntegerField
+        +unit_price: DecimalField
+        +line_total_price: DecimalField
+        +similarity_score: FloatField
+        +candidate_rank: PositiveSmallIntegerField
+        +created_at: DateTimeField
     }
 }
 

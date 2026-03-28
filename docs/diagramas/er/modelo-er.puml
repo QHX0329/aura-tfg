@@ -175,25 +175,49 @@ entity "**optimizer_optimizationresult**" as opt_result {
     * id : BIGSERIAL <<PK>>
     --
     * shopping_list_id : BIGINT <<FK>>
-    * user_id : BIGINT <<FK>>
     * user_location : GEOMETRY(Point, 4326)
+    * max_distance_km : FLOAT
+    * max_stops : SMALLINT
     * optimization_mode : VARCHAR(20)
+    * w_precio : FLOAT
+    * w_distancia : FLOAT
+    * w_tiempo : FLOAT
     * total_price : DECIMAL(10,2)
     * total_distance_km : FLOAT
-    * estimated_time_min : INTEGER
-    * savings_amount : DECIMAL(10,2)
+    * estimated_time_minutes : FLOAT
     * route_data : JSONB
     * created_at : TIMESTAMPTZ
 }
 
-entity "**optimizer_routestop**" as route_stop {
+entity "**optimizer_optimizationroutestop**" as route_stop {
     * id : BIGSERIAL <<PK>>
     --
     * optimization_result_id : BIGINT <<FK>>
+    * shopping_list_id : BIGINT <<FK>>
     * store_id : BIGINT <<FK>>
-    * order : INTEGER
-    * subtotal : DECIMAL(10,2)
-    * distance_from_previous : FLOAT
+    * stop_order : SMALLINT
+    * distance_km : FLOAT
+    * time_minutes : FLOAT
+    * subtotal_price : DECIMAL(10,2)
+    * created_at : TIMESTAMPTZ
+    ..
+    <<UNIQUE(optimization_result_id, stop_order)>>
+}
+
+entity "**optimizer_optimizationroutestopitem**" as route_stop_item {
+    * id : BIGSERIAL <<PK>>
+    --
+    * stop_id : BIGINT <<FK>>
+    product_id : BIGINT <<FK, NULL>>
+    price_id : BIGINT <<FK, NULL>>
+    * query_text : VARCHAR(255)
+    * matched_product_name : VARCHAR(255)
+    * quantity : SMALLINT
+    * unit_price : DECIMAL(10,2)
+    * line_total_price : DECIMAL(10,2)
+    * similarity_score : FLOAT
+    * candidate_rank : SMALLINT
+    * created_at : TIMESTAMPTZ
 }
 
 entity "**business_businessprofile**" as biz_profile {
@@ -280,9 +304,12 @@ list_template }o--o| list : source_list
 list_template_item }o--|| list_template
 
 opt_result }o--|| list
-opt_result }o--|| user
 route_stop }o--|| opt_result
+route_stop }o--|| list
 route_stop }o--|| store
+route_stop_item }o--|| route_stop
+route_stop_item }o--o| product
+route_stop_item }o--o| price
 
 biz_profile ||--|| user
 store }o--o| biz_profile

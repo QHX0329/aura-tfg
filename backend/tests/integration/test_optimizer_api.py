@@ -208,6 +208,40 @@ def test_optimize_persists_result(
 
 
 @pytest.mark.django_db
+def test_optimize_persists_relational_route_breakdown(
+    authenticated_client,
+    shopping_list_with_items,
+    store_in_seville,
+    price_in_store,
+):
+    """POST /api/v1/optimize/ persiste paradas e items de ruta en modelos relacionales."""
+    from apps.optimizer.models import OptimizationRouteStop, OptimizationRouteStopItem
+
+    with patch(
+        "apps.optimizer.services.distance.get_distance_matrix",
+        return_value=(FIXED_DIST_MATRIX, FIXED_TIME_MATRIX),
+    ):
+        response = authenticated_client.post(
+            OPTIMIZE_URL,
+            data={
+                "shopping_list_id": shopping_list_with_items.id,
+                "lat": 37.3891,
+                "lng": -5.9845,
+                "max_distance_km": 10.0,
+                "max_stops": 2,
+            },
+            format="json",
+        )
+
+    assert response.status_code == 200
+    result_id = response.data["data"]["id"]
+    stops = OptimizationRouteStop.objects.filter(optimization_result_id=result_id)
+    items = OptimizationRouteStopItem.objects.filter(stop__optimization_result_id=result_id)
+    assert stops.exists()
+    assert items.exists()
+
+
+@pytest.mark.django_db
 def test_optimize_rejects_other_user_list(
     api_client,
     consumer_user,
@@ -234,3 +268,59 @@ def test_optimize_rejects_other_user_list(
     )
 
     assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_optimize_get_latest_returns_null_when_no_saved_result(
+    authenticated_client,
+    shopping_list_with_items,
+):
+    """GET /api/v1/optimize/?shopping_list_id= devuelve data=null si no hay optimizacion."""
+    response = authenticated_client.get(
+        OPTIMIZE_URL,
+        data={"shopping_list_id": shopping_list_with_items.id},
+    )
+
+    assert response.status_code == 200
+    assert response.data["success"] is True
+    assert response.data["data"] is None
+
+
+@pytest.mark.django_db
+def test_optimize_get_latest_returns_last_saved_result(
+    authenticated_client,
+    shopping_list_with_items,
+    store_in_seville,
+    price_in_store,
+):
+    """GET /api/v1/optimize/?shopping_list_id= devuelve la ultima optimizacion persistida."""
+    with patch(
+        "apps.optimizer.services.distance.get_distance_matrix",
+        return_value=(FIXED_DIST_MATRIX, FIXED_TIME_MATRIX),
+    ):
+        post_response = authenticated_client.post(
+            OPTIMIZE_URL,
+            data={
+                "shopping_list_id": shopping_list_with_items.id,
+                "lat": 37.3891,
+                "lng": -5.9845,
+                "max_distance_km": 10.0,
+                "max_stops": 2,
+            },
+            format="json",
+        )
+
+    assert post_response.status_code == 200
+
+    get_response = authenticated_client.get(
+        OPTIMIZE_URL,
+        data={"shopping_list_id": shopping_list_with_items.id},
+    )
+
+    assert get_response.status_code == 200
+    assert get_response.data["success"] is True
+    assert get_response.data["data"] is not None
+    payload = get_response.data["data"]
+    assert payload["id"] == post_response.data["data"]["id"]
+    assert payload["shopping_list_id"] == shopping_list_with_items.id
+    assert isinstance(payload["route"], list)

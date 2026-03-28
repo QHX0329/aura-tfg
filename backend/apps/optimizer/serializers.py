@@ -62,6 +62,12 @@ class OptimizeRequestSerializer(serializers.Serializer):
         return attrs
 
 
+class LatestOptimizationQuerySerializer(serializers.Serializer):
+    """Valida la querystring para recuperar la ultima optimizacion por lista."""
+
+    shopping_list_id = serializers.IntegerField(min_value=1)
+
+
 class RouteStopSerializer(serializers.Serializer):
     """Serializa una parada de la ruta optimizada."""
 
@@ -79,7 +85,27 @@ class OptimizeResponseSerializer(serializers.Serializer):
     """Serializa el resultado de una optimizacion de ruta."""
 
     id = serializers.IntegerField(help_text="ID del resultado persistido en BD")
+    shopping_list_id = serializers.IntegerField()
+    max_distance_km = serializers.FloatField()
+    max_stops = serializers.IntegerField()
+    w_precio = serializers.FloatField()
+    w_distancia = serializers.FloatField()
+    w_tiempo = serializers.FloatField()
     total_price = serializers.DecimalField(max_digits=10, decimal_places=2)
     total_distance_km = serializers.FloatField()
     estimated_time_minutes = serializers.FloatField()
+    user_lat = serializers.SerializerMethodField()
+    user_lng = serializers.SerializerMethodField()
     route = RouteStopSerializer(many=True, source="route_data")
+
+    def get_user_lat(self, obj) -> float | None:
+        """Devuelve latitud del usuario persistida en el resultado."""
+        if not obj.user_location:
+            return None
+        return float(obj.user_location.y)
+
+    def get_user_lng(self, obj) -> float | None:
+        """Devuelve longitud del usuario persistida en el resultado."""
+        if not obj.user_location:
+            return None
+        return float(obj.user_location.x)

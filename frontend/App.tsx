@@ -9,6 +9,7 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as Notifications from 'expo-notifications';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -31,7 +32,17 @@ import {
 
 import { RootNavigator } from '@/navigation';
 import { useAuthStore } from '@/store/authStore';
+import { registerLockscreenChecklistActionHandler } from '@/services/lockscreenChecklistService';
 import { colors } from '@/theme';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -50,6 +61,13 @@ export default function App() {
 
   useEffect(() => {
     useAuthStore.getState().hydrate().finally(() => setHydrated(true));
+  }, []);
+
+  useEffect(() => {
+    const subscription = registerLockscreenChecklistActionHandler();
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   if (!fontsLoaded || !hydrated) {

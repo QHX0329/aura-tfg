@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-27 (F5-15 completada: spiders de Eroski, Spar, Consum y Coviran)
+> Última sincronización: 2026-03-27 (F5-16 completada: persistencia ruta optimizada + recálculo; ADR-010 creado)
 
 ---
 
@@ -187,6 +187,10 @@
 | F5-11 | Matching fuzzy OCR → catálogo | OCR | 🟠 Alta | ⬜ | 2 |
 | F5-12 | Integración Claude API con contexto de compra | Assistant | 🟠 Alta | ⬜ | 3 |
 | F5-13 | Prompt engineering y guardrails del asistente | Assistant | 🟠 Alta | ⬜ | 2 |
+| F5-16 | Persistencia de ruta optimizada + recuperación al reabrir + botón recalcular | Optimizer/Frontend | 🔴 Crítica | ✅ | 6 |
+| F5-17 | Checklist lock screen iOS con Live Activities (arquitectura nativa) | Mobile iOS | 🟠 Alta | ❌ | 5 |
+
+Nota F5-17: bloqueada en Expo managed. Requiere extensión nativa iOS (ActivityKit + Widget Extension), definida en ADR-010.
 
 ---
 

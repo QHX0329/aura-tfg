@@ -252,23 +252,49 @@ comparación/optimización de precios.
 
 ```
 OptimizationResult
-├── id              UUID (PK)
+├── id              BIGINT (PK)
 ├── shopping_list   FK → ShoppingList
 ├── user_location   PointField(SRID=4326)
-├── max_distance_km DECIMAL(5,2)
+├── max_distance_km FLOAT
 ├── max_stops       SMALLINT
-├── mode            ENUM(price, time, balanced)
-├── weight_price    DECIMAL(4,3)           -- suma con weight_dist + weight_time = 1.0
-├── weight_distance DECIMAL(4,3)
-├── weight_time     DECIMAL(4,3)
+├── optimization_mode ENUM(precio, distancia, balanced)
+├── w_precio       FLOAT                   -- suma con w_distancia + w_tiempo = 1.0
+├── w_distancia    FLOAT
+├── w_tiempo       FLOAT
 ├── total_price     DECIMAL(10,2)
-├── total_distance_km DECIMAL(8,3)
-├── estimated_time_min INTEGER
-├── savings_vs_single DECIMAL(10,2)
+├── total_distance_km FLOAT
+├── estimated_time_minutes FLOAT
 ├── route_data      JSONB                  -- paradas con orden, productos y precios
-├── rank            SMALLINT               -- 1, 2 o 3 (top-3 rutas)
-└── generated_at    TIMESTAMPTZ
+└── created_at      TIMESTAMPTZ
+
+OptimizationRouteStop
+├── id                 BIGINT (PK)
+├── optimization_result FK → OptimizationResult
+├── shopping_list       FK → ShoppingList
+├── store               FK → Store
+├── stop_order          SMALLINT
+├── distance_km         FLOAT
+├── time_minutes        FLOAT
+├── subtotal_price      DECIMAL(10,2)
+└── created_at          TIMESTAMPTZ
+
+OptimizationRouteStopItem
+├── id                 BIGINT (PK)
+├── stop               FK → OptimizationRouteStop
+├── product            FK → Product NULL
+├── price              FK → Price NULL     -- precio exacto elegido en la optimización
+├── query_text         VARCHAR(255)
+├── matched_product_name VARCHAR(255)
+├── quantity           SMALLINT
+├── unit_price         DECIMAL(10,2)
+├── line_total_price   DECIMAL(10,2)
+├── similarity_score   FLOAT
+├── candidate_rank     SMALLINT
+└── created_at         TIMESTAMPTZ
 ```
+
+La ruta sigue guardándose además en `route_data` para compatibilidad de lectura rápida en cliente.
+El nuevo desglose relacional se utiliza para auditoría, trazabilidad y analítica por tienda/precio.
 
 #### Módulo OCR y asistente
 
@@ -446,9 +472,8 @@ La API sigue las convenciones REST y está versionada bajo el prefijo `/api/v1/`
 
 | Método | Endpoint                          | Descripción                             |
 | ------ | --------------------------------- | --------------------------------------- |
-| `POST` | `/api/v1/optimizer/optimize/`     | Calcular rutas óptimas                  |
-| `GET`  | `/api/v1/optimizer/results/{id}/` | Obtener resultado previo                |
-| `GET`  | `/api/v1/optimizer/history/`      | Historial de optimizaciones del usuario |
+| `POST` | `/api/v1/optimize/`               | Calcular o recalcular ruta óptima       |
+| `GET`  | `/api/v1/optimize/?shopping_list_id={id}` | Cargar última ruta persistida por lista |
 
 #### OCR
 

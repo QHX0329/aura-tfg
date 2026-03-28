@@ -371,6 +371,33 @@ export const HomeScreen: React.FC = () => {
       ? navigation.getParent<any>()
       : null;
 
+  const openScanFromHome = useCallback(() => {
+    const nestedOCRRoute = {
+      screen: "OCR",
+      params: {},
+    };
+
+    // Prefer root navigation to avoid issues when this screen is deeply nested.
+    const rootNavigation = parentNavigation?.getParent?.();
+    if (rootNavigation) {
+      rootNavigation.navigate("Main", {
+        screen: "ListsTab",
+        params: nestedOCRRoute,
+      });
+      return;
+    }
+
+    if (parentNavigation) {
+      parentNavigation.navigate("ListsTab", nestedOCRRoute);
+      return;
+    }
+
+    Alert.alert(
+      "No se pudo abrir el escáner",
+      "Inténtalo de nuevo desde la pestaña de Listas.",
+    );
+  }, [parentNavigation]);
+
   const loadAll = useCallback(async () => {
     // Lists
     setWidgetLoading((prev) => ({ ...prev, lists: true }));
@@ -561,7 +588,7 @@ export const HomeScreen: React.FC = () => {
       iconName: "scan",
       color: colors.accentDark,
       bg: colors.accentTint,
-      onPress: () => console.log("Escanear"),
+      onPress: openScanFromHome,
     },
     {
       id: "favorites",

@@ -46,6 +46,14 @@ export interface RouteStop {
 
 export interface OptimizeResponse {
   id: number;
+  shopping_list_id: number;
+  max_distance_km: number;
+  max_stops: number;
+  w_precio: number;
+  w_distancia: number;
+  w_tiempo: number;
+  user_lat: number | null;
+  user_lng: number | null;
   total_price: number;
   total_distance_km: number;
   estimated_time_minutes: number;
@@ -78,6 +86,14 @@ interface RawRouteStop {
 
 interface RawOptimizeResponse {
   id: number | string;
+  shopping_list_id?: number | string;
+  max_distance_km?: number | string;
+  max_stops?: number | string;
+  w_precio?: number | string;
+  w_distancia?: number | string;
+  w_tiempo?: number | string;
+  user_lat?: number | string | null;
+  user_lng?: number | string | null;
   total_price?: number | string;
   total_distance_km?: number | string;
   estimated_time_minutes?: number | string;
@@ -129,6 +145,14 @@ function normalizeOptimizeResponse(raw: RawOptimizeResponse): OptimizeResponse {
 
   return {
     id: Math.round(toNumber(raw.id, 0)),
+    shopping_list_id: Math.round(toNumber(raw.shopping_list_id, 0)),
+    max_distance_km: toNumber(raw.max_distance_km, 10),
+    max_stops: Math.max(2, Math.round(toNumber(raw.max_stops, 3))),
+    w_precio: toNumber(raw.w_precio, 0.5),
+    w_distancia: toNumber(raw.w_distancia, 0.3),
+    w_tiempo: toNumber(raw.w_tiempo, 0.2),
+    user_lat: raw.user_lat == null ? null : toNumber(raw.user_lat, 0),
+    user_lng: raw.user_lng == null ? null : toNumber(raw.user_lng, 0),
     total_price: toNumber(raw.total_price, 0),
     total_distance_km: toNumber(raw.total_distance_km, 0),
     estimated_time_minutes: toNumber(raw.estimated_time_minutes, 0),
@@ -148,6 +172,32 @@ export const optimizeRoute = async (
     payload && typeof payload === "object" && "data" in payload
       ? (payload.data as RawOptimizeResponse)
       : (payload as RawOptimizeResponse);
+
+  return normalizeOptimizeResponse(raw);
+};
+
+export const getLatestOptimizedRoute = async (
+  shoppingListId: number,
+): Promise<OptimizeResponse | null> => {
+  const payload = await apiClient.get<never, RawOptimizeResponse | { data: RawOptimizeResponse } | null>(
+    "/optimize/",
+    {
+      params: { shopping_list_id: shoppingListId },
+    },
+  );
+
+  if (payload == null) {
+    return null;
+  }
+
+  const raw =
+    payload && typeof payload === "object" && "data" in payload
+      ? (payload.data as RawOptimizeResponse)
+      : (payload as RawOptimizeResponse);
+
+  if (!raw || raw.id == null) {
+    return null;
+  }
 
   return normalizeOptimizeResponse(raw);
 };

@@ -66,3 +66,100 @@ class OptimizationResult(models.Model):
 
     def __str__(self) -> str:
         return f"Optimizacion #{self.pk} — {self.shopping_list.name} ({self.optimization_mode})"
+
+
+class OptimizationRouteStop(models.Model):
+    """Parada persistida de una optimizacion con relacion directa a tienda y lista."""
+
+    optimization_result = models.ForeignKey(
+        OptimizationResult,
+        on_delete=models.CASCADE,
+        related_name="stops",
+        verbose_name="Resultado de optimizacion",
+    )
+    shopping_list = models.ForeignKey(
+        "shopping_lists.ShoppingList",
+        on_delete=models.CASCADE,
+        related_name="optimization_stops",
+        verbose_name="Lista de la compra",
+    )
+    store = models.ForeignKey(
+        "stores.Store",
+        on_delete=models.CASCADE,
+        related_name="optimization_stops",
+        verbose_name="Tienda",
+    )
+    stop_order = models.PositiveSmallIntegerField(verbose_name="Orden de parada")
+    distance_km = models.FloatField(default=0.0, verbose_name="Distancia desde parada previa (km)")
+    time_minutes = models.FloatField(default=0.0, verbose_name="Tiempo desde parada previa (min)")
+    subtotal_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        verbose_name="Subtotal de la parada",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Parada de optimizacion"
+        verbose_name_plural = "Paradas de optimizacion"
+        ordering = ["stop_order"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["optimization_result", "stop_order"],
+                name="optimizer_route_stop_unique_order",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return (
+            f"Opt #{self.optimization_result_id} · "
+            f"Parada {self.stop_order} · {self.store.name}"
+        )
+
+
+class OptimizationRouteStopItem(models.Model):
+    """Item de compra asignado a una parada con el precio obtenido en optimizacion."""
+
+    stop = models.ForeignKey(
+        OptimizationRouteStop,
+        on_delete=models.CASCADE,
+        related_name="items",
+        verbose_name="Parada",
+    )
+    product = models.ForeignKey(
+        "products.Product",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="optimization_stop_items",
+        verbose_name="Producto",
+    )
+    price = models.ForeignKey(
+        "prices.Price",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="optimization_stop_items",
+        verbose_name="Precio seleccionado",
+    )
+    query_text = models.CharField(max_length=255, verbose_name="Texto original del item")
+    matched_product_name = models.CharField(max_length=255, verbose_name="Producto asignado")
+    quantity = models.PositiveSmallIntegerField(default=1, verbose_name="Cantidad")
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio unitario")
+    line_total_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Precio total de linea",
+    )
+    similarity_score = models.FloatField(default=0.0, verbose_name="Puntuacion de similitud")
+    candidate_rank = models.PositiveSmallIntegerField(default=1, verbose_name="Ranking candidato")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Item de parada optimizada"
+        verbose_name_plural = "Items de parada optimizada"
+        ordering = ["id"]
+
+    def __str__(self) -> str:
+        return f"{self.matched_product_name} x{self.quantity} ({self.stop.store.name})"

@@ -43,6 +43,7 @@ class CandidateMatch:
         return {
             "query_text": self.query_text,
             "quantity": self.quantity,
+            "matched_price_id": self.price_obj.id,
             "matched_product_id": product.id,
             "matched_product_name": product.name,
             "matched_store_id": store.id,

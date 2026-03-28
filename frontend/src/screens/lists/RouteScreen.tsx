@@ -44,8 +44,10 @@ import {
 import type { ListsStackParamList } from "@/navigation/types";
 import { SkeletonBox } from "@/components/ui/SkeletonBox";
 import { authService } from "@/api/authService";
-import { optimizeRoute } from "@/api/optimizerService";
+import { getLatestOptimizedRoute, optimizeRoute } from "@/api/optimizerService";
 import type { OptimizeResponse, RouteStop } from "@/api/optimizerService";
+import { listService } from "@/api/listService";
+import { scheduleLockscreenChecklist } from "@/services/lockscreenChecklistService";
 import { useProfileStore } from "@/store/profileStore";
 import type { UserProfile } from "@/types/domain";
 import {
@@ -296,10 +298,28 @@ export const RouteScreen: React.FC = () => {
   const [maxDistanceKm, setMaxDistanceKm] = useState(initialPrefs.maxDistanceKm);
   const [showWeightModal, setShowWeightModal] = useState(false);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
+  const [loadingSavedRoute, setLoadingSavedRoute] = useState(false);
+  const [activatingLockscreenChecklist, setActivatingLockscreenChecklist] =
+    useState(false);
   const [originCoords, setOriginCoords] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
+
+  const applyPersistedRoute = useCallback((saved: OptimizeResponse) => {
+    setResult(saved);
+    setSelectedStoreId(saved.route[0]?.store_id ?? null);
+    setMaxDistanceKm(Math.round(saved.max_distance_km || 10));
+    setMaxStops(saved.max_stops || 3);
+    setWeights({
+      w_precio: Math.round((saved.w_precio || 0.5) * 100),
+      w_distancia: Math.round((saved.w_distancia || 0.3) * 100),
+      w_tiempo: Math.round((saved.w_tiempo || 0.2) * 100),
+    });
+    if (saved.user_lat != null && saved.user_lng != null) {
+      setOriginCoords({ lat: saved.user_lat, lng: saved.user_lng });
+    }
+  }, []);
 
   useEffect(() => {
     const prefs = getOptimizerPrefsFromProfile(profile);
@@ -311,29 +331,41 @@ export const RouteScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       let mounted = true;
-      const loadProfile = async () => {
-        try {
-          const freshProfile = await authService.getProfile();
-          if (!mounted) {
-            return;
-          }
-          setProfile(freshProfile);
-        } catch {
-          // Keep local/store values if profile refresh fails.
+      const loadScreenData = async () => {
+        setLoadingSavedRoute(true);
+        const parsedListId = parseInt(listId, 10);
+
+        const [profileResult, routeResult] = await Promise.allSettled([
+          authService.getProfile(),
+          getLatestOptimizedRoute(parsedListId),
+        ]);
+
+        if (!mounted) {
+          return;
         }
+
+        if (profileResult.status === "fulfilled") {
+          setProfile(profileResult.value);
+        }
+
+        if (routeResult.status === "fulfilled" && routeResult.value) {
+          applyPersistedRoute(routeResult.value);
+          setError(null);
+        }
+
+        setLoadingSavedRoute(false);
       };
 
-      void loadProfile();
+      void loadScreenData();
       return () => {
         mounted = false;
       };
-    }, [setProfile]),
+    }, [applyPersistedRoute, listId, setProfile]),
   );
 
   const handleOptimize = async () => {
     setLoading(true);
     setError(null);
-    setResult(null);
 
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -365,8 +397,7 @@ export const RouteScreen: React.FC = () => {
         w_tiempo: weights.w_tiempo / 100,
       });
 
-      setResult(response);
-      setSelectedStoreId(response.route[0]?.store_id ?? null);
+      applyPersistedRoute(response);
     } catch (err: any) {
       const code = err?.response?.data?.error?.code ?? "";
       if (code === "OPTIMIZER_NO_STORES_IN_RADIUS") {
@@ -386,6 +417,8 @@ export const RouteScreen: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const isBusy = loading || loadingSavedRoute;
 
   const handleOpenRouteInMap = async () => {
     if (!result || result.route.length === 0) {
@@ -457,6 +490,54 @@ export const RouteScreen: React.FC = () => {
     }
   };
 
+  const handleActivateLockscreenChecklist = async () => {
+    if (Platform.OS !== "ios") {
+      Alert.alert(
+        "Disponible en iPhone",
+        "El checklist de bloqueo solo está disponible en iOS.",
+      );
+      return;
+    }
+
+    setActivatingLockscreenChecklist(true);
+    try {
+      const latestList = await listService.getList(listId);
+      const schedule = await scheduleLockscreenChecklist({
+        listId,
+        listName,
+        items: latestList.items,
+      });
+
+      if (!schedule.scheduled && schedule.reason === "permission-denied") {
+        Alert.alert(
+          "Permiso requerido",
+          "Activa las notificaciones para usar el checklist en pantalla bloqueada.",
+        );
+        return;
+      }
+
+      if (!schedule.scheduled && schedule.reason === "no-pending-items") {
+        Alert.alert(
+          "Lista completada",
+          "No hay productos pendientes para mostrar en bloqueo.",
+        );
+        return;
+      }
+
+      Alert.alert(
+        "Checklist activado",
+        "Se ha publicado la lista en notificación interactiva para marcar productos desde bloqueo.",
+      );
+    } catch {
+      Alert.alert(
+        "No se pudo activar el checklist",
+        "Inténtalo de nuevo en unos segundos.",
+      );
+    } finally {
+      setActivatingLockscreenChecklist(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       {/* Header */}
@@ -523,23 +604,33 @@ export const RouteScreen: React.FC = () => {
 
         {/* CTA principal */}
         <TouchableOpacity
-          style={[styles.ctaBtn, loading && styles.ctaBtnDisabled]}
+          style={[styles.ctaBtn, isBusy && styles.ctaBtnDisabled]}
           onPress={handleOptimize}
-          disabled={loading}
-          accessibilityLabel="Optimizar ruta"
+          disabled={isBusy}
+          accessibilityLabel={result ? "Recalcular ruta" : "Optimizar ruta"}
         >
-          {loading ? (
-            <Text style={styles.ctaText}>Calculando la mejor ruta...</Text>
+          {isBusy ? (
+            <Text style={styles.ctaText}>
+              {loadingSavedRoute
+                ? "Cargando ruta guardada..."
+                : "Calculando la mejor ruta..."}
+            </Text>
           ) : (
             <>
-              <Ionicons name="navigate" size={20} color={colors.white} />
-              <Text style={styles.ctaText}>Optimizar ruta</Text>
+              <Ionicons
+                name={result ? "refresh" : "navigate"}
+                size={20}
+                color={colors.white}
+              />
+              <Text style={styles.ctaText}>
+                {result ? "Recalcular ruta" : "Optimizar ruta"}
+              </Text>
             </>
           )}
         </TouchableOpacity>
 
         {/* Loading skeletons */}
-        {loading && (
+        {isBusy && (
           <View style={styles.skeletonContainer}>
             <SkeletonBox width="100%" height={56} borderRadius={12} />
             <SkeletonBox width="100%" height={56} borderRadius={12} />
@@ -548,7 +639,7 @@ export const RouteScreen: React.FC = () => {
         )}
 
         {/* Error state */}
-        {!loading && error && (
+        {!isBusy && error && (
           <Animated.View
             entering={FadeInDown.springify()}
             style={styles.errorCard}
@@ -578,7 +669,7 @@ export const RouteScreen: React.FC = () => {
         )}
 
         {/* Empty state */}
-        {!loading && !error && !result && (
+        {!isBusy && !error && !result && (
           <View style={styles.emptyState}>
             <Ionicons name="map-outline" size={64} color={colors.textMuted} />
             <Text style={styles.emptyTitle}>
@@ -592,7 +683,7 @@ export const RouteScreen: React.FC = () => {
         )}
 
         {/* Result: hero card + stops */}
-        {!loading && result && (
+        {!isBusy && result && (
           <Animated.View entering={FadeInDown.springify()}>
             {/* Hero price card */}
             <View style={styles.heroCard}>
@@ -649,6 +740,29 @@ export const RouteScreen: React.FC = () => {
                 }
               />
             ))}
+
+            {Platform.OS === "ios" && (
+              <TouchableOpacity
+                style={[
+                  styles.lockscreenBtn,
+                  activatingLockscreenChecklist && styles.lockscreenBtnDisabled,
+                ]}
+                activeOpacity={0.8}
+                onPress={() => {
+                  void handleActivateLockscreenChecklist();
+                }}
+                disabled={activatingLockscreenChecklist}
+                accessibilityRole="button"
+                accessibilityLabel="Activar checklist en pantalla bloqueada"
+              >
+                <Ionicons name="checkmark-done" size={16} color={colors.primary} />
+                <Text style={styles.lockscreenBtnText}>
+                  {activatingLockscreenChecklist
+                    ? "Activando checklist..."
+                    : "Checklist en bloqueo (iPhone)"}
+                </Text>
+              </TouchableOpacity>
+            )}
 
             {/* "Ver en mapa" secondary button */}
             <TouchableOpacity
@@ -888,6 +1002,41 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   mapBtnText: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.primary,
+  },
+  recalculateBtn: {
+    marginTop: spacing.sm,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xs,
+    borderRadius: borderRadius.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.primary,
+  },
+  recalculateBtnText: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.white,
+  },
+  lockscreenBtn: {
+    marginTop: spacing.sm,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: borderRadius.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.surface,
+  },
+  lockscreenBtnDisabled: {
+    opacity: 0.7,
+  },
+  lockscreenBtnText: {
     fontFamily: fontFamilies.bodyMedium,
     fontSize: fontSize.sm,
     color: colors.primary,

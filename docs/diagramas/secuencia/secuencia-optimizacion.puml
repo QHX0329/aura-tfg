@@ -16,7 +16,25 @@ participant "OptimizerService" as optimizer
 database "PostgreSQL\n+ PostGIS" as db
 participant "OSRM /\nGoogle Maps" as maps
 
-user -> app : Selecciona lista\ny pulsa "Optimizar"
+user -> app : Entra en pantalla\n"Ruta optimizada"
+activate app
+
+app -> api : GET /api/v1/optimize/?shopping_list_id={id}
+activate api
+api -> db : SELECT latest optimization_result\nWHERE shopping_list_id = ?\nORDER BY created_at DESC LIMIT 1
+activate db
+db --> api : Resultado previo o null
+deactivate db
+api --> app : 200 OK\n{success: true, data: result|null}
+deactivate api
+
+alt Existe resultado previo
+    app -> app : Renderizar ruta persistida\n(sin recalcular)
+else No existe resultado
+    app -> app : Mostrar estado vacío
+end
+
+user -> app : Pulsa "Optimizar" / "Recalcular"
 activate app
 
 app -> api : POST /api/v1/optimize/\n{shopping_list_id, lat, lng,\nmax_distance_km, max_stops,\nw_precio, w_distancia, w_tiempo}
@@ -67,7 +85,17 @@ deactivate optimizer
 
 api -> db : INSERT optimization_result
 activate db
-db --> api : optimization_result
+db --> api : optimization_result_id
+deactivate db
+
+api -> db : INSERT optimizer_optimizationroutestop\n(1..N paradas)
+activate db
+db --> api : stops persisted
+deactivate db
+
+api -> db : INSERT optimizer_optimizationroutestopitem\n(precios por item y parada)
+activate db
+db --> api : items persisted
 deactivate db
 
 api --> app : 200 OK\n{success: true, data: {...}}
@@ -78,14 +106,11 @@ app -> app : Renderizar mapa\ncon polylines\ny marcadores
 app --> user : Muestra ruta optimizada\ncon desglose de ahorro
 deactivate app
 
-user -> app : Ajusta sliders\nde pesos
-activate app
-app -> api : POST /api/v1/optimize/\n{..., new_weights}
-note right: Recálculo\nen < 5 seg
-api -> optimizer : optimize_shopping_list(...)
-optimizer --> api : Nueva ruta optimizada
-api --> app : 200 OK {success: true, data}
-app --> user : Ruta actualizada
-deactivate app
+note right of app
+En iOS se activa una checklist en bloqueo
+mediante notificación interactiva (fallback).
+La evolución a Live Activities queda definida
+en ADR-010.
+end note
 
 @enduml

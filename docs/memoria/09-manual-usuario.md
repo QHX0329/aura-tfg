@@ -42,6 +42,7 @@ Funciones disponibles:
 5. Marcar productos como comprados o eliminarlos.
 6. Renombrar listas o convertirlas en plantilla.
 7. Compartir lista con colaboradores por usuario.
+8. Abrir "Ruta optimizada" para calcular, guardar y reutilizar la última ruta por lista.
 
 ## 9.6 Catálogo y detalle de producto
 
@@ -71,7 +72,20 @@ El usuario puede:
 - Configurar notificaciones.
 - Cerrar sesión.
 
-## 9.10 Módulo OCR y asistente
+## 9.10 Ruta optimizada persistente y recálculo
+
+Flujo recomendado:
+1. Entrar en una lista y pulsar "Ruta optimizada".
+2. Si existe una ruta previa para esa lista, se carga automáticamente desde base de datos.
+3. Revisar paradas, productos por parada y precio total estimado.
+4. Pulsar "Recalcular ruta" para lanzar una nueva optimización con ubicación/pesos actuales.
+5. Pulsar "Ver en mapa" para abrir la ruta circular en app de mapas.
+
+Comportamiento persistente:
+- La app no pierde la ruta al salir de la pantalla.
+- Al volver a entrar, recupera la última optimización guardada de esa lista.
+
+## 9.11 Módulo OCR y asistente
 
 Estado actual:
 - Existe interfaz de captura/revisión OCR en frontend (flujo UI).
@@ -80,7 +94,16 @@ Estado actual:
   falta de claridad de Tesseract en fotos reales. La alineación completa del código queda
   planificada en F5.
 
-## 9.11 Portal Business (web)
+## 9.12 Uso en pantalla bloqueada de iPhone
+
+Estado del proyecto:
+- Implementación actual: botón "Checklist en bloqueo (iPhone)" en la pantalla de ruta
+  optimizada, que publica una notificación interactiva con acciones para marcar productos.
+- Al pulsar una acción en bloqueo, el ítem se marca como comprado y la checklist se refresca.
+- Evolución objetivo (ADR-010): migrar a Live Activities (ActivityKit) para un panel nativo
+  con experiencia de checklist más rica.
+
+## 9.13 Portal Business (web)
 
 Para cuentas PYME:
 - Inicio de sesión en portal web.
@@ -88,14 +111,14 @@ Para cuentas PYME:
 - Gestión de promociones.
 - Perfil de negocio.
 
-## 9.12 Resolución de incidencias comunes
+## 9.14 Resolución de incidencias comunes
 
 - Si el frontend no conecta con backend: verificar que backend expone `http://localhost:8000`.
 - Si hay errores JWT: cerrar sesión e iniciar de nuevo para regenerar credenciales.
 - Si no aparecen tiendas en mapa: comprobar permisos de ubicación o usar coordenadas válidas.
 
-## 9.13 Estado de cobertura del manual
+## 9.15 Estado de cobertura del manual
 
-Este manual cubre el uso funcional implementado hasta F4-27. Los flujos de optimización
-avanzada real, OCR productivo con Google Vision API y asistente con datos en vivo se
-documentarán en la actualización final tras F5/F6.
+Este manual cubre el uso funcional implementado hasta la persistencia de optimización
+y recálculo sobre F5. El checklist nativo en lock screen de iOS queda condicionado a la
+ejecución del ADR-010 (extensión nativa ActivityKit).

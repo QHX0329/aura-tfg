@@ -26,6 +26,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { RouteProp } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
 
 import {
@@ -38,11 +39,13 @@ import {
 } from "@/theme";
 import type { ListsStackParamList } from "@/navigation/types";
 import { SkeletonBox } from "@/components/ui/SkeletonBox";
+import { AppModal } from "@/components/ui/AppModal";
 import { scanImage } from "@/api/ocrService";
 import type { OCRItem } from "@/api/ocrService";
 import { listService } from "@/api/listService";
 
 type RouteP = RouteProp<ListsStackParamList, "OCR">;
+type OCRNavigationProp = NativeStackNavigationProp<ListsStackParamList, "OCR">;
 
 // ─── Types locaux ──────────────────────────────────────────────────────────────
 
@@ -52,6 +55,14 @@ interface LocalOCRItem extends OCRItem {
   localName: string; // nombre editable por el usuario
   checked: boolean;
 }
+
+const getDefaultScannedListName = (): string => {
+  const datePart = new Date().toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+  });
+  return `Lista escaneada ${datePart}`;
+};
 
 // ─── OCR Item Row ──────────────────────────────────────────────────────────────
 
@@ -177,13 +188,15 @@ const OCRItemRow: React.FC<OCRItemRowProps> = ({
 // ─── Pantalla principal ───────────────────────────────────────────────────────
 
 export const OCRScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<OCRNavigationProp>();
   const route = useRoute<RouteP>();
-  const { listId } = route.params;
+  const listId = route.params?.listId;
 
   const [items, setItems] = useState<LocalOCRItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [scanDone, setScanDone] = useState(false);
+  const [createListModalVisible, setCreateListModalVisible] = useState(false);
+  const [defaultListName] = useState(getDefaultScannedListName);
 
   const processPickerResult = async (uri: string) => {
     setLoading(true);
@@ -276,9 +289,23 @@ export const OCRScreen: React.FC = () => {
     );
   };
 
+  const addCheckedItemsToList = async (
+    targetListId: string,
+    checkedItems: LocalOCRItem[],
+  ) => {
+    await Promise.all(
+      checkedItems.map((item) =>
+        listService.addItem(targetListId, {
+          name: item.localName.trim() || item.raw_text,
+          quantity: item.localQuantity,
+        }),
+      ),
+    );
+  };
+
   const handleAddToList = async () => {
-    const checked = items.filter((i) => i.checked);
-    if (checked.length === 0) {
+    const checkedItems = items.filter((item) => item.checked);
+    if (checkedItems.length === 0) {
       Alert.alert(
         "Sin selección",
         "Selecciona al menos un producto para añadir a la lista.",
@@ -286,23 +313,67 @@ export const OCRScreen: React.FC = () => {
       return;
     }
 
+    if (!listId) {
+      setCreateListModalVisible(true);
+      return;
+    }
+
     setLoading(true);
     try {
-      await Promise.all(
-        checked.map((item) =>
-          listService.addItem(String(listId), {
-            name: item.localName.trim() || item.raw_text,
-            quantity: item.localQuantity,
-          }),
-        ),
-      );
+      await addCheckedItemsToList(listId, checkedItems);
       Alert.alert(
         "Productos añadidos",
-        `Se han añadido ${checked.length} producto${checked.length !== 1 ? "s" : ""} a tu lista.`,
+        `Se han añadido ${checkedItems.length} producto${checkedItems.length !== 1 ? "s" : ""} a tu lista.`,
         [{ text: "OK", onPress: () => navigation.goBack() }],
       );
     } catch {
       Alert.alert("Error", "No se pudieron añadir los productos a la lista.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateListConfirm = async (name?: string) => {
+    const checkedItems = items.filter((item) => item.checked);
+    if (checkedItems.length === 0) {
+      setCreateListModalVisible(false);
+      Alert.alert(
+        "Sin selección",
+        "Selecciona al menos un producto para crear la nueva lista.",
+      );
+      return;
+    }
+
+    const targetName = name?.trim() || defaultListName;
+    setCreateListModalVisible(false);
+    setLoading(true);
+    try {
+      const newList = await listService.createList(targetName);
+      await addCheckedItemsToList(newList.id, checkedItems);
+      Alert.alert(
+        "Lista creada",
+        `Se ha creado "${newList.name}" con ${checkedItems.length} producto${checkedItems.length !== 1 ? "s" : ""}.`,
+        [
+          {
+            text: "Ver lista",
+            onPress: () =>
+              navigation.navigate("ListDetail", {
+                listId: newList.id,
+                listName: newList.name,
+              }),
+          },
+          {
+            text: "Cerrar",
+            style: "cancel",
+            onPress: () => navigation.goBack(),
+          },
+        ],
+      );
+    } catch {
+      Alert.alert(
+        "Error",
+        "No se pudo crear la lista con los productos escaneados.",
+      );
     } finally {
       setLoading(false);
     }
@@ -443,11 +514,27 @@ export const OCRScreen: React.FC = () => {
                 size={18}
                 color={colors.white}
               />
-              <Text style={styles.addBtnText}>Añadir a mi lista</Text>
+              <Text style={styles.addBtnText}>
+                {listId ? "Añadir a mi lista" : "Crear nueva lista"}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
+
+      <AppModal
+        visible={createListModalVisible}
+        type="input"
+        title="Crear lista desde escaneo"
+        message="Elige un nombre para tu nueva lista con productos escaneados."
+        placeholder="Nombre de la lista"
+        defaultValue={defaultListName}
+        confirmLabel="Crear lista"
+        cancelLabel="Cancelar"
+        onCancel={() => setCreateListModalVisible(false)}
+        onConfirm={handleCreateListConfirm}
+        testID="ocr-create-list-modal"
+      />
     </SafeAreaView>
   );
 };
