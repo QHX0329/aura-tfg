@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-27 (F5-16 completada: persistencia ruta optimizada + recálculo; ADR-010 creado)
+> Última sincronización: 2026-03-28 (F5-19 completada: ajuste adicional validado para eliminar casos residuales de múltiples tiendas de la misma cadena)
 
 ---
 
@@ -163,6 +163,7 @@
 | F4-28 | Landing web premium marketing + portafolio técnico (Stitch + React/Tailwind + Motion + Pages) | Frontend Web | 🔴 Crítica | ✅ | 8 | 8 | Escaparate público con bento interactivo, storytelling técnico y despliegue en GitHub Pages |
 | F4-29 | Onboarding comercios + página demo (Stitch) y conexión de enlaces de marketing | Frontend Web | 🔴 Crítica | ✅ | 5 | 5 | Nueva página onboarding para PYMEs, nueva página demo y wiring de docs/email en la landing |
 | F4-30 | Pantalla Docs técnica web (Stitch) + integración en navegación y demo | Frontend Web | 🔴 Crítica | ✅ | 4 | 4 | Nueva ruta pública `/docs` con índice técnico basado en documentación del proyecto |
+| F4-31 | Checklist dinámico en panel de notificaciones desde ruta optimizada | Optimizer/Mobile UX | 🔴 Crítica | ✅ | 4 | 4 | Sustituida la vista in-app por checklist dinámico en notificaciones; acciones marcan productos y refrescan estado [ ]/[x] en iOS y Android |
 
 ---
 
@@ -189,6 +190,8 @@
 | F5-13 | Prompt engineering y guardrails del asistente | Assistant | 🟠 Alta | ⬜ | 2 |
 | F5-16 | Persistencia de ruta optimizada + recuperación al reabrir + botón recalcular | Optimizer/Frontend | 🔴 Crítica | ✅ | 6 |
 | F5-17 | Checklist lock screen iOS con Live Activities (arquitectura nativa) | Mobile iOS | 🟠 Alta | ❌ | 5 |
+| F5-18 | Capa semántica Gemini para desambiguar items de lista en optimización | Optimizer/Assistant | 🔴 Crítica | ✅ | 4 | Incluye selección manual en frontend (“usar y recalcular”) y persistencia de preferencias por lista para futuras optimizaciones |
+| F5-19 | Consolidación por cadena para evitar múltiples paradas equivalentes (misma cadena/precios) | Optimizer | 🔴 Crítica | ✅ | 3 | Ajuste adicional aplicado: más candidatos por item, desempate determinista por tienda y consolidación por cadena sobre todas las tiendas candidatas; validado en tests |
 
 Nota F5-17: bloqueada en Expo managed. Requiere extensión nativa iOS (ActivityKit + Widget Extension), definida en ADR-010.
 

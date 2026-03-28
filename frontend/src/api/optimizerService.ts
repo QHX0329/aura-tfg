@@ -20,6 +20,19 @@ export interface OptimizeRequest {
   w_tiempo?: number;
 }
 
+export interface SaveSemanticChoiceRequest {
+  shopping_list_id: number;
+  query_text: string;
+  product_id: number;
+}
+
+export interface RouteStopSemanticOption {
+  product_id: number;
+  product_name: string;
+  brand: string;
+  category: string;
+}
+
 export interface RouteStopProduct {
   query_text: string;
   quantity: number;
@@ -31,6 +44,10 @@ export interface RouteStopProduct {
   price: number;
   similarity_score: number;
   candidate_rank: number;
+  semantic_needs_confirmation: boolean;
+  semantic_reason: string;
+  semantic_hints: string[];
+  semantic_options: RouteStopSemanticOption[];
 }
 
 export interface RouteStop {
@@ -71,6 +88,17 @@ interface RawRouteStopProduct {
   price: number | string;
   similarity_score: number | string;
   candidate_rank: number | string;
+  semantic_needs_confirmation?: boolean;
+  semantic_reason?: string;
+  semantic_hints?: unknown;
+  semantic_options?: unknown;
+}
+
+interface RawRouteStopSemanticOption {
+  product_id?: number | string;
+  product_name?: string;
+  brand?: string;
+  category?: string;
 }
 
 interface RawRouteStop {
@@ -112,6 +140,35 @@ function toNumber(value: unknown, fallback = 0): number {
   return fallback;
 }
 
+function toStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
+    .filter((entry) => entry.length > 0);
+}
+
+function normalizeSemanticOptions(value: unknown): RouteStopSemanticOption[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry) => entry && typeof entry === "object")
+    .map((entry) => {
+      const raw = entry as RawRouteStopSemanticOption;
+      return {
+        product_id: Math.round(toNumber(raw.product_id, 0)),
+        product_name: raw.product_name ?? "",
+        brand: raw.brand ?? "",
+        category: raw.category ?? "",
+      };
+    })
+    .filter((entry) => entry.product_id > 0 && entry.product_name.length > 0);
+}
+
 function normalizeRouteStopProduct(raw: RawRouteStopProduct): RouteStopProduct {
   return {
     query_text: raw.query_text,
@@ -124,6 +181,10 @@ function normalizeRouteStopProduct(raw: RawRouteStopProduct): RouteStopProduct {
     price: toNumber(raw.price, 0),
     similarity_score: toNumber(raw.similarity_score, 0),
     candidate_rank: Math.max(1, Math.round(toNumber(raw.candidate_rank, 1))),
+    semantic_needs_confirmation: Boolean(raw.semantic_needs_confirmation),
+    semantic_reason: raw.semantic_reason?.trim() ?? "",
+    semantic_hints: toStringArray(raw.semantic_hints),
+    semantic_options: normalizeSemanticOptions(raw.semantic_options),
   };
 }
 
@@ -200,4 +261,10 @@ export const getLatestOptimizedRoute = async (
   }
 
   return normalizeOptimizeResponse(raw);
+};
+
+export const saveSemanticChoice = async (
+  data: SaveSemanticChoiceRequest,
+): Promise<void> => {
+  await apiClient.post<never, { success: boolean }>("/optimize/choices/", data);
 };

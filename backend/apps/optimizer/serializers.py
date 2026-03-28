@@ -6,6 +6,8 @@ Incluye validacion de la peticion de optimizacion y formato de respuesta.
 
 from rest_framework import serializers
 
+from apps.shopping_lists.utils import normalize_list_text
+
 
 class OptimizeRequestSerializer(serializers.Serializer):
     """Serializa y valida la peticion de optimizacion de ruta de compra."""
@@ -109,3 +111,28 @@ class OptimizeResponseSerializer(serializers.Serializer):
         if not obj.user_location:
             return None
         return float(obj.user_location.x)
+
+
+class SaveSemanticChoiceSerializer(serializers.Serializer):
+    """Valida una preferencia semantica explicita para desambiguar un item."""
+
+    shopping_list_id = serializers.IntegerField(min_value=1)
+    query_text = serializers.CharField(max_length=255)
+    product_id = serializers.IntegerField(min_value=1)
+
+    def validate(self, attrs: dict) -> dict:
+        query_text = (attrs.get("query_text") or "").strip()
+        if not query_text:
+            raise serializers.ValidationError(
+                {"query_text": "El texto del item no puede estar vacio."}
+            )
+
+        normalized_query = normalize_list_text(query_text)
+        if not normalized_query:
+            raise serializers.ValidationError(
+                {"query_text": "El texto del item no puede estar vacio."}
+            )
+
+        attrs["query_text"] = query_text
+        attrs["normalized_query"] = normalized_query
+        return attrs

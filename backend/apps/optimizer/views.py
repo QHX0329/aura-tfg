@@ -24,6 +24,7 @@ from .serializers import (
     LatestOptimizationQuerySerializer,
     OptimizeRequestSerializer,
     OptimizeResponseSerializer,
+    SaveSemanticChoiceSerializer,
 )
 from .services.solver import optimize_shopping_list
 
@@ -284,3 +285,49 @@ class OptimizeView(APIView):
 
         response_serializer = OptimizeResponseSerializer(optimization_result)
         return Response({"success": True, "data": response_serializer.data}, status=200)
+
+
+class OptimizeSemanticChoiceView(APIView):
+    """POST /api/v1/optimize/choices/ para guardar desambiguaciones explicitas."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request) -> Response:
+        from apps.products.models import Product
+        from apps.shopping_lists.models import ShoppingList
+
+        from .models import ShoppingListSemanticPreference
+
+        serializer = SaveSemanticChoiceSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        shopping_list = get_object_or_404(
+            ShoppingList,
+            id=data["shopping_list_id"],
+            owner=request.user,
+        )
+        product = get_object_or_404(Product, id=data["product_id"], is_active=True)
+
+        preference, created = ShoppingListSemanticPreference.objects.update_or_create(
+            shopping_list=shopping_list,
+            normalized_query=data["normalized_query"],
+            defaults={
+                "query_text": data["query_text"],
+                "product": product,
+            },
+        )
+
+        return Response(
+            {
+                "success": True,
+                "data": {
+                    "shopping_list_id": shopping_list.id,
+                    "query_text": preference.query_text,
+                    "normalized_query": preference.normalized_query,
+                    "product_id": preference.product_id,
+                    "created": created,
+                },
+            },
+            status=200,
+        )

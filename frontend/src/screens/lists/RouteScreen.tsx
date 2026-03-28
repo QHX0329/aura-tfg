@@ -44,12 +44,20 @@ import {
 import type { ListsStackParamList } from "@/navigation/types";
 import { SkeletonBox } from "@/components/ui/SkeletonBox";
 import { authService } from "@/api/authService";
-import { getLatestOptimizedRoute, optimizeRoute } from "@/api/optimizerService";
-import type { OptimizeResponse, RouteStop } from "@/api/optimizerService";
+import {
+  getLatestOptimizedRoute,
+  optimizeRoute,
+  saveSemanticChoice,
+} from "@/api/optimizerService";
+import type {
+  OptimizeResponse,
+  RouteStop,
+  RouteStopSemanticOption,
+} from "@/api/optimizerService";
 import { listService } from "@/api/listService";
 import { scheduleLockscreenChecklist } from "@/services/lockscreenChecklistService";
 import { useProfileStore } from "@/store/profileStore";
-import type { UserProfile } from "@/types/domain";
+import type { ShoppingListItem, UserProfile } from "@/types/domain";
 import {
   buildAppleMapsCircularRouteUrl,
   buildGoogleMapsAppCircularRouteUrl,
@@ -69,6 +77,95 @@ const CHAIN_COLORS: Record<string, string> = {
   alcampo: colors.chains.alcampo,
   local: colors.chains.local,
 };
+
+interface OptimizedChecklistEntry {
+  itemId: string;
+  order: number;
+}
+
+function normalizeChecklistText(value: string | undefined | null): string {
+  return (value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function findMatchingQueryKey(
+  itemKeys: string[],
+  routeKeys: string[],
+  routeKeySet: Set<string>,
+): string | null {
+  for (const key of itemKeys) {
+    if (routeKeySet.has(key)) {
+      return key;
+    }
+  }
+
+  for (const key of itemKeys) {
+    const loose = routeKeys.find((routeKey) => routeKey.includes(key) || key.includes(routeKey));
+    if (loose) {
+      return loose;
+    }
+  }
+
+  return null;
+}
+
+function buildOptimizedChecklist(
+  optimizeResult: OptimizeResponse | null,
+  listItems: ShoppingListItem[],
+): OptimizedChecklistEntry[] {
+  if (!optimizeResult) {
+    return [];
+  }
+
+  const queryOrder = new Map<string, number>();
+  let nextOrder = 0;
+
+  for (const stop of optimizeResult.route) {
+    for (const product of stop.products) {
+      const key = normalizeChecklistText(product.query_text);
+      if (!key) {
+        continue;
+      }
+
+      if (!queryOrder.has(key)) {
+        queryOrder.set(key, nextOrder);
+        nextOrder += 1;
+      }
+
+    }
+  }
+
+  const routeKeys = Array.from(queryOrder.keys());
+  const routeKeySet = new Set(routeKeys);
+  const checklist: OptimizedChecklistEntry[] = [];
+
+  for (const item of listItems) {
+    const keys = [item.normalized_name, item.name, item.product_name]
+      .map((value) => normalizeChecklistText(value))
+      .filter((value) => value.length > 0);
+
+    if (keys.length === 0) {
+      continue;
+    }
+
+    const queryKey = findMatchingQueryKey(keys, routeKeys, routeKeySet);
+    if (!queryKey) {
+      continue;
+    }
+
+    checklist.push({
+      itemId: item.id,
+      order: queryOrder.get(queryKey) ?? Number.MAX_SAFE_INTEGER,
+    });
+  }
+
+  return checklist.sort((a, b) => a.order - b.order || a.itemId.localeCompare(b.itemId));
+}
 
 // ─── Weight Config Modal ───────────────────────────────────────────────────────
 
@@ -189,7 +286,19 @@ const RouteStopRow: React.FC<{
   index: number;
   isSelected: boolean;
   onSelect: () => void;
-}> = ({ stop, index, isSelected, onSelect }) => {
+  interactionDisabled: boolean;
+  onApplySemanticOption: (
+    queryText: string,
+    option: RouteStopSemanticOption,
+  ) => void;
+}> = ({
+  stop,
+  index,
+  isSelected,
+  onSelect,
+  interactionDisabled,
+  onApplySemanticOption,
+}) => {
   const chainColor = CHAIN_COLORS[stop.chain.toLowerCase()] ?? colors.primary;
   const subtotal = stop.products.reduce(
     (acc, product) => acc + product.price * product.quantity,
@@ -245,22 +354,99 @@ const RouteStopRow: React.FC<{
           </Text>
           {stop.products.map((product, productIndex) => {
             const lineTotal = product.price * product.quantity;
+            const hasSemanticInfo =
+              product.semantic_needs_confirmation ||
+              product.semantic_reason.length > 0 ||
+              product.semantic_options.length > 0 ||
+              product.semantic_hints.length > 0;
+
             return (
               <View
                 key={`${product.matched_product_id}-${productIndex}`}
-                style={stopRowStyles.productLine}
+                style={stopRowStyles.productBlock}
               >
-                <View style={stopRowStyles.productLineInfo}>
-                  <Text style={stopRowStyles.productLineName} numberOfLines={1}>
-                    {product.matched_product_name}
-                  </Text>
-                  <Text style={stopRowStyles.productLineMeta}>
-                    {product.quantity} x {product.price.toFixed(2)} €
+                <View style={stopRowStyles.productLine}>
+                  <View style={stopRowStyles.productLineInfo}>
+                    <Text style={stopRowStyles.productLineName} numberOfLines={1}>
+                      {product.matched_product_name}
+                    </Text>
+                    <Text style={stopRowStyles.productLineMeta}>
+                      {product.quantity} x {product.price.toFixed(2)} €
+                    </Text>
+                  </View>
+                  <Text style={stopRowStyles.productLineTotal}>
+                    {lineTotal.toFixed(2)} €
                   </Text>
                 </View>
-                <Text style={stopRowStyles.productLineTotal}>
-                  {lineTotal.toFixed(2)} €
-                </Text>
+
+                {hasSemanticInfo ? (
+                  <View style={stopRowStyles.semanticCard}>
+                    <View style={stopRowStyles.semanticHeader}>
+                      <Ionicons
+                        name="alert-circle-outline"
+                        size={14}
+                        color={colors.warning}
+                      />
+                      <Text style={stopRowStyles.semanticTitle}>
+                        {`Posible ambigüedad en "${product.query_text}"`}
+                      </Text>
+                    </View>
+
+                    {product.semantic_reason.length > 0 ? (
+                      <Text style={stopRowStyles.semanticReason}>
+                        {product.semantic_reason}
+                      </Text>
+                    ) : null}
+
+                    {product.semantic_options.length > 0 ? (
+                      <View style={stopRowStyles.semanticOptionsWrap}>
+                        {product.semantic_options.map((option) => {
+                          const optionSubtitle = [option.brand, option.category]
+                            .filter((value) => value.length > 0)
+                            .join(" · ");
+
+                          return (
+                            <TouchableOpacity
+                              key={`${product.matched_product_id}-${option.product_id}`}
+                              style={stopRowStyles.semanticOptionChip}
+                              activeOpacity={0.75}
+                              onPress={() =>
+                                onApplySemanticOption(product.query_text, option)
+                              }
+                              disabled={interactionDisabled}
+                              accessibilityRole="button"
+                              accessibilityLabel={`Usar opción ${option.product_name} y recalcular ruta`}
+                            >
+                              <Text
+                                style={stopRowStyles.semanticOptionName}
+                                numberOfLines={1}
+                              >
+                                {option.product_name}
+                              </Text>
+                              {optionSubtitle.length > 0 ? (
+                                <Text
+                                  style={stopRowStyles.semanticOptionMeta}
+                                  numberOfLines={1}
+                                >
+                                  {optionSubtitle}
+                                </Text>
+                              ) : null}
+                              <Text style={stopRowStyles.semanticOptionAction}>
+                                {interactionDisabled ? "Aplicando..." : "Usar y recalcular"}
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
+                    ) : null}
+
+                    {product.semantic_hints.length > 0 ? (
+                      <Text style={stopRowStyles.semanticHint}>
+                        Consejo: {product.semantic_hints[0]}
+                      </Text>
+                    ) : null}
+                  </View>
+                ) : null}
               </View>
             );
           })}
@@ -299,7 +485,7 @@ export const RouteScreen: React.FC = () => {
   const [showWeightModal, setShowWeightModal] = useState(false);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [loadingSavedRoute, setLoadingSavedRoute] = useState(false);
-  const [activatingLockscreenChecklist, setActivatingLockscreenChecklist] =
+  const [activatingChecklistNotification, setActivatingChecklistNotification] =
     useState(false);
   const [originCoords, setOriginCoords] = useState<{
     lat: number;
@@ -363,33 +549,37 @@ export const RouteScreen: React.FC = () => {
     }, [applyPersistedRoute, listId, setProfile]),
   );
 
-  const handleOptimize = async () => {
-    setLoading(true);
-    setError(null);
+  const getCurrentOrFreshOriginCoords = useCallback(async () => {
+    if (originCoords) {
+      return originCoords;
+    }
 
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Ubicación requerida",
-          "Activa la ubicación para calcular la ruta óptima.",
-        );
-        setLoading(false);
-        return;
-      }
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Ubicación requerida",
+        "Activa la ubicación para recalcular la ruta con tu selección.",
+      );
+      return null;
+    }
 
-      const loc = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-      setOriginCoords({
-        lat: loc.coords.latitude,
-        lng: loc.coords.longitude,
-      });
+    const loc = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
+    const coords = {
+      lat: loc.coords.latitude,
+      lng: loc.coords.longitude,
+    };
+    setOriginCoords(coords);
+    return coords;
+  }, [originCoords]);
 
+  const runOptimization = useCallback(
+    async (coords: { lat: number; lng: number }) => {
       const response = await optimizeRoute({
         shopping_list_id: parseInt(listId, 10),
-        lat: loc.coords.latitude,
-        lng: loc.coords.longitude,
+        lat: coords.lat,
+        lng: coords.lng,
         max_distance_km: maxDistanceKm,
         max_stops: maxStops,
         w_precio: weights.w_precio / 100,
@@ -398,6 +588,21 @@ export const RouteScreen: React.FC = () => {
       });
 
       applyPersistedRoute(response);
+    },
+    [applyPersistedRoute, listId, maxDistanceKm, maxStops, weights],
+  );
+
+  const handleOptimize = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const coords = await getCurrentOrFreshOriginCoords();
+      if (!coords) {
+        return;
+      }
+
+      await runOptimization(coords);
     } catch (err: any) {
       const code = err?.response?.data?.error?.code ?? "";
       if (code === "OPTIMIZER_NO_STORES_IN_RADIUS") {
@@ -417,6 +622,99 @@ export const RouteScreen: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const handleApplySemanticOption = useCallback(
+    async (queryText: string, option: RouteStopSemanticOption) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        await saveSemanticChoice({
+          shopping_list_id: parseInt(listId, 10),
+          query_text: queryText,
+          product_id: option.product_id,
+        });
+
+        const coords = await getCurrentOrFreshOriginCoords();
+        if (!coords) {
+          return;
+        }
+
+        await runOptimization(coords);
+        Alert.alert(
+          "Preferencia aplicada",
+          `Se priorizará ${option.product_name} cuando escribas \"${queryText}\" en esta lista.`,
+        );
+      } catch (err: any) {
+        const message =
+          err?.response?.data?.error?.message ??
+          "No se pudo aplicar la opción seleccionada. Inténtalo de nuevo.";
+        Alert.alert("No se pudo recalcular", message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [getCurrentOrFreshOriginCoords, listId, runOptimization],
+  );
+
+  const handleActivateChecklistNotification = useCallback(async () => {
+    if (!result || result.route.length === 0) {
+      Alert.alert(
+        "Ruta no disponible",
+        "Primero calcula una ruta para generar el checklist dinámico en notificaciones.",
+      );
+      return;
+    }
+
+    setActivatingChecklistNotification(true);
+    try {
+      const latestList = await listService.getList(listId);
+      const optimizedItems = buildOptimizedChecklist(result, latestList.items);
+
+      if (optimizedItems.length === 0) {
+        Alert.alert(
+          "Sin items optimizados",
+          "No hemos encontrado ítems de la lista enlazados a la ruta actual.",
+        );
+        return;
+      }
+
+      const schedule = await scheduleLockscreenChecklist({
+        listId,
+        listName: latestList.name,
+        items: latestList.items,
+        orderedItemIds: optimizedItems.map((item) => item.itemId),
+      });
+
+      if (!schedule.scheduled && schedule.reason === "permission-denied") {
+        Alert.alert(
+          "Permiso requerido",
+          "Activa las notificaciones para usar el checklist dinámico en el panel.",
+        );
+        return;
+      }
+
+      if (!schedule.scheduled && schedule.reason === "no-pending-items") {
+        Alert.alert(
+          "Checklist completado",
+          "Todos los productos optimizados ya están marcados como comprados.",
+        );
+        return;
+      }
+
+      Alert.alert(
+        "Checklist publicado",
+        "Ya puedes marcar productos desde el panel de notificaciones.",
+      );
+    } catch {
+      Alert.alert(
+        "No se pudo publicar",
+        "Inténtalo de nuevo en unos segundos.",
+      );
+    } finally {
+      setActivatingChecklistNotification(false);
+    }
+  }, [listId, result]);
 
   const isBusy = loading || loadingSavedRoute;
 
@@ -487,54 +785,6 @@ export const RouteScreen: React.FC = () => {
       await Linking.openURL(mapUrl);
     } catch {
       Alert.alert("No se pudo abrir el mapa", "Inténtalo de nuevo en unos segundos.");
-    }
-  };
-
-  const handleActivateLockscreenChecklist = async () => {
-    if (Platform.OS !== "ios") {
-      Alert.alert(
-        "Disponible en iPhone",
-        "El checklist de bloqueo solo está disponible en iOS.",
-      );
-      return;
-    }
-
-    setActivatingLockscreenChecklist(true);
-    try {
-      const latestList = await listService.getList(listId);
-      const schedule = await scheduleLockscreenChecklist({
-        listId,
-        listName,
-        items: latestList.items,
-      });
-
-      if (!schedule.scheduled && schedule.reason === "permission-denied") {
-        Alert.alert(
-          "Permiso requerido",
-          "Activa las notificaciones para usar el checklist en pantalla bloqueada.",
-        );
-        return;
-      }
-
-      if (!schedule.scheduled && schedule.reason === "no-pending-items") {
-        Alert.alert(
-          "Lista completada",
-          "No hay productos pendientes para mostrar en bloqueo.",
-        );
-        return;
-      }
-
-      Alert.alert(
-        "Checklist activado",
-        "Se ha publicado la lista en notificación interactiva para marcar productos desde bloqueo.",
-      );
-    } catch {
-      Alert.alert(
-        "No se pudo activar el checklist",
-        "Inténtalo de nuevo en unos segundos.",
-      );
-    } finally {
-      setActivatingLockscreenChecklist(false);
     }
   };
 
@@ -733,36 +983,36 @@ export const RouteScreen: React.FC = () => {
                 stop={stop}
                 index={idx}
                 isSelected={selectedStoreId === stop.store_id}
+                interactionDisabled={isBusy}
                 onSelect={() =>
                   setSelectedStoreId((prev) =>
                     prev === stop.store_id ? null : stop.store_id,
                   )
                 }
+                onApplySemanticOption={handleApplySemanticOption}
               />
             ))}
 
-            {Platform.OS === "ios" && (
-              <TouchableOpacity
-                style={[
-                  styles.lockscreenBtn,
-                  activatingLockscreenChecklist && styles.lockscreenBtnDisabled,
-                ]}
-                activeOpacity={0.8}
-                onPress={() => {
-                  void handleActivateLockscreenChecklist();
-                }}
-                disabled={activatingLockscreenChecklist}
-                accessibilityRole="button"
-                accessibilityLabel="Activar checklist en pantalla bloqueada"
-              >
-                <Ionicons name="checkmark-done" size={16} color={colors.primary} />
-                <Text style={styles.lockscreenBtnText}>
-                  {activatingLockscreenChecklist
-                    ? "Activando checklist..."
-                    : "Checklist en bloqueo (iPhone)"}
-                </Text>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              style={[
+                styles.lockscreenBtn,
+                (activatingChecklistNotification || isBusy) && styles.lockscreenBtnDisabled,
+              ]}
+              activeOpacity={0.8}
+              onPress={() => {
+                void handleActivateChecklistNotification();
+              }}
+              disabled={activatingChecklistNotification || isBusy}
+              accessibilityRole="button"
+              accessibilityLabel="Publicar checklist dinámico en notificaciones"
+            >
+              <Ionicons name="notifications-outline" size={16} color={colors.primary} />
+              <Text style={styles.lockscreenBtnText}>
+                {activatingChecklistNotification
+                  ? "Publicando checklist..."
+                  : "Checklist dinámico en notificaciones"}
+              </Text>
+            </TouchableOpacity>
 
             {/* "Ver en mapa" secondary button */}
             <TouchableOpacity
@@ -1118,6 +1368,9 @@ const stopRowStyles = StyleSheet.create({
     justifyContent: "space-between",
     gap: spacing.sm,
   },
+  productBlock: {
+    gap: spacing.xs,
+  },
   productLineInfo: {
     flex: 1,
     gap: 2,
@@ -1136,6 +1389,68 @@ const stopRowStyles = StyleSheet.create({
     fontFamily: fontFamilies.bodySemiBold,
     fontSize: fontSize.sm,
     color: colors.primary,
+  },
+  semanticCard: {
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.warning,
+    backgroundColor: colors.warningBg,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    gap: 4,
+  },
+  semanticHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  semanticTitle: {
+    flex: 1,
+    fontFamily: fontFamilies.bodySemiBold,
+    fontSize: fontSize.xs,
+    color: colors.warning,
+  },
+  semanticReason: {
+    fontFamily: fontFamilies.body,
+    fontSize: fontSize.xs,
+    color: colors.text,
+    lineHeight: 16,
+  },
+  semanticOptionsWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.xs,
+  },
+  semanticOptionChip: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 4,
+    maxWidth: "100%",
+  },
+  semanticOptionName: {
+    fontFamily: fontFamilies.bodyMedium,
+    fontSize: fontSize.xs,
+    color: colors.text,
+  },
+  semanticOptionMeta: {
+    fontFamily: fontFamilies.body,
+    fontSize: 10,
+    color: colors.textMuted,
+  },
+  semanticOptionAction: {
+    marginTop: 2,
+    fontFamily: fontFamilies.bodySemiBold,
+    fontSize: 10,
+    color: colors.primary,
+  },
+  semanticHint: {
+    fontFamily: fontFamilies.body,
+    fontSize: 10,
+    color: colors.textMuted,
+    lineHeight: 14,
   },
   emptyProductsText: {
     fontFamily: fontFamilies.body,

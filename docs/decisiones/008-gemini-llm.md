@@ -60,3 +60,25 @@ El contrato de la API REST (`POST /api/v1/assistant/chat/`) no cambia.
   a `"model"` en el protocolo Gemini antes de la llamada a la API.
 - La documentación de memoria del TFG (sección de herramientas y decisiones de diseño) debe
   reflejar Gemini como proveedor LLM activo.
+
+## Actualización 2026-03-28
+
+Se amplía el uso de Gemini fuera del chat del asistente para incluir una capa semántica en el
+optimizador de listas de compra:
+
+- Nuevo servicio `apps/optimizer/services/semantic.py` para desambiguar ítems de texto libre.
+- Nueva configuración `GEMINI_PRODUCT_MATCH_MODEL` (por defecto `gemini-3-flash-preview`).
+- El matching del optimizador ahora combina:
+  - filtrado semántico con Gemini,
+  - fallback heurístico seguro (cuando la API no está disponible),
+  - scoring fuzzy con penalización de variantes no solicitadas (ej. `pan` vs `pan rallado`).
+- La salida de productos de ruta incluye metadatos de desambiguación para que frontend pueda
+  ofrecer opciones al usuario cuando la intención sea ambigua.
+
+Extensión adicional en la misma fecha:
+
+- Nuevo endpoint `POST /api/v1/optimize/choices/` para guardar la elección explícita del usuario
+  (producto preferido para un texto de item en una lista concreta).
+- Nuevo modelo `ShoppingListSemanticPreference` en `optimizer` para persistir esas decisiones.
+- El matching del optimizador reutiliza automáticamente la preferencia guardada en ejecuciones
+  futuras de la misma lista, priorizando el producto elegido por el usuario.

@@ -163,3 +163,40 @@ class OptimizationRouteStopItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.matched_product_name} x{self.quantity} ({self.stop.store.name})"
+
+
+class ShoppingListSemanticPreference(models.Model):
+    """Preferencia explicita de producto para un texto de item en una lista concreta."""
+
+    shopping_list = models.ForeignKey(
+        "shopping_lists.ShoppingList",
+        on_delete=models.CASCADE,
+        related_name="semantic_preferences",
+        verbose_name="Lista de la compra",
+    )
+    query_text = models.CharField(max_length=255, verbose_name="Texto original del item")
+    normalized_query = models.CharField(max_length=255, db_index=True, verbose_name="Texto normalizado")
+    product = models.ForeignKey(
+        "products.Product",
+        on_delete=models.CASCADE,
+        related_name="semantic_preferences",
+        verbose_name="Producto preferido",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Preferencia semantica de lista"
+        verbose_name_plural = "Preferencias semanticas de lista"
+        ordering = ["-updated_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["shopping_list", "normalized_query"],
+                name="optimizer_semantic_pref_unique_list_query",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return (
+            f"{self.shopping_list.name}: '{self.query_text}' -> {self.product.name}"
+        )

@@ -336,6 +336,10 @@ GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash-lite")
+GEMINI_PRODUCT_MATCH_MODEL = os.environ.get(
+    "GEMINI_PRODUCT_MATCH_MODEL",
+    "gemini-3-flash-preview",
+)
 
 # ── Graphhopper (Routing) ─────────────────────────────
 

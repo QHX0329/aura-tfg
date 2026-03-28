@@ -15,6 +15,7 @@ import pytest
 from django.contrib.gis.geos import Point
 
 OPTIMIZE_URL = "/api/v1/optimize/"
+OPTIMIZE_CHOICES_URL = "/api/v1/optimize/choices/"
 
 
 # ── Fixtures ───────────────────────────────────────────────────────────────────
@@ -324,3 +325,104 @@ def test_optimize_get_latest_returns_last_saved_result(
     assert payload["id"] == post_response.data["data"]["id"]
     assert payload["shopping_list_id"] == shopping_list_with_items.id
     assert isinstance(payload["route"], list)
+
+
+@pytest.mark.django_db
+def test_save_semantic_choice_creates_preference(
+    authenticated_client,
+    shopping_list_with_items,
+    product_with_category,
+):
+    """POST /api/v1/optimize/choices/ crea preferencia semantica para la lista."""
+    from apps.optimizer.models import ShoppingListSemanticPreference
+
+    response = authenticated_client.post(
+        OPTIMIZE_CHOICES_URL,
+        data={
+            "shopping_list_id": shopping_list_with_items.id,
+            "query_text": "pan",
+            "product_id": product_with_category.id,
+        },
+        format="json",
+    )
+
+    assert response.status_code == 200
+    assert response.data["success"] is True
+    assert ShoppingListSemanticPreference.objects.filter(
+        shopping_list_id=shopping_list_with_items.id,
+        normalized_query="pan",
+        product_id=product_with_category.id,
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_save_semantic_choice_updates_existing_preference(
+    authenticated_client,
+    shopping_list_with_items,
+    product_with_category,
+):
+    """POST /api/v1/optimize/choices/ actualiza la preferencia de la misma query."""
+    from apps.optimizer.models import ShoppingListSemanticPreference
+    from apps.products.models import Product
+
+    other_product = Product.objects.create(
+        name="Pan chapata",
+        normalized_name="pan chapata",
+        category=product_with_category.category,
+        is_active=True,
+    )
+    ShoppingListSemanticPreference.objects.create(
+        shopping_list=shopping_list_with_items,
+        query_text="pan",
+        normalized_query="pan",
+        product=product_with_category,
+    )
+
+    response = authenticated_client.post(
+        OPTIMIZE_CHOICES_URL,
+        data={
+            "shopping_list_id": shopping_list_with_items.id,
+            "query_text": " pan ",
+            "product_id": other_product.id,
+        },
+        format="json",
+    )
+
+    assert response.status_code == 200
+    assert ShoppingListSemanticPreference.objects.filter(
+        shopping_list=shopping_list_with_items,
+        normalized_query="pan",
+    ).count() == 1
+    assert ShoppingListSemanticPreference.objects.get(
+        shopping_list=shopping_list_with_items,
+        normalized_query="pan",
+    ).product_id == other_product.id
+
+
+@pytest.mark.django_db
+def test_save_semantic_choice_rejects_other_user_list(
+    api_client,
+    shopping_list_with_items,
+    django_user_model,
+    product_with_category,
+):
+    """POST /api/v1/optimize/choices/ con lista de otro usuario devuelve 404."""
+    other_user = django_user_model.objects.create_user(
+        username="semantic_other_user",
+        email="semantic_other@test.com",
+        password="testpass123",
+        role="consumer",
+    )
+    api_client.force_authenticate(user=other_user)
+
+    response = api_client.post(
+        OPTIMIZE_CHOICES_URL,
+        data={
+            "shopping_list_id": shopping_list_with_items.id,
+            "query_text": "pan",
+            "product_id": product_with_category.id,
+        },
+        format="json",
+    )
+
+    assert response.status_code == 404
