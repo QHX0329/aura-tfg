@@ -134,9 +134,7 @@ class OptimizeView(APIView):
                         product=products_by_id.get(product_id),
                         price=prices_by_id.get(price_id),
                         query_text=str(product_payload.get("query_text", "")),
-                        matched_product_name=str(
-                            product_payload.get("matched_product_name", "")
-                        ),
+                        matched_product_name=str(product_payload.get("matched_product_name", "")),
                         quantity=quantity,
                         unit_price=unit_price,
                         line_total_price=unit_price * quantity,

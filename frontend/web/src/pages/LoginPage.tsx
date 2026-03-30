@@ -126,6 +126,15 @@ const LoginPage: React.FC = () => {
             <div className="auth-trust-item">Seguridad reforzada para datos de negocio</div>
             <div className="auth-trust-item">Privacidad y control de acceso por rol</div>
           </div>
+
+          <div style={{ textAlign: 'center', marginTop: 16 }}>
+            <Typography.Text type="secondary">
+              ¿No tienes cuenta?{' '}
+              <Typography.Link onClick={() => navigate('/register')}>
+                Regístrate como PYME
+              </Typography.Link>
+            </Typography.Text>
+          </div>
         </Card>
       </section>
     </div>

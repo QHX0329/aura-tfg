@@ -19,7 +19,7 @@ import {
   Statistic,
   Progress,
 } from 'antd';
-import { PlusOutlined, RiseOutlined, PercentageOutlined, EyeOutlined } from '@ant-design/icons';
+import { PlusOutlined, RiseOutlined, PercentageOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { apiClient } from '../api/client';
@@ -88,6 +88,7 @@ const PromotionsPage: React.FC = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
   const [productOptions, setProductOptions] = useState<{ value: string; label: string; id: string }[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [stores, setStores] = useState<StoreOption[]>([]);
@@ -191,14 +192,32 @@ const PromotionsPage: React.FC = () => {
     }
   };
 
-  const openModal = () => {
-    form.resetFields();
-    setSelectedProductId(null);
+  const openModal = (promotion?: Promotion) => {
+    setEditingPromotion(promotion ?? null);
+    if (promotion) {
+      const productId = typeof promotion.product === 'object' ? String(promotion.product.id) : String(promotion.product);
+      setSelectedProductId(productId);
+      form.setFieldsValue({
+        product_name: resolveProductName(promotion.product),
+        product_id: productId,
+        discount_type: promotion.discount_type as 'flat' | 'percentage',
+        discount_value: promotion.discount_value,
+        start_date: dayjs(promotion.start_date),
+        end_date: promotion.end_date ? dayjs(promotion.end_date) : undefined,
+        min_quantity: promotion.min_quantity ?? undefined,
+        title: promotion.title,
+        description: promotion.description,
+      });
+    } else {
+      form.resetFields();
+      setSelectedProductId(null);
+    }
     setModalOpen(true);
   };
 
   const closeModal = () => {
     setModalOpen(false);
+    setEditingPromotion(null);
   };
 
   const onFinish = async (values: PromotionFormValues) => {
@@ -213,23 +232,37 @@ const PromotionsPage: React.FC = () => {
       description: values.description,
     };
     try {
-      await apiClient.post('/business/promotions/', payload);
-      void message.success('Promoción creada correctamente');
+      if (editingPromotion) {
+        await apiClient.patch(`/business/promotions/${editingPromotion.id}/`, payload);
+        void message.success('Promoción actualizada correctamente');
+      } else {
+        await apiClient.post('/business/promotions/', payload);
+        void message.success('Promoción creada correctamente');
+      }
       closeModal();
       void fetchPromotions();
     } catch {
-      void message.error('Error al crear la promoción');
+      void message.error(editingPromotion ? 'Error al actualizar la promoción' : 'Error al crear la promoción');
     }
   };
 
-  const deactivatePromotion = async (id: string) => {
-    try {
-      await apiClient.patch(`/business/promotions/${id}/`, { is_active: false });
-      void message.success('Promoción desactivada');
-      void fetchPromotions();
-    } catch {
-      void message.error('Error al desactivar la promoción');
-    }
+  const handleDeactivate = (promo: Promotion) => {
+    Modal.confirm({
+      title: '¿Desactivar esta promoción?',
+      content: `La promoción "${promo.title || resolveProductName(promo.product)}" dejará de estar visible para los usuarios.`,
+      okText: 'Desactivar',
+      okType: 'danger',
+      cancelText: 'Cancelar',
+      onOk: async () => {
+        try {
+          await apiClient.patch(`/business/promotions/${promo.id}/`, { is_active: false });
+          void message.success('Promoción desactivada');
+          void fetchPromotions();
+        } catch {
+          void message.error('Error al desactivar la promoción');
+        }
+      },
+    });
   };
 
   const promotionStats = useMemo(() => {
@@ -327,12 +360,18 @@ const PromotionsPage: React.FC = () => {
     {
       title: 'Acciones',
       key: 'actions',
-      render: (_: unknown, record: Promotion) =>
-        record.is_active ? (
-          <Button type="link" danger onClick={() => deactivatePromotion(record.id)}>
-            Desactivar
+      render: (_: unknown, record: Promotion) => (
+        <Space>
+          <Button type="link" icon={<EditOutlined />} onClick={() => openModal(record)}>
+            Editar
           </Button>
-        ) : null,
+          {record.is_active && (
+            <Button type="link" danger onClick={() => handleDeactivate(record)}>
+              Desactivar
+            </Button>
+          )}
+        </Space>
+      ),
     },
   ];
 
@@ -347,7 +386,7 @@ const PromotionsPage: React.FC = () => {
             Diseña campañas con contexto y sigue su salud comercial desde un solo panel.
           </Typography.Text>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
           Nueva promoción
         </Button>
       </div>
@@ -423,7 +462,7 @@ const PromotionsPage: React.FC = () => {
       </div>
 
       <Modal
-        title="Nueva promoción"
+        title={editingPromotion ? 'Editar promoción' : 'Nueva promoción'}
         open={modalOpen}
         onCancel={closeModal}
         footer={

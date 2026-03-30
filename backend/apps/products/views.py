@@ -10,12 +10,13 @@ ViewSets:
 
 from django.contrib.postgres.search import TrigramSimilarity
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import generics, viewsets
+from rest_framework import generics, mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.business.permissions import IsVerifiedBusiness
 from apps.core.exceptions import ProductNotFoundError
 from apps.core.responses import created_response, success_response
 from apps.products.filters import ProductFilter
@@ -40,19 +41,28 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
         return Category.objects.filter(parent=None).prefetch_related("children")
 
 
-class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet de solo lectura para productos con búsqueda trigram y barcode."""
+class ProductViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """ViewSet para productos con búsqueda trigram, barcode y edición por PYMEs."""
 
-    permission_classes = []  # Acceso público
     filterset_class = ProductFilter
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:
+            return []  # Acceso público para lectura
+        return [IsAuthenticated(), IsVerifiedBusiness()]  # Solo negocios pueden editar
 
     def get_queryset(self):
         """Queryset base: productos activos con categoría."""
         return Product.objects.select_related("category").filter(is_active=True)
 
     def get_serializer_class(self):
-        """Detalle usa ProductDetailSerializer; listado usa ProductListSerializer."""
-        if self.action == "retrieve":
+        """Detalle y update usa ProductDetailSerializer; listado usa ProductListSerializer."""
+        if self.action in ["retrieve", "update", "partial_update"]:
             return ProductDetailSerializer
         return ProductListSerializer
 

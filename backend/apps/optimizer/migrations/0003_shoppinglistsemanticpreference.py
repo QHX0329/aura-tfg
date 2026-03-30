@@ -5,30 +5,63 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('optimizer', '0002_optimizationroutestop_optimizationroutestopitem'),
-        ('products', '0001_initial'),
-        ('shopping_lists', '0002_list_items_text_only'),
+        ("optimizer", "0002_optimizationroutestop_optimizationroutestopitem"),
+        ("products", "0001_initial"),
+        ("shopping_lists", "0002_list_items_text_only"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ShoppingListSemanticPreference',
+            name="ShoppingListSemanticPreference",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('query_text', models.CharField(max_length=255, verbose_name='Texto original del item')),
-                ('normalized_query', models.CharField(db_index=True, max_length=255, verbose_name='Texto normalizado')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='semantic_preferences', to='products.product', verbose_name='Producto preferido')),
-                ('shopping_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='semantic_preferences', to='shopping_lists.shoppinglist', verbose_name='Lista de la compra')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "query_text",
+                    models.CharField(max_length=255, verbose_name="Texto original del item"),
+                ),
+                (
+                    "normalized_query",
+                    models.CharField(
+                        db_index=True, max_length=255, verbose_name="Texto normalizado"
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="semantic_preferences",
+                        to="products.product",
+                        verbose_name="Producto preferido",
+                    ),
+                ),
+                (
+                    "shopping_list",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="semantic_preferences",
+                        to="shopping_lists.shoppinglist",
+                        verbose_name="Lista de la compra",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Preferencia semantica de lista',
-                'verbose_name_plural': 'Preferencias semanticas de lista',
-                'ordering': ['-updated_at'],
-                'constraints': [models.UniqueConstraint(fields=('shopping_list', 'normalized_query'), name='optimizer_semantic_pref_unique_list_query')],
+                "verbose_name": "Preferencia semantica de lista",
+                "verbose_name_plural": "Preferencias semanticas de lista",
+                "ordering": ["-updated_at"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("shopping_list", "normalized_query"),
+                        name="optimizer_semantic_pref_unique_list_query",
+                    )
+                ],
             },
         ),
     ]

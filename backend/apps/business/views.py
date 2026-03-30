@@ -4,7 +4,8 @@ from typing import Any
 
 import structlog
 from django.db import IntegrityError, transaction
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Sum
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import serializers as drf_serializers
 from rest_framework import status, viewsets
@@ -20,9 +21,11 @@ from apps.stores.models import Store
 from .models import BusinessProfile, Promotion
 from .permissions import IsVerifiedBusiness
 from .serializers import (
+    BulkPriceItemSerializer,
     BusinessPriceSerializer,
     BusinessProfileAdminSerializer,
     BusinessProfileSerializer,
+    BusinessStatsSerializer,
     BusinessStoreSerializer,
     PromotionSerializer,
 )
@@ -136,6 +139,60 @@ class BusinessProfileViewSet(viewsets.ModelViewSet):
             {"id": profile.id, "is_verified": False, "rejection_reason": reason}
         )
 
+    @extend_schema(
+        request=None,
+        responses={200: BusinessStatsSerializer},
+        description="Estadísticas agregadas del negocio autenticado.",
+    )
+    @action(detail=False, methods=["get"], url_path="stats")
+    def stats(self, request) -> Response:
+        """Estadísticas de rendimiento del perfil de negocio."""
+        profile = BusinessProfile.objects.filter(
+            user=request.user,
+            is_verified=True,
+        ).first()
+        if profile is None:
+            return Response(
+                {
+                    "success": False,
+                    "error": {"code": "NOT_VERIFIED", "message": "Perfil no verificado."},
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        stores_qs = Store.objects.filter(business_profile=profile, is_active=True)
+        prices_qs = Price.objects.filter(
+            store__business_profile=profile,
+        )
+        promos_qs = Promotion.objects.filter(
+            store__business_profile=profile,
+            is_active=True,
+        )
+
+        data = {
+            "total_active_prices": prices_qs.count(),
+            "total_active_promotions": promos_qs.count(),
+            "total_stores": stores_qs.count(),
+            "total_promotion_views": promos_qs.aggregate(
+                total=Sum("views"),
+            )["total"]
+            or 0,
+            "latest_price_update": prices_qs.order_by("-verified_at")
+            .values_list(
+                "verified_at",
+                flat=True,
+            )
+            .first(),
+            "latest_promotion_created": promos_qs.order_by("-created_at")
+            .values_list(
+                "created_at",
+                flat=True,
+            )
+            .first(),
+        }
+        serializer = BusinessStatsSerializer(data)
+        return success_response(serializer.data)
+
 
 class PromotionViewSet(viewsets.ModelViewSet):
     """
@@ -206,7 +263,7 @@ class BusinessPriceViewSet(viewsets.ModelViewSet):
 
     serializer_class = BusinessPriceSerializer
     permission_classes = [IsAuthenticated, IsVerifiedBusiness]
-    http_method_names = ["get", "post", "patch", "head", "options"]
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     queryset = Price.objects.select_related("product", "store").all()
 
     def get_queryset(self) -> QuerySet[Price]:
@@ -214,13 +271,15 @@ class BusinessPriceViewSet(viewsets.ModelViewSet):
             profile = BusinessProfile.objects.get(user=self.request.user, is_verified=True)
             return Price.objects.filter(
                 store__business_profile=profile,
-                source=Price.Source.BUSINESS,
             ).select_related("product", "store")
         except BusinessProfile.DoesNotExist:
             return Price.objects.none()
 
     def perform_create(self, serializer):
         serializer.save(source=Price.Source.BUSINESS, is_stale=False)
+
+    def perform_update(self, serializer):
+        serializer.save(source=Price.Source.BUSINESS, is_stale=False, verified_at=timezone.now())
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -243,3 +302,110 @@ class BusinessPriceViewSet(viewsets.ModelViewSet):
         stores_qs = Store.objects.filter(business_profile=profile, is_active=True).order_by("name")
         serializer = BusinessStoreSerializer(stores_qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        request=BulkPriceItemSerializer(many=True),
+        responses={
+            200: inline_serializer(
+                "BulkUpdateResponse",
+                fields={
+                    "created": drf_serializers.IntegerField(),
+                    "updated": drf_serializers.IntegerField(),
+                    "errors": drf_serializers.ListField(child=drf_serializers.DictField()),
+                },
+            )
+        },
+        description="Actualización masiva de precios por lote. Cada item crea o actualiza un precio.",
+    )
+    @action(detail=False, methods=["post"], url_path="bulk-update")
+    def bulk_update(self, request) -> Response:
+        """Actualización masiva de precios para negocio."""
+        profile = BusinessProfile.objects.filter(
+            user=request.user,
+            is_verified=True,
+        ).first()
+        if profile is None:
+            return Response(
+                {
+                    "success": False,
+                    "error": {"code": "NOT_VERIFIED", "message": "Perfil no verificado."},
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if not isinstance(request.data, list):
+            return Response(
+                {
+                    "success": False,
+                    "error": {
+                        "code": "INVALID_FORMAT",
+                        "message": "Se espera una lista de precios.",
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        owned_store_ids = set(
+            Store.objects.filter(business_profile=profile, is_active=True).values_list(
+                "id", flat=True
+            )
+        )
+
+        created_count = 0
+        updated_count = 0
+        errors: list[dict[str, Any]] = []
+
+        with transaction.atomic():
+            for idx, item_data in enumerate(request.data):
+                serializer = BulkPriceItemSerializer(data=item_data)
+                if not serializer.is_valid():
+                    errors.append({"index": idx, "errors": serializer.errors})
+                    continue
+
+                validated = serializer.validated_data
+                store = validated["store"]
+
+                if store.id not in owned_store_ids:
+                    errors.append(
+                        {"index": idx, "errors": {"store": "Tienda no pertenece a tu negocio."}}
+                    )
+                    continue
+
+                defaults = {
+                    "price": validated["price"],
+                    "source": Price.Source.BUSINESS,
+                    "is_stale": False,
+                    "verified_at": timezone.now(),
+                }
+                if validated.get("unit_price") is not None:
+                    defaults["unit_price"] = validated["unit_price"]
+                if validated.get("offer_price") is not None:
+                    defaults["offer_price"] = validated["offer_price"]
+                if validated.get("offer_end_date") is not None:
+                    defaults["offer_end_date"] = validated["offer_end_date"]
+
+                _, was_created = Price.objects.update_or_create(
+                    product=validated["product"],
+                    store=store,
+                    source=Price.Source.BUSINESS,
+                    defaults=defaults,
+                )
+                if was_created:
+                    created_count += 1
+                else:
+                    updated_count += 1
+
+        logger.info(
+            "business_bulk_price_update",
+            profile_id=profile.id,
+            created=created_count,
+            updated=updated_count,
+            errors_count=len(errors),
+        )
+        return success_response(
+            {
+                "created": created_count,
+                "updated": updated_count,
+                "errors": errors,
+            }
+        )

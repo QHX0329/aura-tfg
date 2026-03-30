@@ -199,24 +199,24 @@ const DemoPage: React.FC = () => {
         <motion.section {...reveal} className="mx-auto w-full max-w-7xl px-6 pb-16 lg:px-10">
           <div className="grid gap-5 md:grid-cols-2">
             <article className="rounded-3xl bg-gradient-to-br from-emerald-400/20 to-emerald-700/15 p-7 ring-1 ring-emerald-300/25">
-              <h3 className="text-2xl font-semibold tracking-tight text-white">Start Saving</h3>
+              <h3 className="text-2xl font-semibold tracking-tight text-white">Empieza a ahorrar</h3>
               <p className="mt-3 text-sm text-emerald-50/90">Empieza como usuario y optimiza tu compra desde hoy.</p>
               <a href={withBase('login')} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-300 px-5 py-3 text-sm font-semibold text-emerald-950">
-                Get the App <ArrowRight className="h-4 w-4" />
+                Descargar app <ArrowRight className="h-4 w-4" />
               </a>
             </article>
             <article className="rounded-3xl bg-gradient-to-br from-indigo-400/20 to-fuchsia-500/15 p-7 ring-1 ring-indigo-300/25">
-              <h3 className="text-2xl font-semibold tracking-tight text-white">Scale Commerce</h3>
+              <h3 className="text-2xl font-semibold tracking-tight text-white">Escala tu comercio</h3>
               <p className="mt-3 text-sm text-indigo-50/90">Activa tu canal PYME y publica precios/promociones con trazabilidad.</p>
               <div className="mt-6 flex flex-row items-start gap-3">
                 <a href={withBase('onboarding')} className="inline-flex items-center gap-2 rounded-xl bg-indigo-200 px-5 py-3 text-sm font-semibold text-indigo-950">
-                  Merchant Onboarding <ArrowRight className="h-4 w-4" />
+                  Onboarding para comercios <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href={withBase('docs')}
                   className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20"
                 >
-                  Merchant API Docs <ArrowRight className="h-4 w-4" />
+                  Documentación API <ArrowRight className="h-4 w-4" />
                 </a>
               </div>
             </article>

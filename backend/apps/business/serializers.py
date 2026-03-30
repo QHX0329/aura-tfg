@@ -3,6 +3,7 @@
 from rest_framework import serializers
 
 from apps.prices.models import Price
+from apps.products.models import Product
 from apps.stores.models import Store
 
 from .models import BusinessProfile, Promotion
@@ -104,6 +105,8 @@ class PromotionMinimalSerializer(serializers.ModelSerializer):
 class BusinessPriceSerializer(serializers.ModelSerializer):
     """Serializer para precios creados por negocios PYME."""
 
+    updated_at = serializers.ReadOnlyField(source="verified_at")
+
     class Meta:
         model = Price
         fields = [
@@ -118,8 +121,9 @@ class BusinessPriceSerializer(serializers.ModelSerializer):
             "is_stale",
             "verified_at",
             "created_at",
+            "updated_at",
         ]
-        read_only_fields = ["id", "source", "is_stale", "verified_at", "created_at"]
+        read_only_fields = ["id", "source", "is_stale", "verified_at", "created_at", "updated_at"]
 
     def validate(self, attrs):
         """Verifica que la tienda pertenece al perfil de negocio del usuario."""
@@ -147,3 +151,39 @@ class BusinessStoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = ["id", "name", "address", "is_active"]
+
+
+class BulkPriceItemSerializer(serializers.Serializer):
+    """Serializer para cada elemento de una actualización masiva de precios."""
+
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+    )
+    store = serializers.PrimaryKeyRelatedField(
+        queryset=Store.objects.all(),
+    )
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        required=False,
+        allow_null=True,
+    )
+    offer_price = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        required=False,
+        allow_null=True,
+    )
+    offer_end_date = serializers.DateField(required=False, allow_null=True)
+
+
+class BusinessStatsSerializer(serializers.Serializer):
+    """Serializer de solo lectura para estadísticas del perfil de negocio."""
+
+    total_active_prices = serializers.IntegerField()
+    total_active_promotions = serializers.IntegerField()
+    total_stores = serializers.IntegerField()
+    total_promotion_views = serializers.IntegerField()
+    latest_price_update = serializers.DateTimeField(allow_null=True)
+    latest_promotion_created = serializers.DateTimeField(allow_null=True)

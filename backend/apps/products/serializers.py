@@ -45,6 +45,9 @@ class ProductListSerializer(serializers.ModelSerializer):
     """Serializer para listados de productos (campos básicos)."""
 
     category = CategoryNestedSerializer(read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(), source="category", write_only=True, required=False
+    )
 
     class Meta:
         model = Product
@@ -54,9 +57,12 @@ class ProductListSerializer(serializers.ModelSerializer):
             "normalized_name",
             "barcode",
             "category",
+            "category_id",
             "brand",
             "unit",
             "is_active",
+            "created_at",
+            "updated_at",
         ]
 
 
@@ -108,4 +114,16 @@ class ProductProposalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductProposal
-        fields = ["id", "name", "brand", "barcode", "category", "image_url", "notes", "status"]
+        fields = [
+            "id",
+            "name",
+            "brand",
+            "barcode",
+            "category",
+            "image_url",
+            "notes",
+            "status",
+            "price",
+            "unit_price",
+            "store",
+        ]

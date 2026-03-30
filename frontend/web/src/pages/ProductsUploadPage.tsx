@@ -12,6 +12,8 @@ import {
   Typography,
   Upload,
   message,
+  Drawer,
+  Spin,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -33,6 +35,9 @@ interface ProductProposalPayload {
   category?: number;
   image_url?: string;
   notes?: string;
+  price?: number;
+  unit_price?: number;
+  store?: string | number;
 }
 
 interface CategoryNode {
@@ -99,6 +104,10 @@ const csvKeyAliases: Record<string, keyof ProductProposalPayload> = {
   image: 'image_url',
   notes: 'notes',
   notas: 'notes',
+  price: 'price',
+  precio: 'price',
+  unit_price: 'unit_price',
+  precio_unitario: 'unit_price',
 };
 
 const parseCsvLine = (line: string): string[] => {
@@ -133,6 +142,21 @@ const parseCsvLine = (line: string): string[] => {
   return values;
 };
 
+const normalizeNumber = (value: unknown): number | undefined => {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === 'string' && value.trim().length > 0) {
+    const clean = value.replace(',', '.');
+    const parsed = Number.parseFloat(clean);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+  }
+
+  return undefined;
+};
+
 const normalizeCategory = (value: unknown): number | undefined => {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return value;
@@ -160,6 +184,9 @@ const normalizePayload = (raw: Partial<ProductProposalPayload>): ProductProposal
     category: normalizeCategory(raw.category),
     image_url: raw.image_url?.trim() || undefined,
     notes: raw.notes?.trim() || undefined,
+    price: normalizeNumber(raw.price),
+    unit_price: normalizeNumber(raw.unit_price),
+    store: raw.store || undefined,
   };
 };
 
@@ -194,7 +221,11 @@ const parseCsvProducts = (text: string): ProductProposalPayload[] => {
           raw[mappedKey] = normalizeCategory(value);
           return;
         }
-        raw[mappedKey] = value;
+        if (mappedKey === 'price' || mappedKey === 'unit_price') {
+          raw[mappedKey] = normalizeNumber(value);
+          return;
+        }
+        (raw as any)[mappedKey] = value;
       });
 
       return normalizePayload(raw);
@@ -220,6 +251,8 @@ const parseJsonProducts = (text: string): ProductProposalPayload[] => {
         category: normalizeCategory(maybeRow.category),
         image_url: typeof maybeRow.image_url === 'string' ? maybeRow.image_url : undefined,
         notes: typeof maybeRow.notes === 'string' ? maybeRow.notes : undefined,
+        price: normalizeNumber(maybeRow.price),
+        unit_price: normalizeNumber(maybeRow.unit_price),
       };
 
       return normalizePayload(raw);
@@ -236,6 +269,61 @@ const ProductsUploadPage: React.FC = () => {
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [associatedProducts, setAssociatedProducts] = useState<AssociatedProductRow[]>([]);
   const [associatedLoading, setAssociatedLoading] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [editProductForm] = Form.useForm<ProductProposalPayload>();
+  const [stores, setStores] = useState<StoreOption[]>([]);
+  const [selectedBatchStore, setSelectedBatchStore] = useState<string | number | undefined>();
+  const [editLoading, setEditLoading] = useState(false);
+
+  const openDrawer = async (productId: string) => {
+    setDrawerOpen(true);
+    setEditLoading(true);
+    setEditingProductId(productId);
+    try {
+      const res = await apiClient.get<{name: string, brand?: string, barcode?: string, category?: {id: number}, image_url?: string}>(`/products/${productId}/`);
+      const data = res.data;
+      editProductForm.setFieldsValue({
+        name: data.name,
+        brand: data.brand || undefined,
+        barcode: data.barcode || undefined,
+        category: data.category?.id || undefined,
+        image_url: data.image_url || undefined,
+      });
+    } catch {
+      void message.error('No se pudo cargar la información del producto');
+      setDrawerOpen(false);
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const closeDrawer = () => {
+    setDrawerOpen(false);
+    setEditingProductId(null);
+    editProductForm.resetFields();
+  };
+
+  const handleEditSubmit = async (values: ProductProposalPayload) => {
+    if (!editingProductId) return;
+    setEditLoading(true);
+    try {
+      await apiClient.patch(`/products/${editingProductId}/`, {
+        name: values.name,
+        brand: values.brand,
+        barcode: values.barcode,
+        category_id: values.category,
+        image_url: values.image_url,
+      });
+      void message.success('Producto actualizado correctamente en el catálogo global');
+      closeDrawer();
+      window.location.reload(); 
+    } catch {
+      void message.error('Error al actualizar el producto. Verifica los datos o si el código EAN ya existe.');
+    } finally {
+      setEditLoading(false);
+    }
+  };
 
   const categoryOptions = useMemo(
     () =>
@@ -285,6 +373,7 @@ const ProductsUploadPage: React.FC = () => {
           ? promotionsResponse.data
           : promotionsResponse.data?.results ?? [];
         const storesData = Array.isArray(storesResponse.data) ? storesResponse.data : [];
+        setStores(storesData);
 
         const storeNamesById = storesData.reduce<Record<string, string>>((acc, store) => {
           acc[String(store.id)] = store.name;
@@ -400,6 +489,12 @@ const ProductsUploadPage: React.FC = () => {
     void loadAssociatedProducts();
   }, []);
 
+  React.useEffect(() => {
+    if (stores.length > 0 && !selectedBatchStore) {
+      setSelectedBatchStore(stores[0].id);
+    }
+  }, [stores, selectedBatchStore]);
+
   const associatedColumns: ColumnsType<AssociatedProductRow> = [
     {
       title: 'Producto',
@@ -445,6 +540,15 @@ const ProductsUploadPage: React.FC = () => {
       render: (value?: string) =>
         value ? new Date(value).toLocaleDateString('es-ES') : '-',
     },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      render: (_: unknown, record: AssociatedProductRow) => (
+        <Button type="link" onClick={() => openDrawer(record.productId)}>
+          Editar catálogo
+        </Button>
+      ),
+    },
   ];
 
   const submitProposal = async (payload: ProductProposalPayload): Promise<void> => {
@@ -454,7 +558,11 @@ const ProductsUploadPage: React.FC = () => {
   const handleManualSubmit = async (values: ProductProposalPayload) => {
     setManualLoading(true);
     try {
-      await submitProposal(values);
+      const payload = normalizePayload(values);
+      if (!payload) {
+        throw new Error('Validación fallida');
+      }
+      await submitProposal(payload);
       void message.success('Producto enviado para revisión correctamente');
       manualForm.resetFields();
     } catch {
@@ -502,9 +610,15 @@ const ProductsUploadPage: React.FC = () => {
       void message.warning('Primero selecciona y procesa un archivo con productos.');
       return;
     }
+    if (!selectedBatchStore) {
+      void message.warning('Por favor, selecciona una tienda de destino para los productos.');
+      return;
+    }
 
     setBatchLoading(true);
-    const results = await Promise.allSettled(batchRows.map((row) => submitProposal(row)));
+    const results = await Promise.allSettled(
+      batchRows.map((row) => submitProposal({ ...row, store: selectedBatchStore })),
+    );
     const successCount = results.filter((result) => result.status === 'fulfilled').length;
     const failureCount = results.length - successCount;
 
@@ -533,6 +647,16 @@ const ProductsUploadPage: React.FC = () => {
         </div>
       </div>
 
+      {stores.length === 0 && (
+        <Alert
+          message="No hay tiendas asociadas"
+          description="Tu perfil de negocio no tiene tiendas vinculadas. Contacta con soporte o vincula tu tienda desde el panel de administración para poder subir productos."
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
       <Tabs
         items={[
           {
@@ -545,33 +669,66 @@ const ProductsUploadPage: React.FC = () => {
                   layout="vertical"
                   onFinish={handleManualSubmit}
                 >
-                  <Form.Item
-                    name="name"
-                    label="Nombre del producto"
-                    rules={[
-                      { required: true, message: 'Introduce el nombre del producto' },
-                      { min: 2, message: 'El nombre debe tener al menos 2 caracteres' },
-                    ]}
-                  >
-                    <Input placeholder="Ej. Leche semidesnatada 1L" />
-                  </Form.Item>
+                  <Title level={4}>Información básica</Title>
+                  <Space style={{ display: 'flex', width: '100%' }} align="start">
+                    <Form.Item
+                      name="name"
+                      label="Nombre del producto"
+                      rules={[
+                        { required: true, message: 'Introduce el nombre del producto' },
+                        { min: 2, message: 'El nombre debe tener al menos 2 caracteres' },
+                      ]}
+                      style={{ flex: 2 }}
+                    >
+                      <Input placeholder="Ej. Leche semidesnatada 1L" />
+                    </Form.Item>
+                    <Form.Item name="brand" label="Marca" style={{ flex: 1 }}>
+                      <Input placeholder="Ej. Hacendado" />
+                    </Form.Item>
+                  </Space>
 
-                  <Form.Item name="brand" label="Marca">
-                    <Input placeholder="Ej. Hacendado" />
-                  </Form.Item>
+                  <Space style={{ display: 'flex', width: '100%' }} align="start">
+                    <Form.Item name="barcode" label="Código de barras (EAN)" style={{ flex: 1 }}>
+                      <Input placeholder="Ej. 8412345678901" />
+                    </Form.Item>
+                    <Form.Item name="category" label="Categoría" style={{ flex: 1 }}>
+                      <Select
+                        allowClear
+                        showSearch
+                        placeholder="Selecciona categoría"
+                        options={categoryOptions}
+                        optionFilterProp="label"
+                      />
+                    </Form.Item>
+                  </Space>
 
-                  <Form.Item name="barcode" label="Código de barras">
-                    <Input placeholder="Ej. 8412345678901" />
-                  </Form.Item>
-
-                  <Form.Item name="category" label="Categoría">
-                    <Select
-                      allowClear
-                      showSearch
-                      placeholder="Selecciona una categoría (opcional)"
-                      options={categoryOptions}
-                    />
-                  </Form.Item>
+                  <Title level={4} style={{ marginTop: 16 }}>
+                    Precio e Inventario
+                  </Title>
+                  <Space style={{ display: 'flex', width: '100%' }} align="start">
+                    <Form.Item
+                      name="store"
+                      label="Tienda de destino"
+                      rules={[{ required: true, message: 'Selecciona una tienda' }]}
+                      style={{ flex: 1 }}
+                    >
+                      <Select
+                        placeholder="Selecciona la tienda"
+                        options={stores.map((s) => ({ value: s.id, label: s.name }))}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="price"
+                      label="Precio actual"
+                      rules={[{ required: true, message: 'Introduce el precio' }]}
+                      style={{ flex: 1 }}
+                    >
+                      <Input type="number" step="0.01" prefix="€" placeholder="0.00" />
+                    </Form.Item>
+                    <Form.Item name="unit_price" label="Precio unitario" style={{ flex: 1 }}>
+                      <Input type="number" step="0.01" prefix="€" placeholder="0.00" />
+                    </Form.Item>
+                  </Space>
 
                   <Form.Item name="image_url" label="URL de imagen">
                     <Input placeholder="https://..." />
@@ -584,8 +741,8 @@ const ProductsUploadPage: React.FC = () => {
                     />
                   </Form.Item>
 
-                  <Button type="primary" htmlType="submit" loading={manualLoading}>
-                    Enviar producto
+                  <Button type="primary" htmlType="submit" loading={manualLoading} block>
+                    Enviar producto para revisión
                   </Button>
                 </Form>
               </Card>
@@ -597,6 +754,19 @@ const ProductsUploadPage: React.FC = () => {
             children: (
               <Space orientation="vertical" style={{ width: '100%' }} size={16}>
                 <Card className="surface-card">
+                  <Title level={4}>1. Selecciona tienda de destino</Title>
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+                    Todos los productos del archivo se asignarán a esta tienda tras ser aprobados.
+                  </Text>
+                  <Select
+                    style={{ width: '100%', maxWidth: 400, marginBottom: 24 }}
+                    placeholder="Selecciona la tienda"
+                    value={selectedBatchStore}
+                    onChange={setSelectedBatchStore}
+                    options={stores.map((s) => ({ value: s.id, label: s.name }))}
+                  />
+
+                  <Title level={4}>2. Sube tu archivo</Title>
                   <Upload
                     accept=".csv,.json"
                     maxCount={1}
@@ -606,10 +776,12 @@ const ProductsUploadPage: React.FC = () => {
                       return false;
                     }}
                   >
-                    <Button icon={<UploadOutlined />}>Seleccionar archivo CSV o JSON</Button>
+                    <Button icon={<UploadOutlined />} style={{ marginBottom: 12 }}>
+                      Seleccionar archivo CSV o JSON
+                    </Button>
                   </Upload>
-                  <Text type="secondary" style={{ display: 'block', marginTop: 12 }}>
-                    CSV esperado: columnas name, brand, barcode, category/category_id, image_url, notes.
+                  <Text type="secondary" style={{ display: 'block' }}>
+                    CSV esperado: name, brand, barcode, category, price, unit_price.
                   </Text>
                 </Card>
 
@@ -624,7 +796,12 @@ const ProductsUploadPage: React.FC = () => {
                       { title: 'Nombre', dataIndex: 'name', key: 'name' },
                       { title: 'Marca', dataIndex: 'brand', key: 'brand' },
                       { title: 'EAN', dataIndex: 'barcode', key: 'barcode' },
-                      { title: 'Categoría (ID)', dataIndex: 'category', key: 'category' },
+                      {
+                        title: 'Precio',
+                        dataIndex: 'price',
+                        key: 'price',
+                        render: (val: number | undefined) => (val ? `${val}€` : '—'),
+                      },
                     ]}
                   />
 
@@ -633,6 +810,7 @@ const ProductsUploadPage: React.FC = () => {
                     loading={batchLoading}
                     onClick={handleBatchSubmit}
                     disabled={batchRows.length === 0}
+                    style={{ marginTop: 16 }}
                   >
                     Subir productos del archivo
                   </Button>
@@ -656,6 +834,66 @@ const ProductsUploadPage: React.FC = () => {
           locale={{ emptyText: 'Todavia no hay productos asociados por precios o promociones.' }}
         />
       </Card>
+
+      <Drawer
+        title="Editar producto en el catálogo"
+        placement="right"
+        size="large"
+        open={drawerOpen}
+        onClose={closeDrawer}
+        footer={
+          <Space>
+            <Button onClick={closeDrawer}>Cancelar</Button>
+            <Button type="primary" loading={editLoading} onClick={() => editProductForm.submit()}>
+              Guardar cambios
+            </Button>
+          </Space>
+        }
+      >
+        <Alert
+          message="Catálogo centralizado"
+          description="Al editar este producto, los cambios afectarán a todas las tiendas que lo usen. Usa esta opción solo para corregir descripciones o códigos de barras erróneos."
+          type="info"
+          showIcon
+          style={{ marginBottom: 24 }}
+        />
+        <Spin spinning={editLoading}>
+          <Form<ProductProposalPayload>
+            form={editProductForm}
+            layout="vertical"
+            onFinish={handleEditSubmit}
+          >
+            <Form.Item
+              name="name"
+              label="Nombre del producto"
+              rules={[{ required: true, message: 'Introduce el nombre del producto' }, { min: 2, message: 'El nombre debe tener al menos 2 caracteres' }]}
+            >
+              <Input placeholder="Ej. Leche semidesnatada 1L" />
+            </Form.Item>
+
+            <Form.Item name="brand" label="Marca">
+              <Input placeholder="Ej. Hacendado" />
+            </Form.Item>
+
+            <Form.Item name="barcode" label="Código de barras">
+              <Input placeholder="Ej. 8412345678901" />
+            </Form.Item>
+
+            <Form.Item name="category" label="Categoría">
+              <Select
+                allowClear
+                showSearch
+                placeholder="Selecciona una categoría (opcional)"
+                options={categoryOptions}
+              />
+            </Form.Item>
+
+            <Form.Item name="image_url" label="URL de imagen">
+              <Input placeholder="https://..." />
+            </Form.Item>
+          </Form>
+        </Spin>
+      </Drawer>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { useBusinessStore } from './store/businessStore';
 import AppLayout from './components/AppLayout';
 import UnverifiedGuard from './components/UnverifiedGuard';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import PricesPage from './pages/PricesPage';
 import ProductsUploadPage from './pages/ProductsUploadPage';
@@ -94,12 +95,13 @@ const App: React.FC = () => {
     >
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
-          {/* Public route */}
+          {/* Rutas públicas */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/onboarding" element={<MerchantOnboardingPage />} />
           <Route path="/demo" element={<DemoPage />} />
           <Route path="/docs" element={<DocsPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
           {/* Protected routes wrapped in auth + unverified guard + layout */}
           <Route

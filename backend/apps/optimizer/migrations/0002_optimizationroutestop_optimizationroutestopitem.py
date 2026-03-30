@@ -28,11 +28,15 @@ class Migration(migrations.Migration):
                 ("stop_order", models.PositiveSmallIntegerField(verbose_name="Orden de parada")),
                 (
                     "distance_km",
-                    models.FloatField(default=0.0, verbose_name="Distancia desde parada previa (km)"),
+                    models.FloatField(
+                        default=0.0, verbose_name="Distancia desde parada previa (km)"
+                    ),
                 ),
                 (
                     "time_minutes",
-                    models.FloatField(default=0.0, verbose_name="Tiempo desde parada previa (min)"),
+                    models.FloatField(
+                        default=0.0, verbose_name="Tiempo desde parada previa (min)"
+                    ),
                 ),
                 (
                     "subtotal_price",
@@ -96,7 +100,10 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("query_text", models.CharField(max_length=255, verbose_name="Texto original del item")),
+                (
+                    "query_text",
+                    models.CharField(max_length=255, verbose_name="Texto original del item"),
+                ),
                 (
                     "matched_product_name",
                     models.CharField(max_length=255, verbose_name="Producto asignado"),
@@ -104,7 +111,9 @@ class Migration(migrations.Migration):
                 ("quantity", models.PositiveSmallIntegerField(default=1, verbose_name="Cantidad")),
                 (
                     "unit_price",
-                    models.DecimalField(decimal_places=2, max_digits=10, verbose_name="Precio unitario"),
+                    models.DecimalField(
+                        decimal_places=2, max_digits=10, verbose_name="Precio unitario"
+                    ),
                 ),
                 (
                     "line_total_price",

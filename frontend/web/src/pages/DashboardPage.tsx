@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Row, Col, Card, Statistic, Typography, Spin, Alert, Tag, Progress, Table } from 'antd';
-import { ShopOutlined, TagsOutlined, DollarOutlined, LineChartOutlined } from '@ant-design/icons';
+import { ShopOutlined, TagsOutlined, EyeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { apiClient } from '../api/client';
 import { useBusinessStore } from '../store/businessStore';
@@ -10,6 +10,7 @@ import {
   collectUnresolvedEntityIds,
   resolveEntityName,
 } from '../utils/entityResolver';
+import type { BusinessStats } from '../types/business';
 
 const { Title, Text } = Typography;
 
@@ -48,10 +49,11 @@ const getPromotionStatus = (promotion: Promotion): PromotionStatus => {
 };
 
 const DashboardPage: React.FC = () => {
-  const { profile, setProfile } = useBusinessStore();
+  const { setProfile } = useBusinessStore();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [recentPrices, setRecentPrices] = useState<PriceRecord[]>([]);
   const [productNamesById, setProductNamesById] = useState<Record<string, string>>({});
+  const [stats, setStats] = useState<BusinessStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,12 +62,13 @@ const DashboardPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const [profileRes, promotionsRes, pricesRes] = await Promise.all([
+        const [profileRes, promotionsRes, pricesRes, statsRes] = await Promise.all([
           apiClient.get<BusinessProfile[]>('/business/profiles/'),
           apiClient.get<Promotion[] | { results?: Promotion[] }>('/business/promotions/'),
           apiClient.get<{ results?: PriceRecord[] } | PriceRecord[]>(
             '/business/prices/?limit=8&ordering=-updated_at',
           ),
+          apiClient.get<BusinessStats>('/business/profiles/stats/').catch(() => ({ data: null })),
         ]);
 
         const profiles = extractBusinessProfiles(profileRes.data);
@@ -87,6 +90,10 @@ const DashboardPage: React.FC = () => {
           setRecentPrices(pricesData);
         } else if (pricesData && 'results' in pricesData && Array.isArray(pricesData.results)) {
           setRecentPrices(pricesData.results);
+        }
+
+        if (statsRes.data) {
+          setStats(statsRes.data);
         }
       } catch {
         setError('Error al cargar los datos del dashboard. Comprueba la conexión con el servidor.');
@@ -153,20 +160,7 @@ const DashboardPage: React.FC = () => {
     [promotions],
   );
 
-  const avgDiscount = useMemo(() => {
-    if (promotions.length === 0) {
-      return 0;
-    }
 
-    const weighted = promotions.reduce((sum, promotion) => {
-      if (promotion.discount_type === 'percentage') {
-        return sum + promotion.discount_value;
-      }
-      return sum + Math.min(30, promotion.discount_value * 2);
-    }, 0);
-
-    return Number((weighted / promotions.length).toFixed(1));
-  }, [promotions]);
 
   const statusRatio = useMemo(() => {
     const total = promotions.length || 1;
@@ -195,7 +189,7 @@ const DashboardPage: React.FC = () => {
       dataIndex: 'updated_at',
       key: 'updated_at',
       width: 150,
-      render: (value: string) => new Date(value).toLocaleDateString('es-ES'),
+      render: (value: string) => (value ? new Date(value).toLocaleDateString('es-ES') : '—'),
     },
   ];
 
@@ -231,10 +225,18 @@ const DashboardPage: React.FC = () => {
         <Col xs={24} sm={12} lg={6} style={{ display: 'flex' }}>
           <Card className="surface-card kpi-card" style={{ width: '100%', height: '100%' }}>
             <Statistic
-              title="Nombre del negocio"
-              value={profile?.business_name ?? '—'}
+              title="Tiendas activas"
+              value={stats?.total_stores ?? 0}
               prefix={<ShopOutlined />}
-              styles={{ content: { fontSize: 18, fontWeight: 700 } }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6} style={{ display: 'flex' }}>
+          <Card className="surface-card kpi-card" style={{ width: '100%', height: '100%' }}>
+            <Statistic
+              title="Precios activos"
+              value={stats?.total_active_prices ?? recentPrices.length}
+              prefix={<ShoppingCartOutlined />}
             />
           </Card>
         </Col>
@@ -242,7 +244,7 @@ const DashboardPage: React.FC = () => {
           <Card className="surface-card kpi-card" style={{ width: '100%', height: '100%' }}>
             <Statistic
               title="Promociones activas"
-              value={activePromotions}
+              value={stats?.total_active_promotions ?? activePromotions}
               prefix={<TagsOutlined />}
             />
           </Card>
@@ -250,19 +252,9 @@ const DashboardPage: React.FC = () => {
         <Col xs={24} sm={12} lg={6} style={{ display: 'flex' }}>
           <Card className="surface-card kpi-card" style={{ width: '100%', height: '100%' }}>
             <Statistic
-              title="Descuento medio"
-              value={avgDiscount}
-              suffix="%"
-              prefix={<DollarOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6} style={{ display: 'flex' }}>
-          <Card className="surface-card kpi-card" style={{ width: '100%', height: '100%' }}>
-            <Statistic
-              title="Interes acumulado"
-              value={totalViews}
-              prefix={<LineChartOutlined />}
+              title="Visualizaciones totales"
+              value={stats?.total_promotion_views ?? totalViews}
+              prefix={<EyeOutlined />}
             />
           </Card>
         </Col>

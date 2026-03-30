@@ -188,7 +188,7 @@ const MerchantOnboardingPage: React.FC = () => {
             <h3 className="text-2xl font-semibold tracking-tight text-white">Empieza tu prueba gratuita</h3>
             <p className="mt-2 text-sm text-slate-200">Configura tu negocio en minutos y activa promociones desde el primer panel.</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <a href={withBase('login')} className="rounded-xl bg-emerald-300 px-5 py-3 text-sm font-semibold text-emerald-950">Start Your Free Trial</a>
+              <a href={withBase('login')} className="rounded-xl bg-emerald-300 px-5 py-3 text-sm font-semibold text-emerald-950">Prueba gratis</a>
               <a href="mailto:nicolasparrillageniz@gmail.com" className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20">
                 <Mail className="h-4 w-4" /> Contactar soporte
               </a>

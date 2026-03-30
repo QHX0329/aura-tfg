@@ -6,6 +6,7 @@ import {
   Button,
   Form,
   Input,
+  InputNumber,
   Space,
   Typography,
   Spin,
@@ -24,6 +25,7 @@ interface ProfileFormValues {
   business_name: string;
   address: string;
   website?: string;
+  price_alert_threshold_pct?: number;
 }
 
 const verificationStatusTag = (status: string) => {
@@ -75,6 +77,7 @@ const BusinessProfilePage: React.FC = () => {
         business_name: profile.business_name,
         address: profile.address,
         website: profile.website,
+        price_alert_threshold_pct: profile.price_alert_threshold_pct,
       });
     }
     setEditing(true);
@@ -195,6 +198,14 @@ const BusinessProfilePage: React.FC = () => {
               <Input placeholder="https://..." />
             </Form.Item>
 
+            <Form.Item
+              name="price_alert_threshold_pct"
+              label="Umbral de alerta de precio (%)"
+              tooltip="Porcentaje mínimo de diferencia con competidores para recibir alertas."
+              rules={[{ type: 'number', min: 1, max: 100, message: 'Debe estar entre 1 y 100' }]}
+            >
+              <InputNumber min={1} max={100} addonAfter="%" style={{ width: '100%' }} />
+            </Form.Item>
             <Form.Item>
               <Space>
                 <Button

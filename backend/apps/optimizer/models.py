@@ -112,10 +112,7 @@ class OptimizationRouteStop(models.Model):
         ]
 
     def __str__(self) -> str:
-        return (
-            f"Opt #{self.optimization_result_id} · "
-            f"Parada {self.stop_order} · {self.store.name}"
-        )
+        return f"Opt #{self.optimization_result_id} · Parada {self.stop_order} · {self.store.name}"
 
 
 class OptimizationRouteStopItem(models.Model):
@@ -146,7 +143,9 @@ class OptimizationRouteStopItem(models.Model):
     query_text = models.CharField(max_length=255, verbose_name="Texto original del item")
     matched_product_name = models.CharField(max_length=255, verbose_name="Producto asignado")
     quantity = models.PositiveSmallIntegerField(default=1, verbose_name="Cantidad")
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio unitario")
+    unit_price = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="Precio unitario"
+    )
     line_total_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -175,7 +174,9 @@ class ShoppingListSemanticPreference(models.Model):
         verbose_name="Lista de la compra",
     )
     query_text = models.CharField(max_length=255, verbose_name="Texto original del item")
-    normalized_query = models.CharField(max_length=255, db_index=True, verbose_name="Texto normalizado")
+    normalized_query = models.CharField(
+        max_length=255, db_index=True, verbose_name="Texto normalizado"
+    )
     product = models.ForeignKey(
         "products.Product",
         on_delete=models.CASCADE,
@@ -197,6 +198,4 @@ class ShoppingListSemanticPreference(models.Model):
         ]
 
     def __str__(self) -> str:
-        return (
-            f"{self.shopping_list.name}: '{self.query_text}' -> {self.product.name}"
-        )
+        return f"{self.shopping_list.name}: '{self.query_text}' -> {self.product.name}"

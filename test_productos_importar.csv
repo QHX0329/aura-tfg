@@ -1,0 +1,5 @@
+nombre,marca,ean,categoria,precio,precio_unitario,image_url,notas
+"Aceite de Oliva Virgen Extra 1L","Hacendado","8410242123456",414,9.45,9.45,"https://picsum.photos/200/300","Aceite de alta calidad"
+"Aceitunas Verdes con Hueso","Serpis","8410000112233",384,1.85,3.70,"https://picsum.photos/200/301","Perfectas para aperitivo"
+"After Shave Bálsamo 100ml","Nivea Men","4005808812345",213,2.99,2.99,"https://picsum.photos/200/302","Pieles sensibles"
+"Leche Entera 1L","Pascual","8410101001010",100,1.10,1.10,"https://picsum.photos/200/303","Leche de vaca"

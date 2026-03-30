@@ -13,8 +13,9 @@ import {
   Input,
   message,
   Alert,
+  Modal,
 } from 'antd';
-import { PlusOutlined, BarcodeOutlined } from '@ant-design/icons';
+import { PlusOutlined, BarcodeOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { apiClient } from '../api/client';
@@ -342,6 +343,25 @@ const PricesPage: React.FC = () => {
     }
   };
 
+  const handleDelete = (record: PriceRecord) => {
+    Modal.confirm({
+      title: '¿Eliminar este precio?',
+      content: `Se eliminará el precio de "${resolveProductName(record.product)}" permanentemente.`,
+      okText: 'Eliminar',
+      okType: 'danger',
+      cancelText: 'Cancelar',
+      onOk: async () => {
+        try {
+          await apiClient.delete(`/business/prices/${record.id}/`);
+          void message.success('Precio eliminado');
+          void fetchPrices();
+        } catch {
+          void message.error('Error al eliminar el precio');
+        }
+      },
+    });
+  };
+
   const columns: ColumnsType<PriceRecord> = [
     {
       title: 'Producto',
@@ -369,15 +389,25 @@ const PricesPage: React.FC = () => {
       title: 'Actualizado',
       dataIndex: 'updated_at',
       key: 'updated_at',
-      render: (val: string) => new Date(val).toLocaleDateString('es-ES'),
+      render: (val: string) => (val ? new Date(val).toLocaleDateString('es-ES') : '—'),
     },
     {
       title: 'Acciones',
       key: 'actions',
       render: (_: unknown, record: PriceRecord) => (
-        <Button type="link" onClick={() => openDrawer(record)}>
-          Editar
-        </Button>
+        <Space>
+          <Button type="link" onClick={() => openDrawer(record)}>
+            Editar
+          </Button>
+          <Button
+            type="link"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record)}
+          >
+            Eliminar
+          </Button>
+        </Space>
       ),
     },
   ];

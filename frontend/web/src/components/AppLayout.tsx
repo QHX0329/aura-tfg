@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useBusinessStore } from '../store/businessStore';
+import NotificationBell from './NotificationBell';
 
 const { Sider, Header, Content } = Layout;
 const { Title } = Typography;
@@ -88,14 +89,17 @@ const AppLayout: React.FC = () => {
             </Title>
             <Typography.Text className="header-kicker">{headerSubtitle}</Typography.Text>
           </div>
-          <Button
-            type="text"
-            icon={<LogoutOutlined />}
-            onClick={handleLogout}
-            danger
-          >
-            Cerrar sesión
-          </Button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <NotificationBell />
+            <Button
+              type="text"
+              icon={<LogoutOutlined />}
+              onClick={handleLogout}
+              danger
+            >
+              Cerrar sesión
+            </Button>
+          </div>
         </Header>
         <Content className="business-main-content">
           <Outlet />

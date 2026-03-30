@@ -389,14 +389,20 @@ def test_save_semantic_choice_updates_existing_preference(
     )
 
     assert response.status_code == 200
-    assert ShoppingListSemanticPreference.objects.filter(
-        shopping_list=shopping_list_with_items,
-        normalized_query="pan",
-    ).count() == 1
-    assert ShoppingListSemanticPreference.objects.get(
-        shopping_list=shopping_list_with_items,
-        normalized_query="pan",
-    ).product_id == other_product.id
+    assert (
+        ShoppingListSemanticPreference.objects.filter(
+            shopping_list=shopping_list_with_items,
+            normalized_query="pan",
+        ).count()
+        == 1
+    )
+    assert (
+        ShoppingListSemanticPreference.objects.get(
+            shopping_list=shopping_list_with_items,
+            normalized_query="pan",
+        ).product_id
+        == other_product.id
+    )
 
 
 @pytest.mark.django_db

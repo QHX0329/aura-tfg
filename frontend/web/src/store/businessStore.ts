@@ -22,6 +22,8 @@ export interface Promotion {
   end_date?: string;
   is_active: boolean;
   min_quantity?: number;
+  title?: string;
+  description?: string;
   views: number;
 }
 
