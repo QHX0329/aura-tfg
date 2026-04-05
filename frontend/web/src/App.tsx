@@ -12,6 +12,7 @@ import PricesPage from './pages/PricesPage';
 import ProductsUploadPage from './pages/ProductsUploadPage';
 import PromotionsPage from './pages/PromotionsPage';
 import BusinessProfilePage from './pages/BusinessProfilePage';
+import AdminApprovalPage from './pages/AdminApprovalPage';
 import LandingPage from './pages/LandingPage';
 import MerchantOnboardingPage from './pages/MerchantOnboardingPage';
 import DemoPage from './pages/DemoPage';
@@ -118,6 +119,17 @@ const App: React.FC = () => {
             <Route path="/products-upload" element={<ProductsUploadPage />} />
             <Route path="/promotions" element={<PromotionsPage />} />
             <Route path="/profile" element={<BusinessProfilePage />} />
+          </Route>
+
+          {/* Admin routes: auth required, no business-profile guard */}
+          <Route
+            element={
+              <RequireAuth>
+                <AppLayout />
+              </RequireAuth>
+            }
+          >
+            <Route path="/admin" element={<AdminApprovalPage />} />
           </Route>
 
           {/* Catch-all */}

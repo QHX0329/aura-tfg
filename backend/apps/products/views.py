@@ -6,13 +6,15 @@ ViewSets:
 - ProductViewSet: solo lectura + búsqueda trigram + barcode exact match
   - @action autocomplete: búsqueda rápida con límite de 10 resultados
 - ProductProposalView: solo creación, requiere autenticación
+- ProductProposalAdminViewSet: listar/aprobar/rechazar propuestas (solo admins)
 """
 
 from django.contrib.postgres.search import TrigramSimilarity
+from django.db import IntegrityError
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import generics, mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import SAFE_METHODS, IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -20,13 +22,14 @@ from apps.business.permissions import IsVerifiedBusiness
 from apps.core.exceptions import ProductNotFoundError
 from apps.core.responses import created_response, success_response
 from apps.products.filters import ProductFilter
-from apps.products.models import Category, Product
+from apps.products.models import Category, Product, ProductProposal
 from apps.products.serializers import (
     CategorySerializer,
     ProductDetailSerializer,
     ProductListSerializer,
     ProductProposalSerializer,
 )
+from apps.products.services import approve_proposal
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -160,3 +163,63 @@ class ProductProposalView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return created_response(serializer.data)
+
+
+class ProductProposalAdminViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    """ViewSet de administración para gestionar propuestas de productos.
+
+    Solo accesible por administradores (is_staff=True).
+    Permite listar propuestas pendientes y aprobarlas o rechazarlas.
+    """
+
+    serializer_class = ProductProposalSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        """Devuelve propuestas filtradas por estado (default: pending)."""
+        status = self.request.query_params.get("status", "pending")
+        qs = ProductProposal.objects.select_related("proposed_by", "category", "store")
+        if status != "all":
+            qs = qs.filter(status=status)
+        return qs
+
+    @action(detail=True, methods=["post"], url_path="approve")
+    def approve(self, request: Request, pk: int | None = None) -> Response:
+        """Aprueba una propuesta, crea el producto y materializa el precio si procede."""
+        proposal = self.get_object()
+        if proposal.status != ProductProposal.Status.PENDING:
+            return Response(
+                {"detail": "Solo se pueden aprobar propuestas pendientes."},
+                status=400,
+            )
+
+        try:
+            product = approve_proposal(proposal)
+        except IntegrityError as exc:
+            return Response(
+                {"detail": f"No se pudo aprobar la propuesta: {exc}"},
+                status=409,
+            )
+
+        return success_response(
+            {"proposal_id": proposal.id, "product": ProductDetailSerializer(product).data}
+        )
+
+    @action(detail=True, methods=["post"], url_path="reject")
+    def reject(self, request: Request, pk: int | None = None) -> Response:
+        """Rechaza una propuesta guardando el motivo."""
+        proposal = self.get_object()
+        if proposal.status != ProductProposal.Status.PENDING:
+            return Response(
+                {"detail": "Solo se pueden rechazar propuestas pendientes."},
+                status=400,
+            )
+        reason = request.data.get("reason", "")
+        proposal.status = ProductProposal.Status.REJECTED
+        proposal.notes = f"[RECHAZADO] {reason}" if reason else "[RECHAZADO]"
+        proposal.save(update_fields=["status", "notes"])
+        return success_response({"proposal_id": proposal.id, "status": "rejected"})

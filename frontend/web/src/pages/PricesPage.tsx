@@ -14,8 +14,11 @@ import {
   message,
   Alert,
   Modal,
+  Upload,
+  Tag,
 } from 'antd';
-import { PlusOutlined, BarcodeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, BarcodeOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import type { UploadFile } from 'antd/es/upload/interface';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { apiClient } from '../api/client';
@@ -66,6 +69,17 @@ interface PriceFormValues {
   offer_end_date?: dayjs.Dayjs;
 }
 
+interface BulkUpdateErrorRow {
+  index: number;
+  errors: Record<string, unknown>;
+}
+
+interface BulkUpdateResponse {
+  created: number;
+  updated: number;
+  errors: BulkUpdateErrorRow[];
+}
+
 interface DetectedBarcode {
   rawValue?: string;
 }
@@ -94,6 +108,27 @@ const PricesPage: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [form] = Form.useForm<PriceFormValues>();
+  const [csvModalOpen, setCsvModalOpen] = useState(false);
+  const [csvFile, setCsvFile] = useState<UploadFile | null>(null);
+  const [csvLoading, setCsvLoading] = useState(false);
+  const [csvResult, setCsvResult] = useState<BulkUpdateResponse | null>(null);
+
+  const parseCsvInteger = (value?: string): number | null => {
+    const parsed = Number.parseInt((value ?? '').trim(), 10);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+  };
+
+  const formatBulkUpdateErrors = (value: unknown): string => {
+    if (Array.isArray(value)) {
+      return value.map((item) => formatBulkUpdateErrors(item)).join(', ');
+    }
+    if (value && typeof value === 'object') {
+      return Object.entries(value as Record<string, unknown>)
+        .map(([key, inner]) => `${key}: ${formatBulkUpdateErrors(inner)}`)
+        .join('; ');
+    }
+    return String(value);
+  };
 
   const fetchPrices = async () => {
     setLoading(true);
@@ -362,6 +397,49 @@ const PricesPage: React.FC = () => {
     });
   };
 
+  const handleCsvImport = async () => {
+    if (!csvFile?.originFileObj) {
+      void message.warning('Selecciona un archivo CSV primero');
+      return;
+    }
+    setCsvLoading(true);
+    setCsvResult(null);
+    try {
+      const text = await csvFile.originFileObj.text();
+      const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      if (lines.length < 2) { void message.error('CSV vacío o sin filas de datos'); return; }
+      const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
+      const rows = lines.slice(1).map((line) => {
+        const vals = line.split(',').map((v) => v.trim());
+        return headers.reduce<Record<string, string>>((obj, h, i) => { obj[h] = vals[i] ?? ''; return obj; }, {});
+      });
+      // Fix F6: el backend espera PKs enteros en `product` y `store`, no strings ni aliases ambiguos.
+      const payload = rows
+        .map((r) => ({
+          product: parseCsvInteger(r['product_id'] || r['product']) ?? undefined,
+          store: parseCsvInteger(r['store_id'] || r['store']) ?? undefined,
+          price: r['price'] || r['precio'],
+          unit_price: r['unit_price'] || r['precio_unitario'] || undefined,
+          offer_price: r['offer_price'] || r['precio_oferta'] || undefined,
+          offer_end_date: r['offer_end_date'] || r['fecha_fin_oferta'] || undefined,
+        }))
+        .filter((r) => r.product && r.store && r.price);
+
+      const res = await apiClient.post<BulkUpdateResponse>(
+        '/business/prices/bulk-update/',
+        payload,
+      );
+      setCsvResult(res.data);
+      if ((res.data.created ?? 0) + (res.data.updated ?? 0) > 0) {
+        void fetchPrices();
+      }
+    } catch {
+      void message.error('Error importando CSV. Verifica el formato.');
+    } finally {
+      setCsvLoading(false);
+    }
+  };
+
   const columns: ColumnsType<PriceRecord> = [
     {
       title: 'Producto',
@@ -423,9 +501,14 @@ const PricesPage: React.FC = () => {
             Controla precios base, unitarios y ofertas por tienda.
           </Typography.Text>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer()}>
-          Añadir precio
-        </Button>
+        <Space>
+          <Button icon={<UploadOutlined />} onClick={() => { setCsvResult(null); setCsvFile(null); setCsvModalOpen(true); }}>
+            Importar CSV
+          </Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer()}>
+            Añadir precio
+          </Button>
+        </Space>
       </div>
 
       <div className="surface-card" style={{ overflow: 'hidden' }}>
@@ -435,6 +518,7 @@ const PricesPage: React.FC = () => {
           rowKey="id"
           loading={loading}
           pagination={{ pageSize: 20 }}
+          locale={{ emptyText: loading ? ' ' : 'No hay precios registrados. Añade uno o importa un CSV.' }}
         />
       </div>
 
@@ -539,6 +623,53 @@ const PricesPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Drawer>
+
+      {/* CSV Import Modal */}
+      <Modal
+        title="Importar precios desde CSV"
+        open={csvModalOpen}
+        onCancel={() => setCsvModalOpen(false)}
+        onOk={() => void handleCsvImport()}
+        okText="Importar"
+        cancelText="Cancelar"
+        confirmLoading={csvLoading}
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Typography.Text type="secondary">
+            Columnas esperadas: <code>barcode/product_id, store_id, price</code> (opcionales: <code>unit_price, offer_price, offer_end_date</code>)
+          </Typography.Text>
+          <Upload
+            accept=".csv"
+            maxCount={1}
+            beforeUpload={() => false}
+            fileList={csvFile ? [csvFile] : []}
+            onChange={({ fileList }) => setCsvFile(fileList[fileList.length - 1] ?? null)}
+          >
+            <Button icon={<UploadOutlined />}>Seleccionar archivo CSV</Button>
+          </Upload>
+          {csvResult && (
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Tag color="green">Creados: {csvResult.created}</Tag>
+              <Tag color="blue">Actualizados: {csvResult.updated}</Tag>
+              {csvResult.errors.length > 0 && (
+                <Alert
+                  type="warning"
+                  message={`${csvResult.errors.length} errores en la importación`}
+                  description={
+                    <Space direction="vertical" style={{ width: '100%' }} size={4}>
+                      {csvResult.errors.slice(0, 5).map((error) => (
+                        <Typography.Text key={error.index} style={{ whiteSpace: 'pre-wrap' }}>
+                          Fila {error.index + 2}: {formatBulkUpdateErrors(error.errors)}
+                        </Typography.Text>
+                      ))}
+                    </Space>
+                  }
+                />
+              )}
+            </Space>
+          )}
+        </Space>
+      </Modal>
     </div>
   );
 };

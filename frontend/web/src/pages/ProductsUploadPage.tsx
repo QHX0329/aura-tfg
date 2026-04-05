@@ -28,6 +28,14 @@ import {
 
 const { Title, Text } = Typography;
 
+/** Validates EAN-13 checksum. Returns true if valid or empty. */
+function validateEAN13(code: string): boolean {
+  if (!code) return true;
+  if (!/^\d{13}$/.test(code)) return false;
+  const sum = code.split('').reduce((acc, d, i) => acc + parseInt(d, 10) * (i % 2 === 0 ? 1 : 3), 0);
+  return sum % 10 === 0;
+}
+
 interface ProductProposalPayload {
   name: string;
   brand?: string;
@@ -177,10 +185,15 @@ const normalizePayload = (raw: Partial<ProductProposalPayload>): ProductProposal
     return null;
   }
 
+  const barcode = raw.barcode?.trim() || undefined;
+  if (barcode && !validateEAN13(barcode)) {
+    return null; // Invalid EAN-13 — skip row
+  }
+
   return {
     name: raw.name.trim(),
     brand: raw.brand?.trim() || undefined,
-    barcode: raw.barcode?.trim() || undefined,
+    barcode,
     category: normalizeCategory(raw.category),
     image_url: raw.image_url?.trim() || undefined,
     notes: raw.notes?.trim() || undefined,
@@ -688,7 +701,17 @@ const ProductsUploadPage: React.FC = () => {
                   </Space>
 
                   <Space style={{ display: 'flex', width: '100%' }} align="start">
-                    <Form.Item name="barcode" label="Código de barras (EAN)" style={{ flex: 1 }}>
+                    <Form.Item
+                      name="barcode"
+                      label="Código de barras (EAN)"
+                      style={{ flex: 1 }}
+                      rules={[{
+                        validator: (_, value: string) =>
+                          !value || validateEAN13(value)
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('EAN-13 inválido: debe tener 13 dígitos con dígito de control correcto')),
+                      }]}
+                    >
                       <Input placeholder="Ej. 8412345678901" />
                     </Form.Item>
                     <Form.Item name="category" label="Categoría" style={{ flex: 1 }}>
@@ -831,7 +854,7 @@ const ProductsUploadPage: React.FC = () => {
           columns={associatedColumns}
           loading={associatedLoading}
           pagination={{ pageSize: 10 }}
-          locale={{ emptyText: 'Todavia no hay productos asociados por precios o promociones.' }}
+          locale={{ emptyText: associatedLoading ? ' ' : 'Todavía no hay productos asociados por precios o promociones.' }}
         />
       </Card>
 
@@ -875,7 +898,16 @@ const ProductsUploadPage: React.FC = () => {
               <Input placeholder="Ej. Hacendado" />
             </Form.Item>
 
-            <Form.Item name="barcode" label="Código de barras">
+            <Form.Item
+              name="barcode"
+              label="Código de barras"
+              rules={[{
+                validator: (_, value: string) =>
+                  !value || validateEAN13(value)
+                    ? Promise.resolve()
+                    : Promise.reject(new Error('EAN-13 inválido: debe tener 13 dígitos con dígito de control correcto')),
+              }]}
+            >
               <Input placeholder="Ej. 8412345678901" />
             </Form.Item>
 

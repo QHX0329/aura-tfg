@@ -130,4 +130,19 @@ export const productService = {
     );
     return payload.map(normalizeProduct);
   },
+
+  /** POST /products/proposals/ — propone un nuevo producto con precio */
+  createProposal: async (data: {
+    name: string;
+    brand?: string;
+    barcode?: string;
+    category?: number;
+    image_url?: string;
+    notes?: string;
+    price?: number;
+    unit_price?: number;
+    store?: number;
+  }): Promise<void> => {
+    await apiClient.post("/products/proposals/", data);
+  },
 };

@@ -87,24 +87,24 @@ const architectureBlocks = [
 ];
 
 const stats = [
-  { label: 'Ahorro proyectado', value: '10M€+' },
-  { label: 'Comercios potenciales', value: '25k+' },
-  { label: 'Disponibilidad objetivo', value: '99.9%' },
+  { label: 'Supermercados indexados', value: '5+' },
+  { label: 'Comercios locales (PYME)', value: 'Ilimitados' },
+  { label: 'Rutas optimizadas', value: 'Top-3' },
   { label: 'Tiempo medio de optimizacion', value: '< 5s' },
 ];
 
 const testimonials = [
   {
     quote:
-      'BarGAIN convierte una lista normal en una estrategia de ahorro real. Ves claramente donde comprar cada producto.',
-    author: 'Marta Ruiz',
-    role: 'Usuario beta · Sevilla',
+      'BarGAIN convierte una lista normal en una estrategia de ahorro real. Ves claramente donde comprar cada producto y qué ruta te sale más a cuenta.',
+    author: 'Usuario representativo',
+    role: 'Perfil: comprador habitual · Área urbana',
   },
   {
     quote:
-      'Como comercio local, nos da herramientas para competir con cadenas grandes sin perder margen ni visibilidad.',
-    author: 'Carlos Vera',
-    role: 'Gerente PYME · Dos Hermanas',
+      'Como comercio local, nos da herramientas para competir con cadenas grandes sin perder margen ni visibilidad en la zona.',
+    author: 'Perfil PYME representativo',
+    role: 'Pequeño comercio de barrio',
   },
 ];
 

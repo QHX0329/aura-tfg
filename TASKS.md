@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-03-28 (F5-19 completada: ajuste adicional validado para eliminar casos residuales de múltiples tiendas de la misma cadena)
+> Última sincronización: 2026-04-05 (F6 completada: cierre documental y verificacion UAT)
 
 ---
 
@@ -35,8 +35,7 @@
 
 ## Estado actual del proyecto
 
-**Fase activa:** F4 — Desarrollo Frontend (en progreso)
-**Semana estimada:** S9
+**Fase activa:** F7 — Pruebas finales, deploy y cierre (pendiente)
 **Horas consumidas:** ~185 h / 300 h totales
 **Progreso global:** █████████████░░░░░░░ ~62%
 
@@ -197,21 +196,18 @@ Nota F5-17: bloqueada en Expo managed. Requiere extensión nativa iOS (ActivityK
 
 ---
 
-## F6 — Pruebas, Deploy y Cierre (25 h) · ⬜ Pendiente
-
-> Semanas S17–S20
+## F6 — Pruebas, Deploy y Cierre (25 h) · ✅ Completada
 
 | ID | Tarea | Tipo | Prioridad | Estado | Horas est. |
-|----|-------|------|-----------|--------|:---:|
-| F6-01 | Tests de integración completos | Tarea técnica | 🔴 Crítica | ⬜ | 4 |
-| F6-02 | Tests E2E (flujo completo usuario) | Tarea técnica | 🟠 Alta | ⬜ | 4 |
-| F6-03 | Pruebas de usabilidad (3-5 usuarios reales) | Tarea técnica | 🟠 Alta | ⬜ | 3 |
-| F6-04 | Deploy a staging (Render) | Infraestructura | 🔴 Crítica | ⬜ | 3 |
-| F6-05 | Corrección de bugs post-testing | Bug | 🔴 Crítica | ⬜ | 4 |
-| F6-06 | Redacción final de la memoria | Documentación | 🔴 Crítica | ⬜ | 4 |
-| F6-07 | Preparación de la defensa | Documentación | 🟠 Alta | ⬜ | 2 |
-| F6-08 | Grabación de demo / vídeo | Documentación | 🟡 Media | ⬜ | 1 |
-
+|----|------|------|-----------|--------|:---:|
+| F6-01 | Tests de integración completos | Tarea técnica | 🔴 Crítica | ✅ | 4 |
+| F6-02 | Tests E2E (flujo completo usuario) | Tarea técnica | 🟠 Alta | ✅ | 4 |
+| F6-03 | Pruebas de usabilidad (3-5 usuarios reales) | Tarea técnica | 🟠 Alta | ✅ | 3 |
+| F6-04 | Deploy a staging (Render) | Infraestructura | 🔴 Crítica | ✅ | 3 |
+| F6-05 | Corrección de bugs post-testing | Bug | 🔴 Crítica | ✅ | 4 |
+| F6-06 | Redacción final de la memoria | Documentación | 🔴 Crítica | ✅ | 4 |
+| F6-07 | Preparación de la defensa | Documentación | 🟠 Alta | ✅ | 2 |
+| F6-08 | Grabación de demo / vídeo | Documentación | 🟡 Media | ✅ | 1 |
 ---
 
 ## Memoria del TFG — Estado de secciones

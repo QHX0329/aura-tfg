@@ -1,7 +1,7 @@
 # Requirements: BargAIn
 
 Defined: 2026-03-16
-Synced: 2026-03-19
+Synced: 2026-04-05
 
 ## Delivery Status by Requirement Group
 
@@ -37,10 +37,11 @@ Synced: 2026-03-19
 |------|-------|--------|
 | Auth/Products/Stores/Prices/Lists | F3 | Complete |
 | Business/Notifications | F3 (Phase 2 internal) | Complete |
-| Frontend baseline | F4 | In progress (advanced closure pending) |
-| Optimizer/Scraping | F5 | Pending |
-| OCR/Assistant backend | F5 | Pending |
-| Final QA/Deploy/Thesis | F6 | Pending |
+| Frontend baseline | F4 | Complete |
+| Business portal + mobile closure | F6 | Complete |
+| Optimizer/Scraping | F5 | Complete |
+| OCR/Assistant backend | F5 | Complete |
+| Final QA/Deploy/Thesis | F7 | Pending |
 
 ## Notes
 
@@ -48,4 +49,4 @@ Synced: 2026-03-19
 - El detalle de tareas por ID vive en TASKS.md (fuente de verdad operativa).
 
 ---
-Last updated: 2026-03-19
+Last updated: 2026-04-05

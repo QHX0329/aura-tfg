@@ -37,6 +37,7 @@ export type HomeStackParamList = {
     productName: string;
     product?: import("@/types/domain").Product;
   };
+  ProductProposal: undefined;
 };
 
 /** Parámetros del Stack de Listas */

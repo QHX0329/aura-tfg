@@ -50,6 +50,7 @@ const getPromotionStatus = (promotion: Promotion): PromotionStatus => {
 
 const DashboardPage: React.FC = () => {
   const { setProfile } = useBusinessStore();
+  const [currentProfile, setCurrentProfile] = useState<BusinessProfile | null>(null);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [recentPrices, setRecentPrices] = useState<PriceRecord[]>([]);
   const [productNamesById, setProductNamesById] = useState<Record<string, string>>({});
@@ -74,6 +75,7 @@ const DashboardPage: React.FC = () => {
         const profiles = extractBusinessProfiles(profileRes.data);
         if (profiles.length > 0) {
           setProfile(profiles[0]);
+          setCurrentProfile(profiles[0]);
         }
 
         const promotionsData = promotionsRes.data;
@@ -207,6 +209,35 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div>
+      {currentProfile && !currentProfile.is_verified && !currentProfile.rejection_reason && (
+        <Alert
+          type="info"
+          showIcon
+          message="Perfil pendiente de verificación"
+          description="Tu perfil de negocio está siendo revisado por el equipo de BarGAIN. Te avisaremos por email cuando esté aprobado."
+          style={{ marginBottom: 16 }}
+          closable
+        />
+      )}
+      {currentProfile?.is_verified && (
+        <Alert
+          type="success"
+          showIcon
+          message="¡Perfil aprobado!"
+          description="Tu perfil de negocio ha sido verificado. Ya puedes gestionar precios y promociones."
+          style={{ marginBottom: 16 }}
+          closable
+        />
+      )}
+      {currentProfile && !currentProfile.is_verified && currentProfile.rejection_reason && (
+        <Alert
+          type="error"
+          showIcon
+          message="Perfil rechazado"
+          description={`Motivo: ${currentProfile.rejection_reason}. Actualiza tu perfil y contacta con soporte.`}
+          style={{ marginBottom: 16 }}
+        />
+      )}
       <section className="dashboard-hero">
         <Title level={3}>
           Panel ejecutivo del negocio

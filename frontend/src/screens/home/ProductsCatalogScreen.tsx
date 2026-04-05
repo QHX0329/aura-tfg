@@ -990,6 +990,15 @@ export const ProductsCatalogScreen: React.FC = () => {
             <Text style={styles.toastText}>{toastMessage}</Text>
           </View>
         ) : null}
+
+        {/* FAB — proponer producto (RF-019) */}
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => (navigation as any).navigate("ProductProposal")}
+          activeOpacity={0.85}
+        >
+          <Ionicons name="add" size={26} color="#fff" />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -1332,6 +1341,22 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.body,
     fontSize: fontSize.xs,
     color: colors.white,
+  },
+  fab: {
+    position: "absolute",
+    bottom: spacing.xl,
+    right: spacing.md,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
 });
 

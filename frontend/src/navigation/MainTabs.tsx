@@ -35,6 +35,7 @@ import { NotificationScreen } from "@/screens/home/NotificationScreen";
 import { PriceAlertsScreen } from "@/screens/home/PriceAlertsScreen";
 import { PriceCompareScreen } from "@/screens/home/PriceCompareScreen";
 import { FavoriteStoresScreen } from "@/screens/home/FavoriteStoresScreen";
+import { ProductProposalScreen } from "@/screens/home/ProductProposalScreen";
 
 // Lists
 import { ListsScreen } from "@/screens/lists/ListsScreen";
@@ -99,6 +100,11 @@ const HomeStackNavigator: React.FC = () => (
     <HomeStack.Screen
       name="PriceCompare"
       component={PriceCompareScreen}
+      options={{ headerShown: false }}
+    />
+    <HomeStack.Screen
+      name="ProductProposal"
+      component={ProductProposalScreen}
       options={{ headerShown: false }}
     />
   </HomeStack.Navigator>

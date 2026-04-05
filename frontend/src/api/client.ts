@@ -12,7 +12,7 @@
  */
 
 import axios from "axios";
-import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import {
   getItem as getStoredItem,
   setItem as setStoredItem,
@@ -24,15 +24,28 @@ import { useAuthStore } from "@/store/authStore";
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
+function createBaseClient() {
+  return axios.create({
+    baseURL: API_BASE_URL,
+    timeout: 15000,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
+}
+
 /** Instancia de Axios con configuración base */
-export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 15000,
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
+export const apiClient = createBaseClient();
+
+/**
+ * Cliente para endpoints públicos.
+ *
+ * Evita adjuntar un Bearer potencialmente caducado en rutas públicas; si el
+ * backend intenta autenticar un token inválido devolverá 401 incluso cuando el
+ * endpoint no exige login.
+ */
+export const publicApiClient = createBaseClient();
 
 /**
  * Instancia separada de Axios para llamar al endpoint de refresh.
@@ -95,6 +108,19 @@ interface RetryableConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+function unwrapSuccessResponse(response: AxiosResponse<any>): any {
+  if (
+    response.data !== null &&
+    typeof response.data === "object" &&
+    "success" in response.data &&
+    (response.data as { success?: unknown }).success !== undefined
+  ) {
+    return (response.data as { data?: unknown }).data;
+  }
+
+  return response.data;
+}
+
 /**
  * Interceptor de response:
  * 1. SUCCESS — desempaqueta { success: true, data: {...} } si existe.
@@ -105,19 +131,7 @@ interface RetryableConfig extends InternalAxiosRequestConfig {
  *    Si el refresh falla, llama a logout().
  */
 apiClient.interceptors.response.use(
-  (response) => {
-    // Unwrap backend standard shape: { success: true, data: <payload> }
-    if (
-      response.data !== null &&
-      typeof response.data === "object" &&
-      "success" in response.data &&
-      response.data.success !== undefined
-    ) {
-      return response.data.data;
-    }
-    // Flat response (JWT endpoints, etc.) — pass through unchanged
-    return response.data;
-  },
+  unwrapSuccessResponse,
   async (error: AxiosError) => {
     const originalConfig = error.config as RetryableConfig | undefined;
 
@@ -191,4 +205,9 @@ apiClient.interceptors.response.use(
       isRefreshing = false;
     }
   },
+);
+
+publicApiClient.interceptors.response.use(
+  unwrapSuccessResponse,
+  (error: AxiosError) => Promise.reject(error),
 );

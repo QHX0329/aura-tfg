@@ -18,7 +18,9 @@
       "mcp__plugin_playwright_playwright__browser_evaluate",
       "mcp__claude_ai_Notion__notion-fetch",
       "mcp__claude_ai_Notion__notion-search",
-      "mcp__claude_ai_Notion__notion-update-page"
+      "mcp__claude_ai_Notion__notion-update-page",
+      "Skill(gsd:add-phase)",
+      "Skill(gsd:add-phase:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\xxnii\\.claude\\projects\\c--Users-xxnii-OneDrive-Documentos-TFG-bargain-tfg\\memory"

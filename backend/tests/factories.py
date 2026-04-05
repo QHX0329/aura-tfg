@@ -71,7 +71,8 @@ class CategoryFactory(DjangoModelFactory):
 
     _deferred = factory.LazyFunction(lambda: _lazy_model("products", "Category"))
 
-    name = factory.Faker("word")
+    # El modelo deriva `slug` desde `name`, así que la factory debe garantizar unicidad.
+    name = factory.Sequence(lambda n: f"categoria-{n}")
     parent = None
 
 

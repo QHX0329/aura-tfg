@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 from apps.products.models import Category, Product, ProductProposal
+from apps.products.services import approve_proposal
 
 
 @admin.register(Category)
@@ -66,44 +67,21 @@ class ProductAdmin(admin.ModelAdmin):
 def approve_proposals(modeladmin, request, queryset):
     """Acción para aprobar propuestas y crear productos reales."""
     from django.db import IntegrityError
-    from apps.prices.models import Price
 
+    approved = 0
+    skipped = 0
     for proposal in queryset.filter(status="pending"):
         try:
-            # 1. Intentar obtener o crear el producto
-            product = None
-            if proposal.barcode:
-                product = Product.objects.filter(barcode=proposal.barcode).first()
-
-            if not product:
-                product = Product.objects.create(
-                    name=proposal.name,
-                    brand=proposal.brand,
-                    barcode=proposal.barcode or None,
-                    category=proposal.category,
-                    image_url=proposal.image_url,
-                )
-
-            # 2. Si la propuesta tiene precio y tienda, crear el registro de precio
-            if proposal.price and proposal.store:
-                # Marcar precios anteriores del mismo producto/tienda como caducados
-                Price.objects.filter(product=product, store=proposal.store).update(is_stale=True)
-                
-                Price.objects.create(
-                    product=product,
-                    store=proposal.store,
-                    price=proposal.price,
-                    unit_price=proposal.unit_price,
-                    source=Price.Source.BUSINESS,
-                    is_stale=False,
-                )
-
-            proposal.status = "approved"
-            proposal.save()
+            approve_proposal(proposal)
+            approved += 1
         except IntegrityError:
-            # Si hay error de integridad (ej: barcode duplicado que no pillamos)
-            # simplemente saltamos esta propuesta o podrías loguearlo
+            skipped += 1
             continue
+
+    modeladmin.message_user(
+        request,
+        f"{approved} propuesta(s) aprobada(s), {skipped} omitida(s) por error.",
+    )
 
 
 @admin.register(ProductProposal)

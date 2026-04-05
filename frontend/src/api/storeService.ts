@@ -2,7 +2,7 @@
  * Servicio de tiendas — wrapper tipado sobre apiClient.
  */
 
-import { apiClient } from "./client";
+import { apiClient, publicApiClient } from "./client";
 import type {
   PlacesDetail,
   PlacesPrediction,
@@ -226,7 +226,7 @@ export const storeService = {
     lng: number,
     radius_km = 10,
   ): Promise<Store[]> => {
-    const payload = await apiClient.get<
+    const payload = await publicApiClient.get<
       never,
       RawStore[] | PaginatedResponse<RawStore>
     >("/stores/", {
@@ -243,7 +243,7 @@ export const storeService = {
     lng: number,
     radius_km = 10,
   ): Promise<Store> => {
-    const payload = await apiClient.get<never, RawStore>(
+    const payload = await publicApiClient.get<never, RawStore>(
       `/stores/${storeId}/`,
       {
         params: { lat, lng, radius_km },
@@ -326,7 +326,7 @@ export const storeService = {
       categoryId,
     }: StoreProductsParams = {},
   ): Promise<StoreProductsResult> => {
-    const payload = await apiClient.get<
+    const payload = await publicApiClient.get<
       never,
       RawStoreProductOffer[] | PaginatedResponse<RawStoreProductOffer>
     >(`/stores/${storeId}/products/`, {

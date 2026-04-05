@@ -7,6 +7,7 @@ import {
   TagsOutlined,
   UserOutlined,
   LogoutOutlined,
+  SafetyOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useBusinessStore } from '../store/businessStore';
@@ -53,6 +54,11 @@ const AppLayout: React.FC = () => {
       key: '/profile',
       icon: <UserOutlined />,
       label: 'Perfil',
+    },
+    {
+      key: '/admin',
+      icon: <SafetyOutlined />,
+      label: 'Administración',
     },
   ];
 

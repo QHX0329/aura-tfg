@@ -195,15 +195,31 @@ def send_shared_list_notification(self, list_id: int, actor_id: int) -> None:
 
     for collab in collaborators:
         user = collab.user
-        if user.push_notifications_enabled and user.notify_shared_list_changes is not False:
-            dispatch_push_notification.delay(
-                user_id=user.id,
-                title="Lista de la compra actualizada",
-                body=f"La lista '{shopping_list.name}' ha sido modificada.",
-                data={"list_id": list_id},
-                action_url=action_url,
-                notification_type="shared_list_changed",
-            )
+        if user.notify_shared_list_changes is not False:
+            if user.push_notifications_enabled:
+                dispatch_push_notification.delay(
+                    user_id=user.id,
+                    title="Lista de la compra actualizada",
+                    body=f"La lista '{shopping_list.name}' ha sido modificada.",
+                    data={"list_id": list_id},
+                    action_url=action_url,
+                    notification_type="shared_list_changed",
+                )
+            if user.email_notifications_enabled and user.email:
+                from django.core.mail import send_mail
+
+                send_mail(
+                    subject=f"[BarGAIN] Lista '{shopping_list.name}' actualizada",
+                    message=(
+                        f"Hola {user.first_name or user.username},\n\n"
+                        f"La lista de la compra '{shopping_list.name}' ha sido modificada.\n\n"
+                        "Abre BarGAIN para ver los cambios.\n\n"
+                        "— El equipo de BarGAIN"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=True,
+                )
             notified += 1
 
     logger.info(
