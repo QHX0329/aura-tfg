@@ -2,7 +2,7 @@
 
 ## Overview
 
-Roadmap operativo sincronizado a 2026-04-05. El proyecto tiene F1-F6 finalizadas y F7 pendiente.
+Roadmap operativo sincronizado a 2026-04-05. El proyecto tiene F1-F6 finalizadas, F7 reservada para cierre final y F8-F10 abiertas como fases de cierre post-auditoria.
 
 ## Phase Status
 
@@ -12,7 +12,10 @@ Roadmap operativo sincronizado a 2026-04-05. El proyecto tiene F1-F6 finalizadas
 - [x] Phase 4: Frontend advanced polish y cierre F4 - Completada (2026-03-23)
 - [x] Phase 5: Optimizer, Scraping, OCR, LLM - Completada (5 planes)
 - [x] Phase 6: Portal Business y App Movil - cierre de flujos, tests, UAT, sync docs - Completada
-- [ ] Phase 7: Testing final, Deploy, Memoria y Defensa - Pendiente
+- [ ] Phase 7: Testing final, Deploy, Memoria y Defensa - Pendiente (bloqueada hasta cerrar gaps de auditoria)
+- [ ] Phase 8: Milestone Evidence Recovery - Pendiente
+- [ ] Phase 9: Traceability Normalization - Pendiente
+- [ ] Phase 10: Contract Alignment Cleanup - Pendiente
 
 ## Current Execution Focus
 
@@ -63,6 +66,37 @@ Plans:
 - E2E global y validacion de requisitos no funcionales.
 - Deploy de staging definitivo.
 - Cierre de memoria del TFG y preparacion de defensa.
+- Dependencia: ejecutar despues de cerrar las fases 08-10.
+
+### Phase 8: Milestone Evidence Recovery
+
+**Goal:** Recuperar las evidencias de cierre faltantes de F1, F4 y F5 para que el milestone tenga verificacion formal archive-ready.
+
+**Requirements:** [AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, PROD-01, PROD-02, PROD-03, PROD-04, PROD-05, STORE-01, STORE-02, STORE-03, PRICE-01, PRICE-02, PRICE-03, PRICE-04, PRICE-05, LIST-01, LIST-02, LIST-03, LIST-04, OPT-01, OPT-02, OPT-03, OPT-04, LLM-01, LLM-02, SCRAP-01, NFR-01]
+
+**Gap Closure:** Closes missing verification artifacts for phases 01, 04, and 05 plus the orphaned NFR-01 audit gap.
+
+**Plans:** 0/0 pending planning
+
+### Phase 9: Traceability Normalization
+
+**Goal:** Normalizar `requirements-completed` y la trazabilidad documental en F2 y F6 para que los requisitos ya implementados puedan cerrarse en la re-auditoria.
+
+**Requirements:** [BIZ-01, BIZ-02, BIZ-03, SVC-01, PRO-01, PRO-02, PRO-03, PRO-04, BULK-01, BULK-02, UAT-01, UAT-02, UAT-03, DOC-01]
+
+**Gap Closure:** Closes partial requirement traceability gaps from phases 02 and 06.
+
+**Plans:** 0/0 pending planning
+
+### Phase 10: Contract Alignment Cleanup
+
+**Goal:** Resolver ambiguedades de contrato documental antes del re-audit, especialmente `STORE-04` y el contrato OCR frente a ADR-007.
+
+**Requirements:** [STORE-04, OCR-01, OCR-02]
+
+**Gap Closure:** Closes requirement identity ambiguity and OCR documentation drift highlighted by the milestone audit.
+
+**Plans:** 0/0 pending planning
 
 ## Progress Table
 
@@ -74,7 +108,10 @@ Plans:
 | 4. Frontend Advanced | Complete | Google Places integration done (2 plans, 2 waves) |
 | 5. IA + Optimizer + Scraping | Complete | 5 plans - scraping/OCR/LLM/optimizer/frontend |
 | 6. Business Portal + Mobile App | Complete | Service extraction, 11 integration tests, UAT passed |
-| 7. Final QA + Deploy + Thesis | Not started | Cierre de proyecto |
+| 7. Final QA + Deploy + Thesis | Blocked | Espera cierre de fases 08-10 |
+| 8. Milestone Evidence Recovery | Not started | Backfill de VERIFICATION.md y cierre formal de evidencia |
+| 9. Traceability Normalization | Not started | Reparacion de requirements-completed y trazabilidad audit-ready |
+| 10. Contract Alignment Cleanup | Not started | Alinear IDs ambiguos y contrato OCR antes de re-auditar |
 
 ---
 Last updated: 2026-04-05
