@@ -1,4 +1,4 @@
-# 8. Diseño e Implementación
+﻿# 8. Diseño e Implementación
 
 ## 8.1 Arquitectura del Sistema
 
@@ -1057,3 +1057,4 @@ El flujo de captura de lista por cámara sigue un wizard de tres pasos:
 ### 8.10.4 Interfaz del asistente
 
 La pantalla del asistente sigue el patrón de chat estándar: mensajes del usuario alineados a la derecha (burbuja verde), respuestas del asistente alineados a la izquierda (burbuja gris). Las respuestas que incluyen productos, precios o tiendas se renderizan con chips interactivos que permiten añadir el producto a la lista activa directamente desde el chat.
+

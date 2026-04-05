@@ -1,4 +1,4 @@
-# 5. Herramientas Utilizadas y Justificación Tecnológica
+﻿# 5. Herramientas Utilizadas y Justificación Tecnológica
 
 ## 5.1 Criterios de selección
 
@@ -135,3 +135,4 @@ limitaciones relevantes que condicionan la evolución del sistema:
 
 Estas limitaciones no invalidan la elección realizada; delimitan el marco de validez
 del prototipo y definen líneas de mejora prioritaria para fases posteriores.
+

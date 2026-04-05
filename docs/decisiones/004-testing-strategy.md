@@ -1,4 +1,4 @@
-# ADR-004: Estrategia de pruebas del backend (Fase 1)
+﻿# ADR-004: Estrategia de pruebas del backend (Fase 1)
 
 ## Fecha: 2026-03-17
 
@@ -126,3 +126,4 @@ Al finalizar la Fase 1 del backend, se dispone de 179 pruebas automatizadas dist
 - Cualquier nueva app de Django añadida en fases siguientes debe tener tests en `tests/unit/<app>/` y `tests/integration/<app>/` antes de ser mergeada a `develop`.
 - Las fábricas nuevas deben seguir el patrón lazy de importación descrito en la decisión 3.
 - El test cross-domain debe ampliarse cuando se implementen los módulos de optimización de rutas (Fase 4) y el asistente LLM (Fase 5), añadiendo un flujo completo de optimización y una consulta al asistente.
+

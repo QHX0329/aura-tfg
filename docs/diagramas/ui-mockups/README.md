@@ -1,4 +1,4 @@
-# Wireframes y Mockups de Interfaz de Usuario — BargAIn
+﻿# Wireframes y Mockups de Interfaz de Usuario — BargAIn
 
 **Tarea:** F1-14 · Fase 1 — Análisis y Diseño  
 **Entregable:** `docs/diagramas/ui-mockups/`  
@@ -392,3 +392,4 @@ docs/diagramas/ui-mockups/
 ---
 
 *Este documento forma parte de la Fase 1 — Análisis y Diseño del TFG BargAIn (ETSII, Universidad de Sevilla). La implementación de los componentes aquí descritos corresponde a la Fase 4 — Desarrollo Frontend (S8–S16).*
+

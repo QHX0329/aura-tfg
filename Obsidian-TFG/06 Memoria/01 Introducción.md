@@ -1,11 +1,11 @@
----
+﻿---
 title: 01 Introducción
 tags: [tfg/memoria]
 tipo: memoria
 area: memoria
 estado: completada
 fuente: [docs/memoria/01-introduccion.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[06 Memoria/Mapa de Memoria]]"]
 ---
 # 01 Introducción
@@ -19,3 +19,5 @@ Completada.
 - Estructura del documento.
 ## Fuente de verdad
 - `docs/memoria/01-introduccion.md`
+
+

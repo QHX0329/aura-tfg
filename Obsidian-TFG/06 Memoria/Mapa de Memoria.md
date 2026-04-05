@@ -1,4 +1,4 @@
----
+﻿---
 title: Mapa de Memoria
 tags:
   - tfg/moc
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - docs/memoria/
   - TFG/Memoria TFG.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[Memoria TFG]]"
   - "[[00 Dashboard/Inicio]]"
@@ -29,3 +29,5 @@ relacionados:
 - [[06 Memoria/10 Pruebas y Cobertura]]
 - [[06 Memoria/11 Conclusiones y Trabajo Futuro]]
 - [[06 Memoria/12 Bibliografía]]
+
+

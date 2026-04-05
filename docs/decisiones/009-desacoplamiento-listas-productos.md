@@ -1,4 +1,4 @@
-# ADR-009: Desacoplar ShoppingListItem del catálogo Product
+﻿# ADR-009: Desacoplar ShoppingListItem del catálogo Product
 
 ## Estado
 Aceptado
@@ -73,3 +73,4 @@ Esta ADR exige mantener sincronizados los siguientes artefactos:
 - memoria de diseño/implementación (modelo de datos y pipeline del optimizador),
 - referencia API (payloads de `/api/v1/lists/*` y `/api/v1/prices/list-total/`),
 - documentación operativa de agentes (`CLAUDE.md`).
+

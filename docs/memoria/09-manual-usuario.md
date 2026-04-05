@@ -1,11 +1,10 @@
-# 09. Manual de Usuario
+﻿# 09. Manual de Usuario
 
 ## 9.1 Introducción
 
 BarGAIN permite al usuario gestionar su compra diaria desde una app móvil/web, comparar precios,
 consultar tiendas cercanas y configurar preferencias de optimización. Esta versión del manual
-describe los flujos implementados hasta el estado del proyecto a fecha **2026-03-19**
-(F4-27 completada).
+describe los flujos implementados hasta el estado del proyecto a fecha **2026-04-05** (F4-31 completada; F4-21 pendiente).
 
 ## 9.2 Requisitos de uso
 
@@ -54,7 +53,7 @@ Funciones disponibles:
 ## 9.7 Mapa de tiendas
 
 - Visualización de tiendas cercanas sobre mapa.
-- Panel de tiendas plegable (mejora UX F4-27).
+- Panel de tiendas plegable (mejoras UX F4-27/F4-31).
 - Apertura de perfil de tienda desde el mapa y desde favoritas.
 - Gestión de favoritos.
 
@@ -122,3 +121,5 @@ Para cuentas PYME:
 Este manual cubre el uso funcional implementado hasta la persistencia de optimización
 y recálculo sobre F5. El checklist nativo en lock screen de iOS queda condicionado a la
 ejecución del ADR-010 (extensión nativa ActivityKit).
+
+

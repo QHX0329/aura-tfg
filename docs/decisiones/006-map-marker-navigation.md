@@ -1,4 +1,4 @@
-# ADR-006: Navegación al perfil de tienda desde marcadores del mapa
+﻿# ADR-006: Navegación al perfil de tienda desde marcadores del mapa
 
 **Fecha:** 2026-03-24
 **Estado:** Aceptada
@@ -37,3 +37,4 @@ comunicar la affordance al usuario.
 **Consideraciones:**
 - En iOS, `onCalloutPress` requiere un segundo toque después de abrir el Callout.
   Esto es comportamiento estándar de Apple Maps y Google Maps nativos.
+

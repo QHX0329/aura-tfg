@@ -1,4 +1,4 @@
-# ADR-007: Migración del OCR a Google Cloud Vision API
+﻿# ADR-007: Migración del OCR a Google Cloud Vision API
 
 ## Estado
 Aceptado
@@ -55,3 +55,4 @@ hasta que el código se alinee con esta ADR.
   - a cambio de coste, cuota, latencia y dependencia del proveedor.
 - La documentación que describa el estado actual implementado debe indicar que la migración está
   aprobada, pero aún pendiente de alinear completamente con el código legado basado en Tesseract.
+

@@ -1,4 +1,4 @@
-# Prompts reutilizables para Claude
+﻿# Prompts reutilizables para Claude
 
 Este directorio contiene plantillas listas para pegar en Claude (web, API o CLI), alineadas con el flujo de trabajo de BargAIn.
 
@@ -19,3 +19,4 @@ Este directorio contiene plantillas listas para pegar en Claude (web, API o CLI)
 
 - Estas plantillas son equivalentes funcionales a los prompts de Copilot en `.github/prompts/*.prompt.md`.
 - Mantén ambas versiones sincronizadas cuando cambie el proceso del proyecto.
+

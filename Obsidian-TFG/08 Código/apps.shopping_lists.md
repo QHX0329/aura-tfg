@@ -1,11 +1,11 @@
----
+﻿---
 title: apps.shopping_lists
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: activo
 fuente: [backend/apps/shopping_lists/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[04 Producto/Flujos Clave]]"]
 ---
 # apps.shopping_lists
@@ -19,3 +19,5 @@ Implementado.
 - Plantillas reutilizables.
 ## Fuente de verdad
 - `backend/apps/shopping_lists/`
+
+

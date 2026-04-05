@@ -1,4 +1,4 @@
-# 6. Análisis Temporal y de Costes de Desarrollo
+﻿# 6. Análisis Temporal y de Costes de Desarrollo
 
 ## Resumen Ejecutivo
 
@@ -224,3 +224,4 @@ El coste total estimado del proyecto BargAIn asciende a **8.690,25 € (sin IVA)
 | Rendimiento del optimizador con muchos productos |    Media     |  Alto   | Limitar combinaciones, pre-filtrado geoespacial, caché         |
 | Bloqueo de scraping por supermercados            |    Media     |  Alto   | Rotación de User-Agents, Playwright, respetar robots.txt       |
 | Disponibilidad limitada por estudios             |     Alta     |  Medio  | Buffer de 2 semanas, planificación flexible                    |
+

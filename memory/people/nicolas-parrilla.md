@@ -1,4 +1,4 @@
-# Nicolás Parrilla Geniz
+﻿# Nicolás Parrilla Geniz
 
 **También conocido como:** Nico, Nicolás
 **Rol:** Autor y desarrollador del TFG BargAIn
@@ -20,4 +20,6 @@
 - PRs siempre contra `develop`
 
 ---
-Actualizado: 2026-03-19
+Actualizado: 2026-04-05
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 title: Funcionalidades
 tags:
   - tfg/producto
@@ -10,7 +10,7 @@ fuente:
   - README.md
   - docs/memoria/07-requisitos.md
   - TFG/Fases/F4 — Frontend.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[04 Producto/Mapa de Producto]]"
   - "[[04 Producto/Flujos Clave]]"
@@ -39,3 +39,5 @@ Mayormente implementado en el bloque base.
 - `README.md`
 - `docs/memoria/07-requisitos.md`
 - `TFG/Fases/F4 — Frontend.md`
+
+

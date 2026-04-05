@@ -1,4 +1,4 @@
----
+﻿---
 title: Cronología
 tags:
   - tfg/dashboard
@@ -11,7 +11,7 @@ fuente:
   - docs/STATUS.md
   - .planning/ROADMAP.md
   - TFG/Fases/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[00 Dashboard/Inicio]]"
   - "[[02 Gestión/Hitos]]"
@@ -42,3 +42,5 @@ Histórico consolidado.
 - `docs/STATUS.md`
 - `.planning/ROADMAP.md`
 - `TFG/Fases/`
+
+

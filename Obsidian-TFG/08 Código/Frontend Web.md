@@ -1,11 +1,11 @@
----
+﻿---
 title: Frontend Web
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: activo
 fuente: [frontend/web/src/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[04 Producto/Portal PYME]]"]
 ---
 # Frontend Web
@@ -19,3 +19,5 @@ Implementado.
 - Guardias y utilidades web.
 ## Fuente de verdad
 - `frontend/web/src/`
+
+

@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
   <img src="./docs/assets/logo.png" alt="BarGAIN Logo" width="400">
 </div>
 
@@ -16,13 +16,15 @@ BarGAIN es una aplicación móvil y web que elimina la ineficiencia en la compra
 
 Este proyecto es un **Trabajo Fin de Grado** del Grado en Ingeniería Informática — Ingeniería del Software, Universidad de Sevilla (ETSII).
 
-## 📌 Estado Actual (2026-03-19)
+## 📌 Estado Actual (2026-04-05)
 
 - F1 (Análisis y Diseño): completada.
 - F2 (Infraestructura Base): completada.
 - F3 (Core Backend): completada.
-- F4 (Frontend): en progreso con tareas hasta F4-27 completadas.
-- F5 y F6: pendientes.
+- F4 (Frontend): en progreso con tareas hasta F4-31 completadas y F4-21 pendiente.
+- F5: en progreso.
+- F6: completada.
+- F7: activa (pendiente de cierre).
 - Progreso global aproximado: 62%.
 
 [![Ver Dashboard](https://img.shields.io/badge/Ver_Dashboard_Interactivo-2EA043?style=for-the-badge&logo=github)](https://qhx0329.github.io/bargain-tfg/dashboard.html)
@@ -55,7 +57,7 @@ BarGAIN actúa como un **orquestador inteligente de la cesta de la compra** medi
 | Backend       | Django 5 + Django REST Framework      |
 | Base de datos | PostgreSQL 16 + PostGIS               |
 | Frontend      | React Native (Expo) + React web companion |
-| IA/ML         | Claude API + Google Cloud Vision API (OCR backend) + OR-Tools |
+| IA/ML         | Google Gemini API + Google Cloud Vision API (OCR backend) + OR-Tools |
 | Scraping      | Scrapy + Playwright                   |
 | Async         | Celery + Redis                        |
 | CI/CD         | GitHub Actions                        |
@@ -72,9 +74,10 @@ Nota sobre OCR:
 | F1 — Análisis y Diseño | ✅ | Requisitos, comparativa y base documental del TFG |
 | F2 — Infraestructura | ✅ | Backend en Docker, frontend nativo en host (ADR-002) |
 | F3 — Core Backend | ✅ | Módulos de dominio + API + tests + docs OpenAPI |
-| F4 — Frontend | 🔄 | UX y flujos principales operativos, quedan integraciones avanzadas |
-| F5 — IA/Optimización/Scraping | ⬜ | Migración OCR a Google Vision, optimizer multicriterio y scraping productivo |
-| F6 — Cierre | ⬜ | E2E, deploy staging final, memoria y defensa |
+| F4 - Frontend | 🔄 | UX y flujos principales operativos; F4-21 pendiente |
+| F5 - IA/Optimización/Scraping | 🔄 | Integraciones IA/optimizer/scraping en progreso, con entregables parciales cerrados |
+| F6 - Cierre | ✅ | E2E, deploy a staging y cierre documental/UAT completados |
+| F7 - Cierre final | 🔄 | Verificación final, ajustes de entrega y cierre definitivo |
 
 ## 🚀 Inicio Rápido
 
@@ -198,3 +201,11 @@ Este proyecto está bajo la licencia MIT. Ver [LICENSE](LICENSE) para más detal
 ---
 
 _Proyecto desarrollado como Trabajo Fin de Grado — Escuela Técnica Superior de Ingeniería Informática, Universidad de Sevilla, 2025-2026._
+
+
+
+
+
+
+
+

@@ -1,11 +1,11 @@
----
+﻿---
 title: 04 Comparativa con Competidores
 tags: [tfg/memoria]
 tipo: memoria
 area: memoria
 estado: completada
 fuente: [docs/memoria/04-comparativa.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[05 Investigación/Mercado y Competidores]]"]
 ---
 # 04 Comparativa con Competidores
@@ -18,3 +18,5 @@ Completada.
 - Justificación del valor diferencial.
 ## Fuente de verdad
 - `docs/memoria/04-comparativa.md`
+
+

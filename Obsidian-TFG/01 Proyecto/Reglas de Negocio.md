@@ -1,4 +1,4 @@
----
+﻿---
 title: Reglas de Negocio
 tags:
   - tfg/proyecto
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - docs/memoria/07-requisitos.md
   - TFG/BargAIn — TFG.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[01 Proyecto/Mapa del Proyecto]]"
   - "[[04 Producto/Funcionalidades]]"
@@ -37,3 +37,5 @@ Activas.
 
 - `docs/memoria/07-requisitos.md`
 - `TFG/BargAIn — TFG.md`
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 title: F1 — Análisis y Diseño
 tags:
   - tfg/fase
@@ -14,7 +14,7 @@ fuente:
   - TASKS.md
   - docs/memoria/
   - docs/diagramas/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Roadmap y Fases]]"
   - "[[06 Memoria/07 Requisitos]]"
@@ -54,3 +54,5 @@ Completada.
 
 - [[06 Memoria/03 Antecedentes y Estado del Arte]]
 - [[06 Memoria/07 Requisitos]]
+
+

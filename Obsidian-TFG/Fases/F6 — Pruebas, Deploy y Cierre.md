@@ -1,19 +1,19 @@
----
+﻿---
 title: F6 — Pruebas, Deploy y Cierre
 tags:
   - tfg/fase
-  - tfg/pendiente
+  - tfg/completada
 tipo: fase
 area: gestion
 fase: F6
-estado: pendiente
+estado: completada
 semanas: S17-S20
 horas-estimadas: 25
 fuente:
   - TASKS.md
   - docs/memoria/
   - .github/workflows/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Roadmap y Fases]]"
   - "[[09 Operativa/Checklist Defensa TFG]]"
@@ -31,7 +31,7 @@ Fase final de validación, staging, memoria y defensa.
 
 ## Estado
 
-Pendiente.
+Completada (tests finales, deploy a staging y cierre documental/UAT).
 
 ## Puntos clave
 
@@ -53,3 +53,6 @@ Pendiente.
 - [[09 Operativa/Checklist Defensa TFG]]
 - [[06 Memoria/09 Manual de Usuario]]
 - [[06 Memoria/10 Pruebas y Cobertura]]
+
+
+

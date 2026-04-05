@@ -1,4 +1,4 @@
----
+﻿---
 title: Stack Tecnológico
 tags:
   - tfg/proyecto
@@ -10,7 +10,7 @@ fuente:
   - README.md
   - docs/memoria/05-herramientas.md
   - memory/context/project-context.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[01 Proyecto/Mapa del Proyecto]]"
   - "[[03 Arquitectura/Mapa de Arquitectura]]"
@@ -38,3 +38,5 @@ Consolidado.
 - `README.md`
 - `docs/memoria/05-herramientas.md`
 - `memory/context/project-context.md`
+
+

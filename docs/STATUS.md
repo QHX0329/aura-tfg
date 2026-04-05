@@ -1,1 +1,32 @@
-# Estado de Documentacion - BarGAIN\n\nFecha de sincronizacion: 2026-03-19\n\n## Alcance de esta sincronizacion\n\n- README y CLAUDE actualizados con estado F1-F4/F5-F6.\n- TASKS sincronizado con referencia a actualizacion documental global.\n- Memoria TFG secciones 09, 10, 11 y 12 completadas con contenido real.\n- Documentacion API marcada como sincronizada al estado actual del backend/frontend.\n- Planificacion ejecutiva (.planning) alineada con F4-27.\n- Memoria de contexto (memory/) actualizada a snapshot actual.\n\n## Estado funcional del proyecto reflejado en docs\n\n- F1: completada\n- F2: completada\n- F3: completada\n- F4: en progreso (hasta F4-27 completada)\n- F5 y F6: pendientes\n\n## Nota\n\nLos artefactos historicos de fases en `.planning/phases/` y analisis detallados en `.planning/codebase/` se conservan como historial de ejecucion. La fuente de verdad operativa para estado de tareas sigue siendo `TASKS.md`.\n
+﻿# Estado de Documentacion - BarGAIN
+
+Fecha de sincronización: 2026-04-05
+
+## Alcance de esta sincronización
+
+- README y CLAUDE alineados con el estado actual (F6 completada, F5 en progreso, F7 activa).
+- TASKS actualizado como espejo operativo de sincronización documental.
+- Memoria TFG (secciones 09, 10, 11 y 12) ajustada a la fecha de corte vigente.
+- Documentacion API marcada como sincronizada al estado backend/frontend actual.
+- Memoria de contexto (`memory/`) actualizada al snapshot vigente.
+- Dashboard y notas clave de `Obsidian-TFG/` sincronizadas con el estado real del proyecto.
+
+## Estado funcional del proyecto reflejado en docs
+
+- F1: completada
+- F2: completada
+- F3: completada
+- F4: en progreso (hasta F4-31 completada; F4-21 pendiente)
+- F5: en progreso
+- F6: completada
+- F7: activa (pendiente de cierre)
+
+## Nota
+
+Los artefactos históricos de fases en `.planning/phases/` y análisis detallados en `.planning/codebase/` se conservan como historial de ejecución. La fuente de verdad operativa para estado de tareas sigue siendo `TASKS.md`.
+
+
+
+
+
+

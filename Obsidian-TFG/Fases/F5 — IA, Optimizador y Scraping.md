@@ -1,12 +1,12 @@
----
+﻿---
 title: F5 — IA, Optimizador y Scraping
 tags:
   - tfg/fase
-  - tfg/pendiente
+  - tfg/en-progreso
 tipo: fase
 area: gestion
 fase: F5
-estado: pendiente
+estado: en-progreso
 semanas: S10-S17
 horas-estimadas: 35
 fuente:
@@ -15,7 +15,7 @@ fuente:
   - backend/apps/ocr/
   - backend/apps/assistant/
   - scraping/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Roadmap y Fases]]"
   - "[[03 Arquitectura/IA, OCR y Optimización]]"
@@ -34,7 +34,7 @@ Fase centrada en el bloque inteligente y diferencial del sistema.
 
 ## Estado
 
-Pendiente.
+En progreso, con entregables parciales cerrados y foco actual en optimizador/OCR/LLM + scraping productivo.
 
 ## Puntos clave
 
@@ -57,3 +57,6 @@ Pendiente.
 - [[08 Código/apps.optimizer]]
 - [[08 Código/apps.ocr]]
 - [[08 Código/apps.assistant]]
+
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 title: Mapa del Proyecto
 tags:
   - tfg/moc
@@ -10,7 +10,7 @@ fuente:
   - README.md
   - memory/projects/bargain.md
   - memory/context/project-context.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[00 Dashboard/Inicio]]"
   - "[[BargAIn — TFG]]"
@@ -24,3 +24,5 @@ relacionados:
 - [[01 Proyecto/Reglas de Negocio]]
 - [[01 Proyecto/Stack Tecnológico]]
 - [[01 Proyecto/Glosario del Proyecto]]
+
+

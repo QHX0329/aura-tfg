@@ -1,11 +1,11 @@
----
+﻿---
 title: 07 Requisitos
 tags: [tfg/memoria]
 tipo: memoria
 area: memoria
 estado: completada
 fuente: [docs/memoria/07-requisitos.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[01 Proyecto/Reglas de Negocio]]", "[[04 Producto/Usuarios y Casos de Uso]]"]
 ---
 # 07 Requisitos
@@ -19,3 +19,5 @@ Completada.
 - Reglas de negocio y restricciones.
 ## Fuente de verdad
 - `docs/memoria/07-requisitos.md`
+
+

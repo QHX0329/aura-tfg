@@ -1,4 +1,4 @@
----
+﻿---
 title: Mapa de Producto
 tags:
   - tfg/moc
@@ -10,7 +10,7 @@ fuente:
   - docs/memoria/07-requisitos.md
   - docs/diagramas/ui-mockups/
   - TFG/Fases/F4 — Frontend.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[00 Dashboard/Inicio]]"
   - "[[04 Producto/Funcionalidades]]"
@@ -23,3 +23,5 @@ relacionados:
 - [[04 Producto/Flujos Clave]]
 - [[04 Producto/UX y Pantallas]]
 - [[04 Producto/Portal PYME]]
+
+

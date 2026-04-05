@@ -1,11 +1,11 @@
----
+﻿---
 title: 10 Pruebas y Cobertura
 tags: [tfg/memoria]
 tipo: memoria
 area: memoria
 estado: pendiente
 fuente: [docs/memoria/10-pruebas.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[09 Operativa/CI-CD y Calidad]]"]
 ---
 # 10 Pruebas y Cobertura
@@ -19,3 +19,5 @@ Pendiente.
 - Pruebas de usabilidad y rendimiento.
 ## Fuente de verdad
 - `docs/memoria/10-pruebas.md`
+
+

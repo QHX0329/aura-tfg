@@ -1,6 +1,6 @@
-# Referencia de la API REST — BargAIn (Fases 1-4)
+﻿# Referencia de la API REST — BargAIn (Fases 1-4)
 
-> Estado de sincronización: 2026-03-19. La API backend core (F3) está completada y el frontend (F4) consume estos contratos.
+> Estado de sincronización: 2026-04-05. La API backend core (F3) está completada, F4 mantiene consumo activo de contratos y el roadmap operativo sigue en F5/F7 según TASKS.md.
 
 ## Índice
 
@@ -1141,3 +1141,10 @@ Si no se proporciona `name`, se usa el nombre de la plantilla.
 ---
 
 *Documentación generada para la Fase 1 del TFG BargAIn — ETSII-US, 2026.*
+
+
+
+
+
+
+

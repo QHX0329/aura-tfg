@@ -1,4 +1,4 @@
----
+﻿---
 title: Mapa de Gestión
 tags:
   - tfg/moc
@@ -10,7 +10,7 @@ fuente:
   - TASKS.md
   - .planning/
   - TFG/Fases/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[00 Dashboard/Inicio]]"
   - "[[02 Gestión/Roadmap y Fases]]"
@@ -33,3 +33,5 @@ relacionados:
 - [[Fases/F4 — Frontend]]
 - [[Fases/F5 — IA, Optimizador y Scraping]]
 - [[Fases/F6 — Pruebas, Deploy y Cierre]]
+
+

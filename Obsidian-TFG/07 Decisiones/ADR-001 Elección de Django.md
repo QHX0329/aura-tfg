@@ -1,11 +1,11 @@
----
+﻿---
 title: ADR-001 Elección de Django
 tags: [tfg/adr]
 tipo: adr
 area: decisiones
 estado: adoptada
 fuente: [docs/decisiones/001-eleccion-django.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[03 Arquitectura/Backend]]"]
 ---
 # ADR-001 Elección de Django
@@ -19,3 +19,5 @@ Adoptada.
 - Buen encaje con DRF y PostGIS.
 ## Fuente de verdad
 - `docs/decisiones/001-eleccion-django.md`
+
+

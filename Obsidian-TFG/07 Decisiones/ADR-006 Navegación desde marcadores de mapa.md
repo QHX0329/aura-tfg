@@ -1,11 +1,11 @@
----
+﻿---
 title: ADR-006 Navegación desde marcadores de mapa
 tags: [tfg/adr]
 tipo: adr
 area: decisiones
 estado: adoptada
 fuente: [docs/decisiones/006-map-marker-navigation.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[04 Producto/Flujos Clave]]"]
 ---
 # ADR-006 Navegación desde marcadores de mapa
@@ -18,3 +18,5 @@ Adoptada.
 - Conexión con detalle de tienda.
 ## Fuente de verdad
 - `docs/decisiones/006-map-marker-navigation.md`
+
+

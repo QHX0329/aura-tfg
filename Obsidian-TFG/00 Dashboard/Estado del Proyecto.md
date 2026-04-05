@@ -1,4 +1,4 @@
----
+﻿---
 title: Estado del Proyecto
 tags:
   - tfg/dashboard
@@ -11,7 +11,7 @@ fuente:
   - docs/STATUS.md
   - TASKS.md
   - .planning/ROADMAP.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[00 Dashboard/Inicio]]"
   - "[[02 Gestión/Roadmap y Fases]]"
@@ -28,9 +28,10 @@ Snapshot ejecutivo del estado real de Bargain.
 - F1: completada
 - F2: completada
 - F3: completada
-- F4: completada
-- F5: pendiente
-- F6: pendiente
+- F4: en progreso (F4-31 completada; F4-21 pendiente)
+- F5: en progreso
+- F6: completada
+- F7: activa (pendiente de cierre)
 - Progreso global estimado: ~62%
 
 ## Puntos clave
@@ -46,3 +47,6 @@ Snapshot ejecutivo del estado real de Bargain.
 - `docs/STATUS.md`
 - `TASKS.md`
 - `.planning/ROADMAP.md`
+
+
+

@@ -1,9 +1,9 @@
-# 10. Pruebas
+﻿# 10. Pruebas
 
 ## 10.1 Objetivo
 
 Validar que BarGAIN cumple requisitos funcionales y no funcionales clave en las fases ya
-implementadas (F1-F4 parcial), minimizando regresiones antes de abordar F5/F6.
+implementadas (F1-F6 con distinto grado de madurez), minimizando regresiones en el cierre de F5/F7.
 
 ## 10.2 Estrategia de testing
 
@@ -60,21 +60,21 @@ Frontend:
 - Entornos Windows con GIS: mitigado ejecutando backend tests en Docker por defecto.
 - Riesgo de desalineación frontend-backend: mitigado con contratos API centralizados y
 	tests de servicios frontend.
-- Riesgo en integraciones futuras (F5): pendiente ampliar pruebas de rendimiento del
-	optimizador y precisión OCR con Google Vision API sobre tickets y listas reales.
+- Riesgo en integraciones abiertas (F5): pendiente ampliar pruebas de rendimiento del optimizador y precisión OCR con Google Vision API sobre tickets y listas reales.
 
-## 10.7 Pruebas pendientes (F5/F6)
+## 10.7 Pruebas pendientes (F5/F7)
 
 - Tests de optimizador multicriterio con casos borde y tiempos de respuesta.
 - Tests de OCR con datasets de tickets/listas manuscritas y contraste de resultados tras la
   migración a Google Vision API.
-- E2E completos de usuario (inicio a fin).
-- Pruebas de usabilidad con usuarios reales.
 - Validación final de criterios no funcionales de rendimiento y despliegue.
 
 ## 10.8 Conclusión
 
 El estado de pruebas es sólido para la base funcional ya implementada. El foco de calidad para
-el cierre del TFG se concentra en F5-F6: optimizador real, migración OCR a Google Vision,
-OCR/LLM productivo, E2E y pruebas
-de usuario final.
+el cierre del TFG se concentra en F5/F7: optimizer real productivo, OCR/LLM backend consolidado y validación final de estabilidad/entrega.
+
+
+
+
+

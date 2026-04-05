@@ -1,11 +1,11 @@
----
+﻿---
 title: ADR-004 Estrategia de pruebas
 tags: [tfg/adr]
 tipo: adr
 area: decisiones
 estado: adoptada
 fuente: [docs/decisiones/004-testing-strategy.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[09 Operativa/CI-CD y Calidad]]"]
 ---
 # ADR-004 Estrategia de pruebas
@@ -19,3 +19,5 @@ Adoptada.
 - Umbral de cobertura.
 ## Fuente de verdad
 - `docs/decisiones/004-testing-strategy.md`
+
+

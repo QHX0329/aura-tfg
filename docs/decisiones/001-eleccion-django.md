@@ -1,4 +1,4 @@
-# ADR-001: Elección de Django como framework backend
+﻿# ADR-001: Elección de Django como framework backend
 
 ## Estado
 Aceptado
@@ -30,3 +30,4 @@ Se elige **Django 5.x** con **Django REST Framework** como framework backend pri
 - El backend será un monolito modular (no microservicios), adecuado para el alcance del TFG.
 - Se usará Python 3.12+ para type hints nativos y mejoras de rendimiento.
 - Las operaciones pesadas (scraping, OCR, optimización) se delegan a Celery para no bloquear la API.
+

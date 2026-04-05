@@ -1,11 +1,11 @@
----
+﻿---
 title: apps.notifications
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: activo
 fuente: [backend/apps/notifications/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[03 Arquitectura/Backend]]"]
 ---
 # apps.notifications
@@ -19,3 +19,5 @@ Implementado.
 - Integración con Celery.
 ## Fuente de verdad
 - `backend/apps/notifications/`
+
+

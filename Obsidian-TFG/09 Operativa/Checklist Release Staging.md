@@ -1,4 +1,4 @@
----
+﻿---
 title: Checklist Release Staging
 tags: [tfg/operativa]
 tipo: operativa
@@ -8,7 +8,7 @@ fuente:
   - README.md
   - .github/workflows/
   - TFG/Fases/F6 — Pruebas, Deploy y Cierre.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[Fases/F6 — Pruebas, Deploy y Cierre]]"]
 ---
 # Checklist Release Staging
@@ -19,3 +19,5 @@ relacionados: ["[[Fases/F6 — Pruebas, Deploy y Cierre]]"]
 - [ ] Verificar migraciones
 - [ ] Confirmar acceso a staging
 - [ ] Revisar logs y errores críticos
+
+

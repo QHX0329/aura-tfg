@@ -1,11 +1,11 @@
----
+﻿---
 title: 08 Diseño e Implementación
 tags: [tfg/memoria]
 tipo: memoria
 area: memoria
 estado: completada
 fuente: [docs/memoria/08-diseno-implementacion.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[03 Arquitectura/Arquitectura Global]]", "[[07 Decisiones/Índice ADR]]"]
 ---
 # 08 Diseño e Implementación
@@ -19,3 +19,5 @@ Completada.
 - API REST y decisiones de diseño.
 ## Fuente de verdad
 - `docs/memoria/08-diseno-implementacion.md`
+
+

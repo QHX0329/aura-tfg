@@ -1,4 +1,4 @@
----
+﻿---
 title: Riesgos y Bloqueos
 tags:
   - tfg/gestion
@@ -10,7 +10,7 @@ fuente:
   - docs/ai-mistakes-log.md
   - .planning/ROADMAP.md
   - CLAUDE.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Mapa de Gestión]]"
   - "[[09 Operativa/CI-CD y Calidad]]"
@@ -38,3 +38,5 @@ Abierto.
 - `docs/ai-mistakes-log.md`
 - `.planning/ROADMAP.md`
 - `CLAUDE.md`
+
+

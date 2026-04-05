@@ -1,4 +1,4 @@
----
+﻿---
 title: Planificación Semanal
 tags:
   - tfg/gestion
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - docs/memoria/06-planificacion.md
   - TASKS.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Mapa de Gestión]]"
   - "[[06 Memoria/06 Planificación y Cronograma]]"
@@ -35,3 +35,5 @@ Histórico disponible; replanificación final pendiente.
 
 - `docs/memoria/06-planificacion.md`
 - `TASKS.md`
+
+

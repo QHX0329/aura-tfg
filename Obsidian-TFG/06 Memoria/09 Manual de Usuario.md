@@ -1,11 +1,11 @@
----
+﻿---
 title: 09 Manual de Usuario
 tags: [tfg/memoria]
 tipo: memoria
 area: memoria
 estado: pendiente
 fuente: [docs/memoria/09-manual-usuario.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[04 Producto/UX y Pantallas]]"]
 ---
 # 09 Manual de Usuario
@@ -20,3 +20,5 @@ Pendiente.
 - Portal PYME.
 ## Fuente de verdad
 - `docs/memoria/09-manual-usuario.md`
+
+

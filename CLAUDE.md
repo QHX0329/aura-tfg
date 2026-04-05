@@ -1,4 +1,4 @@
-# CLAUDE.md — Instrucciones del Proyecto BarGAIN
+﻿# CLAUDE.md — Instrucciones del Proyecto BarGAIN
 
 ## 🎯 Resumen del Proyecto
 
@@ -10,13 +10,15 @@
 **Tutor:** Juan Vicente Gutiérrez Santacreu
 **Departamento:** Matemática Aplicada I
 
-## 📌 Estado actual (2026-03-19)
+## 📌 Estado actual (2026-04-05)
 
 - **F1:** completada
 - **F2:** completada
 - **F3:** completada
-- **F4:** en progreso (hasta **F4-27** completada)
-- **F5-F6:** pendientes
+- **F4:** en progreso (hasta **F4-31** completada; **F4-21** pendiente)
+- **F5:** en progreso
+- **F6:** completada
+- **F7:** activa (pendiente de cierre)
 - **Progreso global estimado:** ~62%
 
 ---
@@ -538,3 +540,6 @@ make logs               # Logs de todos los servicios
 make logs-backend       # Logs solo del backend
 make deploy-staging     # Deploy a staging (Render)
 ```
+
+
+

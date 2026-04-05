@@ -1,4 +1,4 @@
----
+﻿---
 title: Roadmap y Fases
 tags:
   - tfg/gestion
@@ -10,7 +10,7 @@ fuente:
   - TASKS.md
   - .planning/ROADMAP.md
   - TFG/Fases/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Mapa de Gestión]]"
   - "[[00 Dashboard/Estado del Proyecto]]"
@@ -37,3 +37,5 @@ Foco operativo en F5 y F6.
 - `TASKS.md`
 - `.planning/ROADMAP.md`
 - `TFG/Fases/`
+
+

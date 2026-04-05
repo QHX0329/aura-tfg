@@ -1,11 +1,11 @@
----
+﻿---
 title: Plantilla Issue
 tags: [tfg/plantilla]
 tipo: plantilla
 area: plantillas
 estado: activo
 fuente: [TASKS.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[02 Gestión/Backlog y Tareas]]"]
 ---
 # Issue {{id}}
@@ -15,3 +15,5 @@ relacionados: ["[[02 Gestión/Backlog y Tareas]]"]
 ## Impacto
 
 ## Fuente de verdad
+
+

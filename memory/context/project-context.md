@@ -1,15 +1,17 @@
-# Contexto del Proyecto BargAIn
+﻿# Contexto del Proyecto BargAIn
 
-## Estado global (2026-03-19)
+## Estado global (2026-04-05)
 
 - F1: completada.
 - F2: completada.
 - F3: completada.
-- F4: en progreso (F4-27 completada).
-- F5-F6: pendientes.
+- F4: en progreso (F4-31 completada; F4-21 pendiente).
+- F5: en progreso.
+- F6: completada.
+- F7: activa (pendiente de cierre).
 - Progreso estimado: ~62%.
 
-## Entorno academico
+## Entorno académico
 
 | Campo | Valor |
 |-------|-------|
@@ -20,7 +22,7 @@
 | Tutor | Juan Vicente Gutierrez Santacreu |
 | Curso | 2025-2026 |
 
-## Entorno tecnico
+## Entorno técnico
 
 - Backend: Django + DRF + PostgreSQL/PostGIS en Docker.
 - Frontend: React Native/Expo en host (modelo hibrido ADR-002).
@@ -34,4 +36,8 @@
 - Estado de planificacion ejecutiva: .planning/.
 
 ---
-Actualizado: 2026-03-19
+Actualizado: 2026-04-05
+
+
+
+

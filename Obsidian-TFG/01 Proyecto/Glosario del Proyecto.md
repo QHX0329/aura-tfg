@@ -1,4 +1,4 @@
----
+﻿---
 title: Glosario del Proyecto
 tags:
   - tfg/proyecto
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - memory/glossary.md
   - CLAUDE.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[01 Proyecto/Mapa del Proyecto]]"
   - "[[09 Operativa/Comandos y Flujos]]"
@@ -35,3 +35,5 @@ Sincronizado.
 
 - `memory/glossary.md`
 - `CLAUDE.md`
+
+

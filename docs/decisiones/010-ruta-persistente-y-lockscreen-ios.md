@@ -1,4 +1,4 @@
-# ADR-010: Persistencia relacional de ruta óptima y estrategia lock screen en iOS
+﻿# ADR-010: Persistencia relacional de ruta óptima y estrategia lock screen en iOS
 
 ## Estado
 Aceptado
@@ -59,3 +59,4 @@ alcanzable sin extensión nativa iOS (ActivityKit + Widget Extension).
 - Backend: nuevos modelos del módulo optimizer + endpoint GET de recuperación.
 - Frontend: carga automática de ruta persistida y recálculo desde la misma pantalla.
 - Documentación/diagramas: actualización de ER, clases y secuencia de optimización.
+

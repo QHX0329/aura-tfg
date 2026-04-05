@@ -1,4 +1,4 @@
-# TASKS.md — BarGAIN Task Tracker
+﻿# TASKS.md — BarGAIN Task Tracker
 
 > **Fuente de verdad única** para el seguimiento de tareas del proyecto BarGAIN.
 > Sincronizado con GitHub (git) y espejo del Notion Backlog.
@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-04-05 (F6 completada: cierre documental y verificacion UAT)
+> Última sincronización: 2026-04-05 (sincronización documental integral local: docs, memory y Obsidian alineados con F6 completada, F5 en progreso y F7 activa)
 
 ---
 
@@ -258,3 +258,8 @@ Cada tarea de prioridad **Crítica** o **Alta** debe tener un Issue de GitHub as
 - No eliminar tareas completadas — son parte del historial.
 - No cambiar IDs de tareas existentes — rompe referencias en commits y PRs.
 - No actualizar horas estimadas sin anotar el motivo.
+
+
+
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 title: Índice ADR
 tags:
   - tfg/moc
@@ -8,7 +8,7 @@ area: decisiones
 estado: activo
 fuente:
   - docs/decisiones/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[03 Arquitectura/Mapa de Arquitectura]]"
 ---
@@ -21,3 +21,5 @@ relacionados:
 - [[07 Decisiones/ADR-004 Estrategia de pruebas]]
 - [[07 Decisiones/ADR-005 Matching con Google Places]]
 - [[07 Decisiones/ADR-006 Navegación desde marcadores de mapa]]
+
+

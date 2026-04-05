@@ -1,8 +1,8 @@
-# Glosario - Proyecto BargAIn
+﻿# Glosario - Proyecto BargAIn
 
 ## Estado
 
-Documento sincronizado con el estado del proyecto a 2026-03-19.
+Documento sincronizado con el estado del proyecto a 2026-04-05.
 
 ## Acronomos clave
 
@@ -20,7 +20,7 @@ Documento sincronizado con el estado del proyecto a 2026-03-19.
 
 | Codigo | Significado |
 |--------|-------------|
-| F1 | Analisis y diseno |
+| F1 | Análisis y diseño |
 | F2 | Infraestructura base |
 | F3 | Desarrollo core backend |
 | F4 | Desarrollo frontend |
@@ -30,8 +30,8 @@ Documento sincronizado con el estado del proyecto a 2026-03-19.
 ## Estado de avance
 
 - F1, F2, F3: completadas.
-- F4: en progreso (F4-27 completada).
-- F5-F6: pendientes.
+- F4: en progreso (F4-31 completada; F4-21 pendiente).
+- F5: en progreso; F6: completada; F7: activa (pendiente de cierre).
 
 ## Terminos operativos
 
@@ -43,4 +43,6 @@ Documento sincronizado con el estado del proyecto a 2026-03-19.
 | core backend | Modulos users/products/stores/prices/lists/business/notifications |
 
 ---
-Actualizado: 2026-03-19
+Actualizado: 2026-04-05
+
+

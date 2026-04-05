@@ -1,4 +1,4 @@
-# Juan Vicente Gutiérrez Santacreu
+﻿# Juan Vicente Gutiérrez Santacreu
 
 **También conocido como:** Juan Vicente, el tutor
 **Rol:** Tutor del TFG BargAIn
@@ -11,4 +11,6 @@
 - Punto de contacto académico para el proyecto BargAIn
 
 ---
-Actualizado: 2026-03-19
+Actualizado: 2026-04-05
+
+

@@ -1,11 +1,11 @@
----
+﻿---
 title: apps.business
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: activo
 fuente: [backend/apps/business/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[04 Producto/Portal PYME]]"]
 ---
 # apps.business
@@ -19,3 +19,5 @@ Implementado.
 - Gestión de precios para comercios.
 ## Fuente de verdad
 - `backend/apps/business/`
+
+

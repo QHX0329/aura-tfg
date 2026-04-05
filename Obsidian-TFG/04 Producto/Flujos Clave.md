@@ -1,4 +1,4 @@
----
+﻿---
 title: Flujos Clave
 tags:
   - tfg/producto
@@ -10,7 +10,7 @@ fuente:
   - docs/diagramas/secuencia/
   - docs/api/README.md
   - TFG/Fases/F4 — Frontend.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[04 Producto/Mapa de Producto]]"
   - "[[03 Arquitectura/IA, OCR y Optimización]]"
@@ -39,3 +39,5 @@ Diseñados y parcialmente integrados de extremo a extremo.
 - `docs/diagramas/secuencia/`
 - `docs/api/README.md`
 - `TFG/Fases/F4 — Frontend.md`
+
+

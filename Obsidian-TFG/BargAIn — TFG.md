@@ -1,4 +1,4 @@
----
+﻿---
 title: BargAIn — TFG Ingeniería del Software
 aliases:
   - BargAIn
@@ -24,7 +24,7 @@ fuente:
   - docs/memoria/
   - docs/decisiones/
   - .planning/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[00 Dashboard/Inicio]]"
   - "[[01 Proyecto/Mapa del Proyecto]]"
@@ -47,9 +47,10 @@ cssclasses:
 - F1 — completada
 - F2 — completada
 - F3 — completada
-- F4 — completada
-- F5 — pendiente
-- F6 — pendiente
+- F4 - en progreso (F4-31 completada; F4-21 pendiente)
+- F5 - en progreso
+- F6 - completada
+- F7 - activa (pendiente de cierre)
 - Pendiente histórico: `F4-21` Google Places
 
 ## Navegación rápida
@@ -77,14 +78,14 @@ cssclasses:
 | Horas consumidas | ~185 h / 300 h |
 | Progreso estimado | ~62% |
 | Secciones memoria completadas | 01–08 de 12 |
-| Fases completadas | F1, F2, F3, F4 |
-| Fase activa | F5 |
+| Fases completadas | F1, F2, F3, F6 |
+| Fase activa | F7 |
 
 ## Stack Tecnológico
 
 - Backend: Django, DRF, PostgreSQL, PostGIS, Celery, Redis
 - Frontend: React Native, Expo, React web, Zustand, Axios
-- IA: OR-Tools, Google Cloud Vision API y Claude API
+- IA: OR-Tools, Google Cloud Vision API y Google Gemini API
 - Infra: Docker, GitHub Actions, Render
 
 ## Fuente de verdad
@@ -103,3 +104,6 @@ cssclasses:
 - [[03 Arquitectura/Arquitectura Global]]
 - [[04 Producto/Funcionalidades]]
 - [[09 Operativa/Entorno de Desarrollo]]
+
+
+

@@ -1,11 +1,11 @@
----
+﻿---
 title: Frontend App
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: activo
 fuente: [frontend/src/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[03 Arquitectura/Frontend]]"]
 ---
 # Frontend App
@@ -19,3 +19,5 @@ Implementada en los flujos principales.
 - Componentes reutilizables.
 ## Fuente de verdad
 - `frontend/src/`
+
+

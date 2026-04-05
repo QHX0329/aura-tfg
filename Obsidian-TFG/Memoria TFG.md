@@ -1,4 +1,4 @@
----
+﻿---
 title: Memoria TFG — BargAIn
 tags:
   - tfg/memoria
@@ -11,7 +11,7 @@ secciones-totales: 12
 fuente:
   - docs/memoria/
   - TASKS.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[00 Dashboard/Inicio]]"
   - "[[06 Memoria/Mapa de Memoria]]"
@@ -59,3 +59,5 @@ relacionados:
 
 - `docs/memoria/`
 - `TASKS.md`
+
+

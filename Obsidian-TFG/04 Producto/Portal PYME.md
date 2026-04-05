@@ -1,4 +1,4 @@
----
+﻿---
 title: Portal PYME
 tags:
   - tfg/producto
@@ -11,7 +11,7 @@ fuente:
   - TFG/Fases/F4 — Frontend.md
   - backend/apps/business/
   - frontend/web/src/pages/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[04 Producto/Mapa de Producto]]"
   - "[[08 Código/apps.business]]"
@@ -40,3 +40,5 @@ Base funcional implementada.
 - `frontend/web/src/pages/`
 - `TFG/Fases/F3 — Backend Core.md`
 - `TFG/Fases/F4 — Frontend.md`
+
+

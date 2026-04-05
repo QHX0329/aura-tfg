@@ -1,4 +1,4 @@
-# 2. Definición de Objetivos del Proyecto
+﻿# 2. Definición de Objetivos del Proyecto
 
 ## Objetivo Principal
 
@@ -36,3 +36,4 @@ Desarrollar una aplicación móvil y web que optimice la compra diaria del usuar
 | Ahorro medio calculado por ruta optimizada | > 5% vs compra en un solo supermercado |
 | Satisfacción de usuarios en pruebas | ≥ 4/5 |
 | Disponibilidad del sistema en staging | ≥ 99% |
+

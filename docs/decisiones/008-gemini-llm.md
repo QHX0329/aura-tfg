@@ -1,4 +1,4 @@
-# ADR-008: Migración del asistente LLM a Google Gemini API
+﻿# ADR-008: Migración del asistente LLM a Google Gemini API
 
 ## Estado
 Aceptado
@@ -82,3 +82,4 @@ Extensión adicional en la misma fecha:
 - Nuevo modelo `ShoppingListSemanticPreference` en `optimizer` para persistir esas decisiones.
 - El matching del optimizador reutiliza automáticamente la preferencia guardada en ejecuciones
   futuras de la misma lista, priorizando el producto elegido por el usuario.
+

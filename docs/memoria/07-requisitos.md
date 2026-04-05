@@ -1,4 +1,4 @@
-# 7. Análisis de Requisitos
+﻿# 7. Análisis de Requisitos
 
 ## 7.1 Especificación de Actores del Sistema
 
@@ -317,3 +317,4 @@ El sistema debe almacenar las conversaciones entre los usuarios y el asistente L
 **RN-009 Respeto al robots.txt.** Los spiders de web scraping deben respetar las directivas del archivo robots.txt de cada sitio web. Las cadenas que prohíban explícitamente el scraping serán excluidas y se buscará una alternativa (API oficial o crowdsourcing).
 
 **RN-010 Frecuencia de scraping.** La ejecución de los spiders de scraping se realizará con una frecuencia máxima de una vez cada 24 horas por cadena, con un delay mínimo de 2 segundos entre peticiones consecutivas, para minimizar el impacto en los servidores de destino.
+

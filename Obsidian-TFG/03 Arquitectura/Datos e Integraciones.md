@@ -1,4 +1,4 @@
----
+﻿---
 title: Datos e Integraciones
 tags:
   - tfg/arquitectura
@@ -10,7 +10,7 @@ fuente:
   - docs/api/README.md
   - docs/decisiones/005-google-places-matching-strategy.md
   - docs/decisiones/006-map-marker-navigation.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[03 Arquitectura/Mapa de Arquitectura]]"
   - "[[07 Decisiones/Índice ADR]]"
@@ -38,3 +38,5 @@ Base lista con integraciones parciales.
 - `docs/api/README.md`
 - `docs/decisiones/005-google-places-matching-strategy.md`
 - `docs/decisiones/006-map-marker-navigation.md`
+
+

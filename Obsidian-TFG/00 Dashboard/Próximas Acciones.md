@@ -1,4 +1,4 @@
----
+﻿---
 title: Próximas Acciones
 tags:
   - tfg/dashboard
@@ -11,7 +11,7 @@ fuente:
   - .planning/ROADMAP.md
   - TFG/Fases/F5 — IA, Optimizador y Scraping.md
   - TFG/Fases/F6 — Pruebas, Deploy y Cierre.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[00 Dashboard/Estado del Proyecto]]"
   - "[[02 Gestión/Backlog y Tareas]]"
@@ -41,3 +41,5 @@ Pendiente de ejecución.
 - `.planning/ROADMAP.md`
 - `TFG/Fases/F5 — IA, Optimizador y Scraping.md`
 - `TFG/Fases/F6 — Pruebas, Deploy y Cierre.md`
+
+

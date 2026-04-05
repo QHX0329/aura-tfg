@@ -1,4 +1,4 @@
-# ADR 002: Modelo de Desarrollo Híbrido (Docker + Nativo)
+﻿# ADR 002: Modelo de Desarrollo Híbrido (Docker + Nativo)
 
 ## Fecha: 2026-03-11
 
@@ -21,3 +21,4 @@ Se ha decidido adoptar un modelo de desarrollo híbrido:
 ### Negativas
 - **Dependencia del Host:** Los desarrolladores deben tener Node.js instalado directamente en su sistema.
 - **Configuración de Red:** Se debe asegurar que el frontend nativo pueda comunicarse con el `localhost:8000` del backend expuesto por Docker.
+

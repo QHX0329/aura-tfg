@@ -1,11 +1,11 @@
----
+﻿---
 title: Plantilla Referencia
 tags: [tfg/plantilla]
 tipo: plantilla
 area: plantillas
 estado: activo
 fuente: [docs/memoria/12-bibliografia.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[05 Investigación/Referencias Técnicas y Académicas]]"]
 ---
 # Referencia {{titulo}}
@@ -15,3 +15,5 @@ relacionados: ["[[05 Investigación/Referencias Técnicas y Académicas]]"]
 ## Relevancia para Bargain
 
 ## Fuente
+
+

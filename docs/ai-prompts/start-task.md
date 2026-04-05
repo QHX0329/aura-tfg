@@ -1,4 +1,4 @@
-# START TASK (Claude)
+﻿# START TASK (Claude)
 
 Actua como asistente de desarrollo para BargAIn.
 
@@ -21,3 +21,4 @@ Formato de salida obligatorio:
 - `Plan`
 - `Validation`
 - `Open questions`
+

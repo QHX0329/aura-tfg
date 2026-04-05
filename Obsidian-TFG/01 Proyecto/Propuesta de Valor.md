@@ -1,4 +1,4 @@
----
+﻿---
 title: Propuesta de Valor
 tags:
   - tfg/proyecto
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - README.md
   - docs/memoria/04-comparativa.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[01 Proyecto/Visión y Objetivos]]"
   - "[[05 Investigación/Mercado y Competidores]]"
@@ -35,3 +35,5 @@ Estable.
 
 - `README.md`
 - `docs/memoria/04-comparativa.md`
+
+

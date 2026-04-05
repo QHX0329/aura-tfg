@@ -1,4 +1,4 @@
----
+﻿---
 title: Visión y Objetivos
 tags:
   - tfg/proyecto
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - README.md
   - docs/memoria/02-objetivos.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[01 Proyecto/Mapa del Proyecto]]"
   - "[[06 Memoria/02 Objetivos]]"
@@ -35,3 +35,5 @@ Definido.
 
 - `README.md`
 - `docs/memoria/02-objetivos.md`
+
+

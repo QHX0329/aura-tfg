@@ -1,11 +1,11 @@
----
+﻿---
 title: 06 Planificación y Cronograma
 tags: [tfg/memoria]
 tipo: memoria
 area: memoria
 estado: completada
 fuente: [docs/memoria/06-planificacion.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[02 Gestión/Planificación Semanal]]"]
 ---
 # 06 Planificación y Cronograma
@@ -19,3 +19,5 @@ Completada.
 - 6 fases.
 ## Fuente de verdad
 - `docs/memoria/06-planificacion.md`
+
+

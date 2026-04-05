@@ -1,11 +1,11 @@
----
+﻿---
 title: apps.assistant
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: pendiente
 fuente: [backend/apps/assistant/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[03 Arquitectura/IA, OCR y Optimización]]"]
 ---
 # apps.assistant
@@ -19,3 +19,5 @@ Pendiente de integración productiva.
 - Flujo de chat desde frontend.
 ## Fuente de verdad
 - `backend/apps/assistant/`
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 title: Checklist Defensa TFG
 tags: [tfg/operativa]
 tipo: operativa
@@ -7,7 +7,7 @@ estado: activo
 fuente:
   - TFG/Fases/F6 — Pruebas, Deploy y Cierre.md
   - docs/memoria/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[Fases/F6 — Pruebas, Deploy y Cierre]]"]
 ---
 # Checklist Defensa TFG
@@ -18,3 +18,5 @@ relacionados: ["[[Fases/F6 — Pruebas, Deploy y Cierre]]"]
 - [ ] Slides preparadas
 - [ ] Storyline de producto y arquitectura clara
 - [ ] Riesgos y limitaciones explicados
+
+

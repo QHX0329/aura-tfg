@@ -1,4 +1,4 @@
-# 4. Comparativa con Alternativas Existentes
+﻿# 4. Comparativa con Alternativas Existentes
 
 ## 4.1 Mapa del panorama competitivo
 
@@ -194,3 +194,4 @@ En conclusión, BargAIn no compite frontalmente con Soysuper u OCU Market en el 
 ## Referencias
 
 [22] Porter, M. E. *Competitive Advantage: Creating and Sustaining Superior Performance*. Nueva York: Free Press, 1985.
+

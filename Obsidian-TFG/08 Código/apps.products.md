@@ -1,11 +1,11 @@
----
+﻿---
 title: apps.products
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: activo
 fuente: [backend/apps/products/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[03 Arquitectura/Backend]]"]
 ---
 # apps.products
@@ -18,3 +18,5 @@ Implementado.
 - Búsqueda y autocomplete.
 ## Fuente de verdad
 - `backend/apps/products/`
+
+

@@ -1,4 +1,4 @@
-# 1. Introducción
+﻿# 1. Introducción
 
 En la actualidad, el consumidor español se enfrenta a un escenario de compra diaria marcado por la fragmentación de la información y la ineficiencia logística. Los precios de los productos básicos varían significativamente entre cadenas de supermercados, e incluso entre establecimientos de una misma cadena, y esta variación se produce de forma diaria sin que exista una fuente única y centralizada que permita al usuario tomar decisiones informadas.
 
@@ -11,3 +11,4 @@ El proyecto integra cuatro pilares tecnológicos: un módulo de ingesta de preci
 Este Trabajo Fin de Grado se enmarca en el Grado en Ingeniería Informática — Ingeniería del Software de la Universidad de Sevilla, y tiene como alcance el desarrollo completo de la plataforma: desde el análisis de requisitos y diseño de la arquitectura hasta la implementación, pruebas y despliegue de un prototipo funcional.
 
 La memoria se estructura en doce capítulos que cubren el ciclo completo del desarrollo: objetivos, estado del arte, comparativa con alternativas existentes, herramientas utilizadas, planificación temporal y de costes, análisis de requisitos, diseño e implementación, manual de usuario, pruebas, conclusiones y bibliografía.
+

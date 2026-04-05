@@ -1,4 +1,4 @@
----
+﻿---
 title: Stakeholders y Alcance
 tags:
   - tfg/proyecto
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - docs/memoria/07-requisitos.md
   - TASKS.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[01 Proyecto/Mapa del Proyecto]]"
   - "[[04 Producto/Usuarios y Casos de Uso]]"
@@ -36,3 +36,5 @@ Definido.
 
 - `docs/memoria/07-requisitos.md`
 - `TASKS.md`
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 title: Antecedentes y Estado del Arte
 tags:
   - tfg/investigacion
@@ -8,7 +8,7 @@ area: investigacion
 estado: activo
 fuente:
   - docs/memoria/03-antecedentes.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[05 Investigación/Mercado y Competidores]]"
   - "[[06 Memoria/03 Antecedentes y Estado del Arte]]"
@@ -33,3 +33,5 @@ Documentado.
 ## Fuente de verdad
 
 - `docs/memoria/03-antecedentes.md`
+
+

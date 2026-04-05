@@ -1,4 +1,4 @@
----
+﻿---
 title: Diagramas y Mockups
 tags: [tfg/assets]
 tipo: referencia
@@ -6,7 +6,7 @@ area: assets
 estado: activo
 fuente:
   - docs/diagramas/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[04 Producto/UX y Pantallas]]", "[[03 Arquitectura/Arquitectura Global]]"]
 ---
 # Diagramas y Mockups
@@ -26,3 +26,5 @@ relacionados: ["[[04 Producto/UX y Pantallas]]", "[[03 Arquitectura/Arquitectura
 ## Fuente de verdad
 
 - `docs/diagramas/`
+
+

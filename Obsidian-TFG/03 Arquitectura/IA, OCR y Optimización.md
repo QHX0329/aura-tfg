@@ -1,4 +1,4 @@
----
+﻿---
 title: IA, OCR y Optimización
 tags:
   - tfg/arquitectura
@@ -12,7 +12,7 @@ fuente:
   - backend/apps/optimizer/
   - backend/apps/ocr/
   - backend/apps/assistant/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[03 Arquitectura/Mapa de Arquitectura]]"
   - "[[Fases/F5 — IA, Optimizador y Scraping]]"
@@ -42,3 +42,5 @@ Pendiente de cierre productivo.
 - `backend/apps/optimizer/`
 - `backend/apps/ocr/`
 - `backend/apps/assistant/`
+
+

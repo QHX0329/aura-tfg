@@ -1,11 +1,11 @@
----
+﻿---
 title: apps.scraping
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: parcial
 fuente: [backend/apps/scraping/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[08 Código/Scraping Project]]"]
 ---
 # apps.scraping
@@ -18,3 +18,5 @@ Parcial.
 - Coordinación con proyecto Scrapy.
 ## Fuente de verdad
 - `backend/apps/scraping/`
+
+

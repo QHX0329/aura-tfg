@@ -1,4 +1,4 @@
----
+﻿---
 title: CI-CD y Calidad
 tags: [tfg/operativa]
 tipo: operativa
@@ -8,7 +8,7 @@ fuente:
   - .github/workflows/
   - docs/decisiones/004-testing-strategy.md
   - README.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[07 Decisiones/ADR-004 Estrategia de pruebas]]"]
 ---
 # CI-CD y Calidad
@@ -25,3 +25,4 @@ Activo.
 - `.github/workflows/`
 - `docs/decisiones/004-testing-strategy.md`
 - `README.md`
+

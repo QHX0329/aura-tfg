@@ -1,4 +1,4 @@
----
+﻿---
 title: Identidad Visual
 tags: [tfg/assets]
 tipo: referencia
@@ -8,7 +8,7 @@ fuente:
   - docs/assets/logo.png
   - frontend/src/assets/
   - frontend/web/public/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[10 Assets/Índice de Assets]]"]
 ---
 # Identidad Visual
@@ -22,3 +22,5 @@ Recoge logo y activos visuales reutilizables del proyecto.
 - `docs/assets/logo.png`
 - `frontend/src/assets/`
 - `frontend/web/public/`
+
+

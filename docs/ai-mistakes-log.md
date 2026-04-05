@@ -1,4 +1,4 @@
-# AI Mistakes Log — BargAIn
+﻿# AI Mistakes Log — BargAIn
 
 > Registro de errores cometidos por agentes IA trabajando en este proyecto,
 > con su causa raíz y solución. Actualizar este archivo cada vez que se detecte
@@ -148,3 +148,4 @@
 - **Claude:** Actualiza este archivo al final de cada sesión donde hayas cometido un error, aunque sea menor. Usa el formato estándar. Revisa las REGLAS derivadas al inicio de cada sesión.
 - **Gemini / Codex:** Si detectas un error tuyo o de otro agente en los archivos del proyecto (código incorrecto, documentación contradictoria, etc.), añade una entrada aquí antes de corregirlo. Incluye "— Gemini" o "— Codex" en el encabezado.
 - **Todos:** Si una REGLA de este log aplica a lo que estás a punto de hacer, menciónala explícitamente en tu razonamiento antes de actuar.
+

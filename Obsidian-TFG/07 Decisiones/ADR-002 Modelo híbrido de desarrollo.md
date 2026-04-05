@@ -1,11 +1,11 @@
----
+﻿---
 title: ADR-002 Modelo híbrido de desarrollo
 tags: [tfg/adr]
 tipo: adr
 area: decisiones
 estado: adoptada
 fuente: [docs/decisiones/002-modelo-hibrido.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[09 Operativa/Entorno de Desarrollo]]"]
 ---
 # ADR-002 Modelo híbrido de desarrollo
@@ -18,3 +18,5 @@ Adoptada.
 - Mantiene backend más reproducible.
 ## Fuente de verdad
 - `docs/decisiones/002-modelo-hibrido.md`
+
+

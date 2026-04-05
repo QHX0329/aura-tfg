@@ -1,4 +1,4 @@
----
+﻿---
 title: Entorno de Desarrollo
 tags: [tfg/operativa]
 tipo: operativa
@@ -8,7 +8,7 @@ fuente:
   - README.md
   - CLAUDE.md
   - docs/decisiones/002-modelo-hibrido.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[09 Operativa/Comandos y Flujos]]"]
 ---
 # Entorno de Desarrollo
@@ -24,3 +24,5 @@ Activo.
 - `README.md`
 - `CLAUDE.md`
 - `docs/decisiones/002-modelo-hibrido.md`
+
+

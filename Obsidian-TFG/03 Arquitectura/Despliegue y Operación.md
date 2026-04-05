@@ -1,4 +1,4 @@
----
+﻿---
 title: Despliegue y Operación
 tags:
   - tfg/arquitectura
@@ -11,7 +11,7 @@ fuente:
   - docker-compose.yml
   - README.md
   - .github/workflows/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[03 Arquitectura/Mapa de Arquitectura]]"
   - "[[09 Operativa/CI-CD y Calidad]]"
@@ -40,3 +40,5 @@ Desarrollo operativo; staging final pendiente.
 - `docker-compose.yml`
 - `README.md`
 - `.github/workflows/`
+
+

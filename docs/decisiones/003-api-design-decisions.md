@@ -1,4 +1,4 @@
-# ADR-003: Decisiones de diseño de la API REST (Fase 1)
+﻿# ADR-003: Decisiones de diseño de la API REST (Fase 1)
 
 ## Fecha: 2026-03-17
 
@@ -122,3 +122,4 @@ Durante la implementación del backend en la Fase 1 (tareas F3-01 a F3-06) se to
 - Todos los endpoints nuevos deben respetar el contrato `{success, data/error}` usando los helpers de `apps/core/responses.py`.
 - Las decisiones de autenticación a nivel de acción deben documentarse en el ViewSet con un comentario indicando el porqué, para facilitar revisiones de seguridad.
 - Los parámetros de configuración sensibles al entorno (como tiempos de vida de tokens) deben estar siempre en `.env` y documentados en `.env.example`.
+

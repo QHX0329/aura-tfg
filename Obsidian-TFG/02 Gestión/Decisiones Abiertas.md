@@ -1,4 +1,4 @@
----
+﻿---
 title: Decisiones Abiertas
 tags:
   - tfg/gestion
@@ -10,7 +10,7 @@ fuente:
   - TASKS.md
   - .planning/ROADMAP.md
   - docs/decisiones/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Riesgos y Bloqueos]]"
   - "[[07 Decisiones/Índice ADR]]"
@@ -38,3 +38,5 @@ Abierto.
 - `TASKS.md`
 - `.planning/ROADMAP.md`
 - `docs/decisiones/`
+
+

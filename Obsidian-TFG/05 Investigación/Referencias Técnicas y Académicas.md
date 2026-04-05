@@ -1,4 +1,4 @@
----
+﻿---
 title: Referencias Técnicas y Académicas
 tags:
   - tfg/investigacion
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - docs/memoria/12-bibliografia.md
   - docs/memoria/05-herramientas.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[05 Investigación/Mercado y Competidores]]"
   - "[[06 Memoria/12 Bibliografía]]"
@@ -35,3 +35,5 @@ Pendiente de consolidación final.
 
 - `docs/memoria/12-bibliografia.md`
 - `docs/memoria/05-herramientas.md`
+
+

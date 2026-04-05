@@ -1,11 +1,11 @@
----
+﻿---
 title: 02 Objetivos
 tags: [tfg/memoria]
 tipo: memoria
 area: memoria
 estado: completada
 fuente: [docs/memoria/02-objetivos.md]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[01 Proyecto/Visión y Objetivos]]"]
 ---
 # 02 Objetivos
@@ -18,3 +18,5 @@ Completada.
 - Incluir scraping, OCR, LLM y portal PYME.
 ## Fuente de verdad
 - `docs/memoria/02-objetivos.md`
+
+

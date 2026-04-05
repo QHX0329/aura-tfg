@@ -1,4 +1,4 @@
----
+﻿---
 title: Frontend
 tags:
   - tfg/arquitectura
@@ -10,7 +10,7 @@ fuente:
   - frontend/src/
   - frontend/web/src/
   - docs/diagramas/ui-mockups/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[03 Arquitectura/Mapa de Arquitectura]]"
   - "[[04 Producto/UX y Pantallas]]"
@@ -37,3 +37,5 @@ Muy avanzado.
 - `frontend/src/`
 - `frontend/web/src/`
 - `docs/diagramas/ui-mockups/`
+
+

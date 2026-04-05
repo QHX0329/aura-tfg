@@ -1,11 +1,11 @@
----
+﻿---
 title: Plantilla Módulo
 tags: [tfg/plantilla]
 tipo: plantilla
 area: plantillas
 estado: activo
 fuente: [backend/apps/, frontend/src/, frontend/web/src/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[08 Código/Mapa de Código]]"]
 ---
 # {{modulo}}
@@ -19,3 +19,5 @@ relacionados: ["[[08 Código/Mapa de Código]]"]
 ## Fuente de verdad
 
 ## Relacionados
+
+

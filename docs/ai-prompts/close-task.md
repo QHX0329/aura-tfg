@@ -1,4 +1,4 @@
-# CLOSE TASK (Claude)
+﻿# CLOSE TASK (Claude)
 
 Actua como asistente de desarrollo para BargAIn.
 
@@ -24,3 +24,4 @@ Formato de salida obligatorio:
 - `Documentation updates`
 - `PR summary`
 - `Follow-ups`
+

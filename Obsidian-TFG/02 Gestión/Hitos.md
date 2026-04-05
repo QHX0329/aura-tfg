@@ -1,4 +1,4 @@
----
+﻿---
 title: Hitos
 tags:
   - tfg/gestion
@@ -10,7 +10,7 @@ fuente:
   - README.md
   - .planning/ROADMAP.md
   - docs/STATUS.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Roadmap y Fases]]"
   - "[[00 Dashboard/Cronología]]"
@@ -40,3 +40,5 @@ Parcialmente completados.
 - `README.md`
 - `.planning/ROADMAP.md`
 - `docs/STATUS.md`
+
+

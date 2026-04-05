@@ -1,4 +1,4 @@
----
+﻿---
 title: Índice de Assets
 tags: [tfg/assets]
 tipo: referencia
@@ -7,10 +7,12 @@ estado: activo
 fuente:
   - docs/assets/
   - docs/diagramas/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[10 Assets/Diagramas y Mockups]]", "[[10 Assets/Identidad Visual]]"]
 ---
 # Índice de Assets
 
 - [[10 Assets/Diagramas y Mockups]]
 - [[10 Assets/Identidad Visual]]
+
+

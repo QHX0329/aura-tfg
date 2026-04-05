@@ -1,4 +1,4 @@
----
+﻿---
 title: Usuarios y Casos de Uso
 tags:
   - tfg/producto
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - docs/memoria/07-requisitos.md
   - docs/diagramas/casos-uso/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[04 Producto/Mapa de Producto]]"
   - "[[10 Assets/Diagramas y Mockups]]"
@@ -35,3 +35,5 @@ Definido.
 
 - `docs/memoria/07-requisitos.md`
 - `docs/diagramas/casos-uso/`
+
+

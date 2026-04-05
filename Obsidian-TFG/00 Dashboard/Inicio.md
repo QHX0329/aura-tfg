@@ -1,4 +1,4 @@
----
+﻿---
 title: Inicio
 tags:
   - tfg/dashboard
@@ -11,7 +11,7 @@ fuente:
   - TASKS.md
   - docs/
   - .planning/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[BargAIn — TFG]]"
   - "[[00 Dashboard/Estado del Proyecto]]"
@@ -66,3 +66,5 @@ relacionados:
 - `backend/`
 - `frontend/`
 - `scraping/`
+
+

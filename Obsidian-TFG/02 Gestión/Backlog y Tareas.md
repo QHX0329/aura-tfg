@@ -1,4 +1,4 @@
----
+﻿---
 title: Backlog y Tareas
 tags:
   - tfg/gestion
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - TASKS.md
   - https://www.notion.so/234f4ce235f74bf388c3892e44bd5667
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Mapa de Gestión]]"
   - "[[00 Dashboard/Próximas Acciones]]"
@@ -35,3 +35,5 @@ Activo.
 
 - `TASKS.md`
 - `https://www.notion.so/234f4ce235f74bf388c3892e44bd5667`
+
+

@@ -1,4 +1,4 @@
-# 12. Bibliografía
+﻿# 12. Bibliografía
 
 ## 12.1 Frameworks y documentación técnica
 
@@ -76,6 +76,9 @@ profesionales en el ámbito informático," 2018.
 
 ## 12.5 Nota de actualización
 
-Esta bibliografía se ha sincronizado con el estado del proyecto a 2026-03-19. En la entrega final
+Esta bibliografía se ha sincronizado con el estado del proyecto a 2026-04-05. En la entrega final
 de la memoria se incorporarán DOI/ISBN y formato IEEE definitivo para todas las referencias
-académicas y técnicas usadas durante F5-F6.
+académicas y técnicas usadas durante F5/F7.
+
+
+

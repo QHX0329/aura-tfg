@@ -1,11 +1,11 @@
----
+﻿---
 title: Scraping Project
 tags: [tfg/codigo]
 tipo: modulo
 area: codigo
 estado: pendiente
 fuente: [scraping/]
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados: ["[[03 Arquitectura/IA, OCR y Optimización]]"]
 ---
 # Scraping Project
@@ -19,3 +19,5 @@ Estructura base presente; spiders productivos pendientes.
 - Futuras spiders y pipeline.
 ## Fuente de verdad
 - `scraping/`
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 title: Mercado y Competidores
 tags:
   - tfg/investigacion
@@ -9,7 +9,7 @@ estado: activo
 fuente:
   - docs/memoria/03-antecedentes.md
   - docs/memoria/04-comparativa.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[05 Investigación/Antecedentes y Estado del Arte]]"
   - "[[01 Proyecto/Propuesta de Valor]]"
@@ -34,3 +34,5 @@ Documentado.
 
 - `docs/memoria/03-antecedentes.md`
 - `docs/memoria/04-comparativa.md`
+
+

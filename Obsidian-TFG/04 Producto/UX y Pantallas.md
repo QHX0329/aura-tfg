@@ -1,4 +1,4 @@
----
+﻿---
 title: UX y Pantallas
 tags:
   - tfg/producto
@@ -10,7 +10,7 @@ fuente:
   - docs/diagramas/ui-mockups/
   - TFG/Fases/F4 — Frontend.md
   - frontend/src/screens/
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[04 Producto/Mapa de Producto]]"
   - "[[10 Assets/Diagramas y Mockups]]"
@@ -37,3 +37,5 @@ Avanzado.
 - `docs/diagramas/ui-mockups/`
 - `TFG/Fases/F4 — Frontend.md`
 - `frontend/src/screens/`
+
+

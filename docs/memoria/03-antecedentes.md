@@ -1,4 +1,4 @@
-# 3. Antecedentes y Estado del Arte
+﻿# 3. Antecedentes y Estado del Arte
 
 ## 3.1 Contexto del mercado de la distribución alimentaria en España
 
@@ -181,3 +181,4 @@ Estas cuatro brechas constituyen el espacio de oportunidad que BargAIn aborda co
 [20] Scrapy Project. *Scrapy 2.12 Documentation*. Disponible en: https://docs.scrapy.org
 
 [21] Open Food Facts. *Open Food Facts: The Open Database of Food Products*. Disponible en: https://world.openfoodfacts.org
+

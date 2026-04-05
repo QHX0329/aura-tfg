@@ -1,4 +1,4 @@
----
+﻿---
 title: F3 — Backend Core
 tags:
   - tfg/fase
@@ -14,7 +14,7 @@ fuente:
   - TASKS.md
   - backend/apps/
   - docs/api/README.md
-actualizado: 2026-03-24
+actualizado: 2026-04-05
 relacionados:
   - "[[02 Gestión/Roadmap y Fases]]"
   - "[[03 Arquitectura/Backend]]"
@@ -55,3 +55,5 @@ Completada.
 - [[08 Código/apps.products]]
 - [[08 Código/apps.stores]]
 - [[08 Código/apps.prices]]
+
+

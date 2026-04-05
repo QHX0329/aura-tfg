@@ -1,4 +1,4 @@
-# SYNC TASK (Claude)
+﻿# SYNC TASK (Claude)
 
 Actua como asistente de seguimiento de proyecto para BargAIn.
 
@@ -31,3 +31,4 @@ Reglas:
 - No reordenar ni renumerar tareas.
 - No eliminar historial de tareas completadas.
 - Mantener el formato de tabla existente.
+

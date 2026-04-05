@@ -1,4 +1,4 @@
-# ADR-005: Estrategia de matching de tiendas con Google Places
+﻿# ADR-005: Estrategia de matching de tiendas con Google Places
 
 **Fecha:** 2026-03-24
 **Estado:** Aceptada
@@ -62,3 +62,4 @@ exactos de la Google Places API. Las direcciones también se actualizaron.
   (ej: "Mercadona" vs "seed_Mercadona Kansas City").
 - **Cache del matched_store_id:** Ahorraría queries pero podría devolver datos obsoletos
   si se elimina o desactiva una tienda.
+

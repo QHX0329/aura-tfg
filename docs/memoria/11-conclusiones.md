@@ -1,14 +1,15 @@
-# 11. Conclusiones
+﻿# 11. Conclusiones
 
 ## 11.1 Grado de cumplimiento
 
-Hasta la fecha de corte (2026-03-19), BarGAIN ha completado tres bloques críticos:
+Hasta la fecha de corte (2026-04-05), BarGAIN ha completado cuatro bloques críticos:
 
 - F1: análisis, requisitos y diseño de arquitectura.
 - F2: infraestructura base de desarrollo y CI.
-- F3: backend core completo con módulos de dominio y API documentada.
+- F3: backend core completo con modulos de dominio y API documentada.
+- F6: pruebas finales, deploy a staging y cierre documental completados.
 
-Adicionalmente, F4 se encuentra en progreso avanzado con tareas hasta F4-27 completadas,
+Adicionalmente, F4 se mantiene en progreso avanzado con tareas hasta F4-31 completadas (F4-21 pendiente),
 aportando una experiencia frontend funcional para autenticación, listas, catálogo, mapa,
 notificaciones, perfil y portal business.
 
@@ -24,7 +25,7 @@ notificaciones, perfil y portal business.
 - El optimizador avanzado (F5) aún no está cerrado end-to-end con datos de scraping productivo.
 - OCR y asistente LLM están implementados en frontend como flujo UI. En OCR se ha aprobado la
 	migración de Tesseract a Google Vision API, pendiente de alineación backend definitiva.
-- Faltan hitos de cierre F6: E2E globales, usabilidad formal, staging final y cierre académico.
+- Tras el cierre de F6, los hitos restantes se concentran en F5 (cierre técnico inteligente) y F7 (verificación final y entrega).
 
 ## 11.4 Lecciones aprendidas
 
@@ -35,13 +36,23 @@ notificaciones, perfil y portal business.
 
 ## 11.5 Trabajo futuro inmediato
 
-1. Completar F5 con scraping estable, optimizer multicriterio y OCR/LLM en producción, incluyendo
-   la migración OCR a Google Vision API.
-2. Ejecutar F6 con pruebas finales, despliegue y validación con usuarios.
-3. Consolidar resultados cuantitativos finales (ahorro, rendimiento, precisión OCR) para defensa.
+1. Completar integraciones pendientes de F5 (scraping estable, optimizer multicriterio y OCR/LLM backend).
+2. Validar F5 en condiciones de uso real con evidencia cuantitativa reproducible.
+3. Ejecutar F7 para cierre de entrega, verificación transversal y consolidación cuantitativa final (ahorro, rendimiento, precisión OCR).
 
 ## 11.6 Cierre
 
 El proyecto ya dispone de una base técnica robusta y funcional para demostrar valor real en la
 compra inteligente. El tramo final se centra en cerrar las capacidades avanzadas y validar con
 evidencia experimental completa los objetivos del TFG.
+
+
+
+
+
+
+
+
+
+
+
