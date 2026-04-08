@@ -1,0 +1,16 @@
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{pclass}
+[2008/09/08 PFC class Universidad de Sevilla]
+
+\DeclareOption{openright}{ \PassOptionsToClass{openright}{book} }
+\DeclareOption{openany}{ \PassOptionsToClass{openany}{book} }
+\DeclareOption{twoside}{ \PassOptionsToClass{twoside}{book} }
+\DeclareOption{oneside}{ \PassOptionsToClass{oneside}{book} }
+\ExecuteOptions{twoside,openright}
+\ProcessOptions 
+\LoadClass[a4paper,11pt]{book}
+
+\textwidth=350pt
+\textheight=600pt
+\marginparwidth=100pt

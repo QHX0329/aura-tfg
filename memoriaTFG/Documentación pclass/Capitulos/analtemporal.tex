@@ -1,0 +1,190 @@
+\chapter{An\'alisis temporal y costes de desarrollo}\label{anatemporal}
+
+\section{An\'alisis temporal}
+	En los apartados anteriores hemos descrito fielmente todo el proceso que ha dado como resultado la creaci\'on 
+	de la clase \LaTeX{} \texttt{pclass}. Una vez cubierta la descripci\'on del proceso, pasaremos a tratar en detalle
+	la planificaci\'on seguida para la realizaci\'on de este proyecto, as\'i como un desglose de las labores m\'as 
+	importantes. Dicha tarea la desarrollaremos a lo largo del cap\'itulo que nos ocupa en este instante.
+	
+	Para comenzar con el an\'alisis temporal, hemos de distinguir todas las etapas que nos han ocupado durante la 
+	elaboraci\'on de este proyecto. Un desglose de estas etapas ser\'ia:
+		
+	\begin{enumerate}
+			\item \textbf{Aprendizaje y documentaci\'on sobre \LaTeX{}}.\\ 
+						Al comienzo del desarrollo la soluci\'on al problema propuesto, formateo de memorias para proyectos de 
+						fin de carrera, y su implementaci\'on usando lenguaje \LaTeX{} era completamente desconocida 
+						para ambos autores del proyecto. Para hacer esta afirmaci\'on nos basamos en que ninguno de los autores 
+						gozaba de conocimiento previos acerca de \LaTeX{}, por lo que la construcci\'on de esta clase constitu\'ia
+						nuestro primer contacto con dicho lenguaje de programaci\'on. Debido a lo anterior resultaba indispensable
+						un periodo inicial de aprendizaje y asimilaci\'on de conceptos b\'asicos sobre \LaTeX{}, as\'i como 
+						una b\'usqueda extensa de documentaci\'on a la cual poder acudir en cualquier fase del proyecto.
+						
+			\item \textbf{Creaci\'on de la clase \texttt{pclass.cls}}\\
+						Una vez hemos adquirido los conocimientos necesarios durante la fase anterior, en esta etapa procedemos
+						a la creaci\'on en s\'i misma de la clase \texttt{pclass.cls}.
+			
+			\item \textbf{Fase de pruebas y testeo de \textbf{pclass}}\\
+						Las constantes ideas que surg\'ian para dar soluci\'on a los problemas que nos encontrabamos, dieron como 
+						resultado que la clase estuviese en todo momento sujeta a gran cantidad de cambios. Por esta raz\'on resultaba
+						imprescindible un periodo de pruebas y testeo, para as\'i validar los nuevos elementos introducidos y
+						su correcto funcionamiento con los elementos ya existentes.
+						
+						Adem\'as una vez obtenido el contenido definitivo de \texttt{pclass.cls}, era necesario la creaci\'on de 
+						la plantilla para una memoria de proyecto, a la cual aplicar\'iamos el formato definido en el \texttt{.cls}. 
+						La finalidad de esta plantilla no es m\'as que facilitar al usuario la redacci\'on de su memoria, olvid\'andose 
+						del formato de la misma. Es decir, el usuario har\'a uso de la plantilla y la rellenar\'a con los datos de 
+						su memoria, para finalmente obtener como resultado una memoria acorde al formato establecido para la 
+						presentaci\'on de la misma.
+						
+			\item \textbf{Elaboraci\'on de los cap\'itulos de esta memoria}\\
+						Durante esta fase hemos realizado la redacci\'on de los cap\'itulos que conforman la memoria de este proyecto. 
+										  
+			\item \textbf{Creaci\'on del estilo bibliogr\'afico \texttt{pfcbibstyle}}\\
+						Durante esta etapa hemos creado, haciendo uso de \texttt{Custom-bib}, un nuevo y propio estilo bibliogr\'afico, 
+						el cual aplicaremos a las referencias de esta memoria. Dicho estilo recibe el nombre de pfcbibstyle. Hubiera
+						resultado mas sencillo emplear algunos de los estilos existentes m\'as comunes. Sin embargo esta creaci\'on
+						nos permitir\'a solucionar algunos problemas derivados del ingl\'es como la ordenaci\'on err\'onea por orden
+						alfab\'etico de la letra e\~ne. As\'i mismo nos permitir\'a agrupar las referencias por orden alfab\'etico
+						en lugar de por orden de aparici\'on como suele ser m\'as habitual, adem\'as en las citas no aparecer\'a un
+						n\'umero sino las inciales del autor o autores y el a\~no de publicaci\'on.  
+			
+\end{enumerate}
+
+
+	La planificaci\'on temporal consistir\'a en una estimaci\'on del tiempo dedicado a cada una de las fases
+	de desarrollo del proyecto. Para ello asignaremos a cada una de esas fases las dos estimaciones siguientes:
+	
+\begin{enumerate}
+	\item \textbf{Estimaci\'on Inicial} la cual es empleada en los inicios del desarrollo. Suele ser poco exacta,
+				pero se usan como primera aproximaci\'on para la viabilidad del proyecto.
+
+	\item \textbf{Estimaci\'on Final} la cual expresa la duraci\'on y el esfuerzo real empleado.
+\end{enumerate}
+ 
+	Para realizar una evaluaci\'on de la exactitud de la estimaci\'n se realiza una comparaci\'on de los valores reales 
+	con los valores estimados, teniendo en cuenta el error relativo medio. Tomando $RE =\frac{A - E}{A}$, donde A 
+	representa el valor real y E el valor estimado previamente, calculamos el error relativo medio mediante la 
+	expresi\'on: \\
+	
+	\begin{displaymath}
+     \left(\frac{1}{n}\right) \sum_{i=1}^{n} RE   
+	\end{displaymath} \\
+	
+	
+	Las estimaciones de cada fase se han realizado en d\'ias, considerando una dedicaci\'on de dos personas durante una
+	media de 4 horas al d\'ia. Dicho esto obtendr\'iamos las estimaciones mostradas en la Tabla~\ref{tab:planif}.										Analizando los datos de la misma obtenemos un error relativo medio de 14.02 \%.														
+																												
+\begin{table}
+	\centering
+		\begin{tabular}{|l|r|r|r|}
+			\hline
+			\textbf{Tarea} & \textbf{Est. Inicial} & \textbf{Est. Final} & \textbf{RE}\\ \hline \hline
+			 Documentaci\'on sobre \LaTeX{}  & 25 d\'ias & 36 d\'ias & 30.5 \%  \\
+			 Creaci\'on \texttt{pclass.cls} & 18 d\'ias & 19 d\'ias & 5.3 \% \\
+			 Fase de pruebas y testeo  & 12 d\'ias & 14 d\'ias & 14.3  \% \\
+			 Elaboraci\'on cap\'itulos memoria & 8 d\'ias & 10 d\'ias & 20 \% \\
+			 Creaci\'on \texttt{pfcbibstyle}  & 5 d\'ias & 5 d\'ias & 0 \% \\		
+			\hline
+		\end{tabular}
+	\caption{Planificaci\'on del proyecto}
+	\label{tab:planif}
+\end{table}
+
+
+
+\section{Costes de desarrollo}
+	En esta secci\'on estudiaremos detalladamente los costes que han supuesto la creaci\'on de la clase \texttt{pclass.cls}.
+	Comenzaremos diciendo que no ha sido necesaria inversi\'on alguna destinada a la adquisici\'on de dispositivos 
+	espec\'ificos, hardware o software. Este hecho ha supuesto una gran ventaja a la hora de elaborar el proyecto que nos 
+	ocupa, ya que los costes se centrar\'an unicamente en los campos de costes de personal y costes indirectos.
+	
+	
+	\subsection{Inversiones}
+	En lo que respecta a la inversi\'on para la adquisici\'on de dispositivos espec\'ificos, tenemos que decir que en 
+	nuestro caso dicha inversi\'on ha sido nula. Esto se debe a que no requeriamos de ning\'un material espec\'ifico para
+	materializar la clase \texttt{pclass}.
+	
+		
+	\subsection{Costes de software}
+	En lo que respecta los costes de software usado para el desarrollo del proyecto, hemos de indicar primeramente
+	que todo el software empleado es free software, o lo que es lo mismo software libre. Esto  supondr\'a un coste cero
+	en lo que respecta a este apartado.
+	
+	Adem\'as del coste cero, el sofware libre tambi\'en nos proporciona muchas otras ventajas. Este tipo de software 
+	brinda libertad a los usuarios sobre su producto adquirido y por tanto, una vez obtenido, puede ser usado, copiado,
+	estudiado, modificado y redistribuido libremente. Seg\'un la Free Software Foundation, el software libre se refiere 
+	a la libertad de los usuarios para ejecutar, copiar, distribuir, estudiar, cambiar y mejorar el software; de modo 
+	m\'as preciso, se refiere a cuatro libertades de los usuarios del software: la libertad de usar el programa, 
+	con cualquier prop\'osito; de estudiar el funcionamiento del programa, y adaptarlo a las necesidades; de distribuir 
+	copias, con lo que puede ayudar a otros; de mejorar el programa y hacer p\'ublicas las mejoras, de modo que toda la 
+	comunidad se beneficie. El software libre suele estar disponible gratuitamente, o al precio de coste de la distribuci\'on 
+	a trav\'es de otros medios; sin embargo no es obligatorio que sea as\'i, por ende no hay que asociar la idea de 
+	software libre a software gratuito.  
+	 
+ 	Entre el software usado podemos citar entre otros:
+ 	
+\begin{itemize}
+	\item \TeX{}Live, en caso de que usemos Linux.
+	\item Mik\TeX{}, en caso de usar Windows.
+	\item Kyle, como editor \LaTeX{} sobre Linux.
+	\item \TeX{}nicCenter, como editor \LaTeX{} sobre Windows.
+	\item GhostScript y GSview, como visores de documentos.
+\end{itemize}
+ 	
+	En lo que respecta a la variedad de paquetes utilizados para complementar a la clase \texttt{pclass}, todos ellos
+	son propuestas de software libre bajo licencia GNU, implicando tambien un coste nulo.
+	
+	
+	\subsection{Costes de hardware}
+	En el proceso de desarollo ha sido necesaria la adquisici\'on de dos equipos inform\'aticos. Concretamente hemos 
+	hecho uso de dos PC port\'atiles Dell XPS 1530, los cuales hemos incluido como costes de hardware en el presupuesto.
+	El valor que representan estos equipos es de 999 euros/unidad.
+	
+	
+	\subsection{Costes indirectos}
+	Dentro de esta secci\'on dedicada a los costes indirectos incluiremos el gasto producido por material consumible 
+	(CD, impresora, papel, etc), luz consumida, limpieza de la zona de desarrollo, etc. Hemos considerado adecuado 
+	 que un incremento del 5 \% en el presupuesto total ser\'ia representativo de este gasto.
+
+	
+	\subsection{Costes de personal}
+	
+	Para calcular el coste personal hemos utilizado como referencia los sueldos brutos estipulados m\'inimos 
+	fijados en el BOE del 21 de Marzo de 2007, en el Anexo III. El sueldo anual para un Titulado de grado medio 
+	es de 14637.56 euros \'o 6.53 $\frac{euros}{hora}$. 
+	
+	Tambi\'en debemos tener en cuenta el n\'umero total de horas dedicadas a la elaboraci\'on de este proyecto. Dicho 
+	dato tiene un valor de 672 horas, representado por el trabajo realizado por dos personas durante 84 d\'ias dedicando 
+	una media de 4 horas/d\'ia.
+	
+	De esta forma el coste personal supondr\'a una cuant\'ia de:
+	
+\begin{center}
+$672 horas \cdot 6.53 \frac{euros}{hora} = 4388.16 euros$.
+\end{center}
+	
+	
+	\subsection{Presupuesto}
+	
+	Haciendo uso de los costes especificados anteriormente, obtendremos el presupuesto mostrado en la 
+	Tabla~\ref{tab:presup}.
+
+\begin{table}
+	\centering
+		\begin{tabular}{|p{7cm}|r|}
+		\hline
+		Inversiones & 0 euros \\
+		Costes Software & 0 euros \\
+		Costes Hardware & 1998 euros \\
+		Costes Personal & 4388.16 euros \\
+		Costes Indirectos & 319.31 euros \\ \hline  
+		\textbf{TOTAL} & 6705.47 euros \\	
+		\hline	
+		\end{tabular}
+	\caption{Presupuesto del proyecto}
+	\label{tab:presup}
+\end{table}
+
+		
+	
+	

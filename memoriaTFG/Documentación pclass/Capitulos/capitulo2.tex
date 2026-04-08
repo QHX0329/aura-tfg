@@ -1,0 +1,524 @@
+\chapter{Conceptos b\'asicos}	\label{conceptos} 
+                                                 
+\section{Primeros pasos en \LaTeX{}} 
+	Desde el punto de vista del usuario, \LaTeX{} se presenta como un programa de l\'inea de comandos que toma 
+	como par\'ametro 	principal el fichero fuente que contiene la descripci\'on (texto y comandos \LaTeX{}) del 
+	documento a generar. Existen dos comandos para ejecutar \LaTeX{}:
+	
+	\begin{enumerate}
+		\item \texttt{latex} genera el documento final en formato DVI (DeVice Independent), a partir del cual puede obtenerse, 
+		mediante la aplicaci\'on \texttt{dvips}, el documento en formato PS (PostScript):
+		
+		\texttt{latex fichero.tex} (genera fichero.dvi, necesita un visualizador espec\'ifico, pero por la naturaleza 
+		del formato, la lectura resulta lenta)
+		
+		\texttt{dvips fichero.dvi -o fichero.ps} (genera fichero.ps, m\'as manejable que DVI y directamente entendible por 
+		muchas impresoras l\'aser, se puede ver con GhostScript/GhostView)
+		
+		\item \texttt{pdflatex} genera el documento directamente en formato PDF (Portable Document File, de uso muy extendido 
+		en Internet):
+		
+		\texttt{pdflatex fichero.tex} (genera fichero.pdf, visualizable con Adobe Acrobat Reader) 
+	\end{enumerate}
+	
+	A la hora de incluir gr\'aficos o im\'agenes en los documentos, hay que tener en cuenta que cada una de estas aplicaciones 
+	es capaz de comprender s\'olo unos ciertos formatos gr\'aficos, si necesit\'asemos insertar figuras almacenadas en otros 
+	formatos no directamente soportados, tendremos que recurrir a un programa que haga la conversi\'on. Por una 
+	parte \texttt{latex} trabaja c\'omodamente tan s\'olo con EPS (Encapsulated PostScript, una variante especial de PS), 
+	sin embargo \texttt{pdflatex} espera que las figuras est\'en en PDF (preferible para los gr\'aficos vectoriales), 
+	PNG (adecuado para las capturas de pantalla o cualquier imagen generada por ordenador) o JPG (adecuada para fotograf\'ias).
+
+	Una vez conocemos todo lo mencionado en el p\'arrafo anterior, ?`c\'omo hago uso de esos comandos en mi sistema operativo? 					\LaTeX{} puede usarse en Linux (y otros sistemas tipo UNIX) y en MS Windows (aunque parezca sorprendente). 
+	Dependiendo del sistema operativo, la distribuci\'on y el m\'etodo de instalaci\'on var\'ia.
+	
+		\subsection{Instalaci\'on de \LaTeX{} y \TeX{}}
+	
+				\subsubsection{\LaTeX{} en Windows} %%%sacado de udla tesis + recetario latex
+				La versi\'on m\'as popular de \LaTeX{} para Windows se llama MiK\TeX{} y la puedes bajar desde 
+				\url{http://www.miktex.org}. Desde ah\'i bajas un Setup Wizard que, una vez instalado, se conecta a internet 
+				para bajar e instalar el resto del programa. Realmente se instala una versi\'on reducida (guiada por asistente 
+				al t\'ipico estilo Windows), pero luego se pueden descargar aquellos m\'odulos LaTeX (denominados paquetes) que 
+				se vayan necesitando mediante MiK\TeX{} Options, que viene incluido en la distribuci\'on. La distribuci\'on 
+				de MiK\TeX{} se puede ir actualizando mediante MiK\TeX{} Update Wizard.
+	
+				Es muy recomendable, si quieres generar y ver tu tesis en el formado PDF, que tengas instalado 
+				Adobe Acrobat Reader en tu ordenador. Lo m\'as normal es que ya lo tengas instalado pero, si no lo tienes, 
+				puedes bajarlo desde \url{http://www.adobe.com/products/acrobat}.
+	
+				Necesitas tambi\'en los programas AFPL Ghostscript y GSview para poder manipular archivos PostScript. 
+				Ambos programas los puedes conseguir en la p\'agina de Internet \url{http://www.cs.wisc.edu/~ghost/}.
+
+				Por \'ultimo, tambi\'en es muy recomendable que bajes el \TeX{}nicCenter. Es un editor de texto especializado 
+				para \LaTeX{} con botones y ventanas, muy intuitivo y f\'acil de usar. Este programa, altamente recomendable, 
+				lo puedes bajar en la direcci\'on \url{http://www.toolscenter.org/products/texniccenter/}.
+
+				Es importante que el \'ultimo programa que instales sea \TeX{}nicCenter. Ya que, al iniciarlo la primera vez, 
+				buscar\'a donde tienes instalados MiK\TeX{} y el resto de las aplicaciones para configurar todas las opciones 
+				necesarias de manera autom\'atica. Una vez instalado \TeX{}nicCenter, s\'olo hay que realizar unos sencillos pasos 
+				de configuraci\'on, consistentes en confirmar la ruta de acceso a MiK\TeX{} e indicar que se va a usar
+				PDF (preferible, aunque tambi\'en puede ser DVI o PS) como formato de salida, esto har\'a que \TeX{}nicCenter 
+				ejecute autom\'aticamente el comando \LaTeX{} apropiado.
+			
+				\subsubsection{\LaTeX{} en Linux} 
+				Hay que instalar el paquete TeTex. \'Este incluye todo lo necesario, excepto el editor para poder escribir 
+				los documentos LaTeX. Sin embargo el paquete TeTex no ha sido mantenido en mucho tiempo. Esto ha llevado a buscar 
+				una soluci\'on, \'esta se llama TexLive, que incorpora soluciones a bugs y mejoras respecto a su antecesor.
+				Como editor puede usarse:
+			
+	\begin{itemize}
+	\item \textbf{Emacs} (paquete emacs), que dispone de un modo de edici\'on especial para \LaTeX{}, realzando 
+	los comandos. Puede ser conveniente evaluar una extensi\'on para emacs denominada AUCTeX, que indenta 
+	autom\'aticamente, con lo cual se obtiene una mejora ostensible de la legibilidad del c\'odigo, entre 
+	otras cosas.
+	\figura{0.9}{img/Emacs}{Emacs}{fig:emacs}{}			
+	\item \textbf{Kile}, en el cual dispodemos de autocompletado de comandos \LaTeX{}, coloreado de sintaxis, 
+	Kile autom\'aticamente marca los comandos \LaTeX{} y resalta los parentesis, y puede trabajar 
+	con m\'ultiples ficheros a la vez. Adem\'as tambi\'en proporciona plantillas y patrones para facilitar 
+	la creaci\'on de documentos.
+  	\figura{0.9}{img/kile}{Kile}{fig:kile}{}
+	\end{itemize}
+			
+			
+\section{Lo que necesita saber sobre \LaTeX{}}%%%%%sacado de libros latex2.zip ---> una descripcion de latex2e
+		
+		\subsection{Ficheros de entrada de \LaTeX{}}
+		El fichero de entrada para \LaTeX{} es un fichero de texto en formato ASCII. Se puede crear con cualquier editor 
+		de textos. Contiene tanto el texto que se debe imprimir como las instrucciones, con las cuales \LaTeX{} interpreta 
+		c\'omo debe disponer el texto. 
+				
+				\subsubsection{Signos de espacio}
+				Los caracteres invisibles, como el espacio en blanco, el tabulador y el final de l\'inea, son tratados por 
+				\LaTeX{} como signos de espacio propiamente dichos. Varios espacios seguidos se tratan como un espacio en 
+				blanco. Generalmente, un espacio en blanco al comienzo de una l\'inea se ignora, y varios renglones en blanco 
+				se tratan como un rengl\'on en blanco. 
+
+				Un rengl\'on en blanco entre dos l\'ineas de texto definen el final de un p\'arrafo. Varias l\'ineas en blanco 
+				se tratan como una sola l\'inea en blanco. El texto que mostramos a continuaci\'on es un ejemplo. A la derecha 
+				se encuentra el texto del fichero de entrada y a la izquierda la salida formateada.\\
+				
+%%%%%%%%%%%%%% FIGURA PAG17 No importa si introduce varios espacios tras una palabra...%%%%%%%%%%%%%%%%%  
+\begin{minipage}{0,4\linewidth}
+No importa si introduce varios espacios
+tras una palabra.
+
+Con una l\'inea vac\'ia se empieza un
+nuevo p\'arrafo.
+\end{minipage}
+\hfill\begin{minipage}{0,5\linewidth}
+\begin{verbatim}
+No importa si introduce
+varios      espacios tras
+una palabra.
+
+Con una línea vacía se empieza 
+un nuevo párrafo.
+\end{verbatim}
+\end{minipage}
+				
+				\subsubsection{Caracteres especiales}
+				Los s\'imbolos siguientes son caracteres reservados que tienen un significado especial para \LaTeX{} o 
+				que no est\'an disponibles en todos los tipos. Si los introduce en su fichero directamente es muy probable 
+				que no se impriman o que fuercen a \LaTeX{} a hacer cosas que Vd. no desea.\\
+								\begin{center}\verb+$ & % # _ { } ~ ^ \+ \end{center}
+				Como puede ver, algunos de estos caracteres se pueden incluir en sus documentos anteponiendo el car\'acter 
+				(backslash) \verb+\+:
+				 				\begin{center}\verb+\$ \& \% \# \_ \{ \}+ \end{center}
+				 				
+				Los restantes s\'imbolos y otros muchos caracteres especiales se pueden imprimir en f\'ormulas matem\'aticas 
+				o como acentos con \'ordenes espec\'ificas.
+				
+				\subsubsection{Las \'ordenes de \LaTeX{}}
+				En las \'ordenes \LaTeX{} se distinguen las letras may\'usculas y las min\'usculas. Toman uno de los dos 
+				formatos siguientes:
+						\begin{itemize}
+								\item Comienzan con un backslash y tienen un nombre compuesto s\'olo por letras. Los nombres de las 
+								\'ordenes acaban con uno o m\'as espacios en blanco, un car\'acter especial o una cifra.
+								
+								\item Se compone de un backslash y un car\'acter especial. 
+						\end{itemize}
+ 
+				\LaTeX{} ignora los espacios en blanco que van tras las \'ordenes. Si se desea introducir un espacio en blanco 
+				tras una instrucci\'on, se debe poner o bien \{\} y un espacio, o bien una instrucci\'on de espaciado despu\'es 
+				de la orden. Con \{\} se fuerza a \LaTeX{} a dejar de ignorar el resto de espacios que se encuentren despu\'es 
+				de la instrucci\'on.\\
+				
+%%%%%%%%%%%%%%FIGURA PAG 17 He leido que Knuth distingue a la gente ...%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{minipage}{0,4\linewidth}
+He le\'ido que Knuth distingue 
+a la gente que trabaja con 
+\TeX{} en \TeX{}nicos y \TeX{}pertos.\\
+Hoy es \today.
+\end{minipage}
+\hfill\begin{minipage}{0,5\linewidth}
+\begin{verbatim}
+He le'ido que Knuth distingue 
+a la gente que trabaja con 
+\TeX{}  en \TeX{}nicos 
+y \TeX{}pertos.\\
+Hoy es \today.
+\end{verbatim}
+\end{minipage}\\
+\\
+
+				Algunas instrucciones necesitan un par\'ametro que se debe poner entre llaves \{\} tras la instrucci\'on. Otras 
+				\'ordenes pueden llevar par\'ametros opcionales que se a\~naden a la instrucci\'on entre corchetes [ ] o no. 
+
+
+				\subsubsection{Comentarios}
+				Cuando \LaTeX{} encuentra un car\'acter \% mientras procesa un fichero de entrada, ignora el resto de la 
+				l\'inea. Esto suele ser \'util para introducir notas en el fichero de entrada que no se mostrar\'an en la 
+				versi\'on impresa.\\
+%%%%%%%%%%%%%%%%%%%%%%%%% FIGURA PAG 18 Esto es un ejemplo tonto...%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{minipage}{0,4\linewidth}
+Esto es un % tonto 
+% o mejor instructivo
+ejemplo.
+\end{minipage}
+\hfill\begin{minipage}{0,5\linewidth}
+\begin{verbatim}
+Esto es un % tonto 
+% o mejor instructivo
+ejemplo.
+\end{verbatim}
+\end{minipage}\\
+\\
+
+				Esto a veces puede resultar \'util cuando nos encontramos con l\'ineas demasiado largas en el fichero fuente. 
+				Si no quisi\'esemos introducir un espacio entre dos palabras, y preferimos tener dos renglones, entonces el signo 
+				\% debe ir justo al final del rengl\'on pero pegado al \'ultimo car\'acter. De este modo comentamos el car\'acter 
+				de salto de l\'inea, que se hubiese tratado como un espacio en blanco.\\ 
+%%%%%%%%%%%%%%%%%%%%%%%%% FIGURA PAG 18 Esto es otro ejemplo...%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{minipage}{0,4\linewidth}
+Este es otro ejem% y
+% ahora el resto
+plo.
+\end{minipage}
+\hfill\begin{minipage}{0,5\linewidth}
+\begin{verbatim}
+Este es otro ejem% y
+% ahora el resto
+plo.
+\end{verbatim}
+\end{minipage}\\
+\\
+
+		\subsection{Estructura de un fichero de entrada}
+		Cuando \LaTeXe{} procesa un fichero de entrada, espera de el que siga una determinada estructura. Todo 
+		fichero de entrada debe comenzar con la orden\\ 
+				\verb+\documentclass{...}+\\
+		
+		Esto indica qu\'e tipo de documento es el que se pretende crear. Tras esto, se pueden incluir \'ordenes que 
+		influir\'an sobre el estilo del documento entero, o cargar paquetes que a\~nadir\'an nuevas propiedades al sistema 
+		de \LaTeX{}. Para cargar uno de estos paquetes se usar\'a la instrucci\'on\\ 
+				\verb+\usepackage{...}+\\
+		Cuando todo el trabajo de configuraci\'on est\'e realizado entonces comienza el cuerpo del texto con la instrucci\'on\\
+				\verb+\begin{document}+\\
+		El \'area comprendida entre \verb+\documentclass{...}+ y \verb+\begin{document}+ recibe el nombre de pre\'ambulo, una 
+		vez que \'este ha finalizado se introducir\'a el texto mezclado con algunas instrucciones \'utiles de \LaTeX{}. Por 
+		\'ultimo para finalizar el documento debe ponerse la orden\\ 
+				\verb+\end{document}+\\
+		De esta forma \LaTeX{} ingorar\'a cualquier cosa que se ponga tras esta instrucci\'on. Las figuras \ref{fig:minimo} y
+		\ref{fig:articulo} muestran el contenido m\'inimo de un fichero de \LaTeXe{}, as\'i como un fichero de entrada algo m\'as complicado.\\
+	%%%%%%%%%%%%%%%%%%%%%%%%% FIGURA 1.1 y 1.2 PAG 19%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+\begin{figure}[htbp]
+\centering
+\begin{tabular}{lp{10cm}}
+	\hline
+		\verb+\documentclass{article}+\\
+		\verb+\begin{document}+\\
+		\verb+Lo bueno si es breve, dos veces bueno.+\\
+		\verb+\end{document}+\\	
+		\verb+\end{verbatim}+\\
+	\hline
+\end{tabular}
+\caption{Fichero m\'inimo de \LaTeX{}}
+\label{fig:minimo}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tabular}{lp{10cm}}
+	\hline
+		\verb+\documentclass[a4paper,11pt]{article}+\\
+		\verb+\usepackage{latexsym}+\\
+		\verb+\usepackage[activeacute,spanish]{babel}+\\
+		\verb+\author{H.~Partl}+\\	
+		\verb+\title{Minimizando} +\\
+		\verb+\frenchspacing+\\
+		\verb+\begin{document}+\\
+		\verb+\maketitle+\\
+		\verb+\tableofcontents+\\
+		\verb+\section{Inicio}+\\
+		\verb+Aqu'i comienza un art'iculo estupendo.+\\
+		\verb+\section{Fin}+\\
+		\verb+Aqu'i acaba mi art'iculo.+\\
+		\verb+\end{document}+\\
+	\hline
+\end{tabular}
+\caption{Ejemplo de art\'iculo cient\'ifico en espa\~nol}
+\label{fig:articulo}
+\end{figure}
+		
+		\subsection{El formato del documento}
+				\subsubsection{Clases de documetos}
+				Cuando procesa un fichero de entrada, lo primero que necesita saber \LaTeX{} es el tipo de documento que el 
+				autor quiere crear. Esto se indica con la instrucci\'on\\
+							\verb+\documentclass[opciones]{clase}+\\
+				En este caso, la clase indica el tipo de documento que se crear\'a. En el cuadro \ref{tab:clases} se muestran 
+				las clases de documento que explicaremos m\'as adelante. La distribuci\'on de \LaTeXe{} proporciona m\'as clases para 
+				otros documentos, como cartas y transparencias. El par\'ametro de opciones personaliza el comportamiento de la 
+				clase de documento elegida. Las opciones se deben separar con comas. En el cuadro \ref{tab:opciones} se indican 
+				las opciones m\'as comunes de las clases de documento est\'andares. 
+				
+				Por ejemplo: un fichero de entrada para un documento de \LaTeX{} podr\'ia comenzar con\\ 
+							\verb+\documentclass[11pt,twoside,a4paper]{article}+\\
+				Esto le indica a \LaTeX{} que componga el documento como un art\'iculo utilizando tipos del cuerpo 11, y que 
+				produzca un formato para impresi\'on a doble cara en papel DIN A4.\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%TABLA 1.1 PAG 20 Y 1.2 PAG 22%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{table}[htbp]
+\centering
+	\hrulefill
+	\begin{description}
+	\item[article] para art\'iculos de revistas especializadas, ponencias, trabajos de pr\'acticas de formaci\'on, 
+	trabajos de seminarios, informes peque\~nos, solicitudes, dict\'amenes, descripciones de programas, 
+	invitaciones y muchos otros.
+	\item[report] para informes mayores que constan de m\'as de un cap\'itulo, proyectos fin de carrera, tesis doctorales, 
+	libros peque\~nos, disertaciones, guiones y similares.
+	\item[book] para libros de verdad.
+	\item[slide] para transparencias. Esta clase emplea tipos grandes sans serif.
+	\end{description}
+	\hrulefill
+\caption{Clases de documentos}
+\label{tab:clases}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+	\hrulefill
+	\begin{description}
+	\item[10pt, 11pt, 12pt] Establecen el tama\~no (cuerpo) para los tipos. Si no se especifica ninguna opci\'on, 
+	se toma \textbf{10pt}.
+	\item[a4paper, letterpaper, \ldots] Define el tama\~no del papel. Si no se indica nada, se toma \textbf{letterpaper}. 
+				Aparte de \'este se puede elegir \textbf{a5paper}, \textbf{b5paper}, \textbf{executivepaper} y \textbf{legalpaper}.
+	\item[fleqn] Dispone las ecuaciones hacia la izquierda en vez de centradas.
+	\item[leqno] Coloca el n\'umero de las ecuaciones a la izquierda en vez de a la derecha.
+	\item[titlepage, notitlepage] Indica si se debe comenzar una p\'agina nueva tras el t\'itulo del documento o no. Si no 
+				se indica otra cosa, la clase \textbf{article} no comienza una p\'agina nueva, mientras que \textbf{report} y 
+				\textbf{book} s\'i.
+	\item[twocolumn] Le dice a \LaTeX{} que componga el documento en dos columnas.
+	\item[twoside, oneside] Especifica si se debe generar el documento a una o a dos caras. En caso de no indicarse otra 
+				cosa, las clases \textbf{article} y \textbf{report} son a una cara y la clase \textbf{book} es a dos.
+	\item[openright, openany] Hace que los cap\'itulos comienzen o bien s\'olo en p\'aginas a la derecha, o bien en la 
+				pr\'oxima que est\'e disponible. Esto no funciona con la clase \textbf{article}, ya que en esta clase no 
+				existen cap\'itulos. De modo predeterminado, la clase \textbf{report} comienza los cap\'itulos en la pr\'oxima 
+				p\'agina disponible y la clase \textbf{book} las comienza en las p\'aginas a la derecha.
+	\end{description}
+	\hrulefill
+\caption{Opciones de clases de documentos}
+\label{tab:opciones}
+\end{table}
+  
+				
+				\subsubsection{Paquetes}
+				En algunas situaciones el \LaTeX{} b\'asico no es suficiente, por ejemplo si queremos incluir gr\'aficos, texto 
+				en color o el c\'odigo fuente de un fichero, necesita mejorar las capacidades de \LaTeX{}. Tales mejoras son 
+				conocidas como paquetes. Los paquetes se activan con la orden\\
+							\verb+\usepackage[opciones]{paquete}+\\
+				donde paquete es el nombre del paquete que queremos usar y opciones es una lista palabras clave que activan 
+				funciones especiales del paquete. Algunos paquetes vienen con la distribuci\'on b\'asica de \LaTeX{} (v\'ease la 
+				Cuadro~\ref{tab:paquetes}). Otros se porporcionan por separado. En la Gu\'ia Local \cite{guiaa} puede encontrar m\'as 
+				informaci\'on sobre los paquetes disponibles en su instalaci\'on local. La fuente principal de informaci\'on 
+				sobre \LaTeX{} es The \LaTeX{} Companion \cite{latexcomp}. Contiene descripciones de cientos de paquetes, as\'i como 
+				informaci\'on sobre c\'omo escribir sus propias extensiones a \LaTeXe{}.\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%INSERTAR TABLA 1.3 PAG 22%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{table}[htbp]
+\centering
+	\hrulefill
+	\begin{description}
+	\item[doc] Permite la documentaci\'on de paquetes y otros ficheros de \LaTeX{}.\\ Se describe en \texttt{doc.dtx}. 
+	\item[exscale] Proporciona versiones escaladas de los tipos adicionales para matem\'aticas.\\
+					Descrito en \texttt{ltexscale.dtx}.  
+	\item[fontenc] Especifica qu\'e codificaci\'on de tipo debe usar \LaTeX{}.\\
+					Descrito en \texttt{ltoutenc.dtx}.
+	\item[ifthen] Proporciona instrucciones de la forma `si. . . entonces. . . si no. . . '\\
+					Descrito en \texttt{ifthen.dtx}.
+	\item[latexsym] Para que \LaTeX{} acceda al tipo de s\'imbolos, se debe usar el paquete \texttt{latexsym}.\\
+					Descrito en \texttt{latexsym.dtx}.
+	\item[makeidx] Proporciona instrucciones para producir \'indices de materias.
+	\item[syntonly] Procesa un documento sin componerlo, lo cual es \'util para la verificaci\'on r\'apida de errores.\\
+					Se describe en \texttt{syntonly.dtx}.
+	\item[inputenc] Permite la especificaci\'on de una codificaci\'on de entrada como ASCII (con la opci\'on ascii), 
+					ISO Latin-1 (con la opci\'on latin1), ISO Latin-2 (con la opci\'on latin2), p\'aginas de c\'odigo de 
+					437/850 IBM (con las opciones cp437 y cp580, respectivamente), Apple Macintosh (con la opci\'on applemac), 
+					Next (con la opci\'on next), ANSI-Windows (con la opci\'on ansinew) o una definida por el usuario.\\ 
+					Descrito en \texttt{inputenc.dtx}.
+	\end{description}
+	\hrulefill
+\caption{Algunos paquetes distribuidos con \LaTeX{}}
+\label{tab:paquetes}
+\end{table}
+		
+				\subsubsection{Estilo de p\'agina}
+				Con \LaTeX{} existen tres combinaciones predefinidas de cabeceras y pies de p\'agina, a las que se llaman 
+				estilos de p\'agina. El par\'ametro estilo de la instrucci\'on\\
+							\verb+\pagestyle{estilo}+\\
+				define cu\'al usarse. La Cuadro~\ref{tab:estilos} muestra los estilos de p\'agina predefinidos.\\ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%TABLA 1.4 PAG 23%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{table}[htbp]
+\centering
+	\hrulefill
+	\begin{description}
+	\item[plain] imprime los n\'umeros de p\'agina en el centro del pie de las p\'aginas. Este es el estilo de 
+				p\'agina que se toma si no se indica ning\'un otro. 
+	\item[headings] en la cabecera de cada p\'agina imprime el cap\'itulo que se est\'a procesando y el n\'umero de 
+				p\'agina, mientras que el pie est\'a vac\'io. (Este estilo es similar al empleado en este documento). 
+	\item[empty] deja tanto la cabecera como el pie de las p\'aginas vac\'ios.
+	\end{description}
+	\hrulefill
+\caption{Estilos de p\'agina predefinidos en \LaTeX{}}
+\label{tab:estilos}
+\end{table}
+
+				Es posible cambiar el estilo de p\'agina de la p\'agina actual con la instrucci\'on\\
+							\verb+\thispagestyle{estilo}+\\
+				En The \LaTeX{} Companion [3]               hay una descripci\'on de c\'omo crear sus propias cabeceras y 
+				pies de p\'agina.
+						 
+		\subsection{Proyectos grandes}
+		Cuando trabaje con documentos grandes, podr\'ia, si lo desea, dividir el fichero de entrada en varias partes. 
+		\LaTeX{} tiene varias instrucciones que le ayudan a realizar esto.\\
+				\verb+\include{fichero}+\\
+		Se puede utilizar en el cuerpo del documento para introducir el contenido de otro fichero. Observe que 
+		\LaTeX{} comenzar\'a una p\'agina nueva antes de procesar el texto del fichero.
+		
+		La siguiente instrucci\'on solo puede ser utilizada en el pre\'ambulo. Permite indicarle a \LaTeX{} que s\'olo tome 
+		la entrada de algunos ficheros de los indicados con \verb+\include+.\\
+				\verb+\includeonly{fichero, fichero,...}+\\
+		Una vez que esta instrucci\'on se ejecute en el pre\'ambulo del documento, s\'olo se procesar\'an las 
+		instrucciones \verb+\include+ con los ficheros indicados en el argumento de la orden \verb+\includeonly+. Observe 
+		que no hay espacios entre los nombres de fichero y las comas. 
+		
+		Existe otra opci\'on que puede ser usada a lo largo del documento para introducir el texto situado en el 
+		fichero correspondiente. En este caso no se produce ning\'un salto de p\'agina ni de l\'inea a menos que se indique 
+		adecuadamente.\\
+				\verb+\input{fichero}+\\
+		Resulta muy \'util para dividir un trabajo en diferentes archivos y agruparlos en un documento donde tendremos 
+		un pre\'ambulo com\'un a todos. 
+					 	
+
+\section{?`Qu\'e documentaci\'on hay sobre \TeX{}/\LaTeX{}?}
+	\subsection{Tutoriales}%%%%sacado de libros/esLatex.zip
+ 	\subsubsection{Tutoriales en castellano}
+								
+	\begin{itemize}
+	\item \textbf{Una descripci\'on de \LaTeX{}} Tom\'as Bautista. Este documento se encuentra en CTAN (en 
+ 	CTAN:documentation/short/spanish)
+					
+	\item \textbf{Bases de datos bibliogr\'aficos, \LaTeX{} y el idioma espa\~nol} Luis Seidel:
+         \url{ftp://tex.unirioja.es/pub/tex/doc/bibliogr.pdf}
+					
+	\item \textbf{Recetario para \LaTeX{}} por Aristarco. Disponible en:\\
+	\url{http://recetariolatex.cjb.net}
+
+	\end{itemize}
+ 				
+ 	\subsubsection{Tutoriales en otros idiomas}%%%%sacado de libros/esLatex.zip
+ 										
+	\begin{itemize}
+	\item \textbf{A Gentle Introduction to \TeX{}} de Michael Dobb, 
+	disponible en :\url{CTAN:documentation/gentle}
+
+	\item \textbf{Simplied Introduction to \LaTeX{}} de Harvey J. Greenberg,
+	disponible en :\url{CTAN:documentation/simplified-latex/latex.ps}
+															
+	\item \textbf{The not so Short Introduction to \LaTeX{}} de Tobias Oetiker,
+	disponible en :\url{CTAN:documentation/lshort/} 
+					
+								\end{itemize}
+ 		
+ 								
+ 		\subsection{Libros}%%%%sacado de libros esLatex.zip
+ 						\subsubsection{Libros en castellano}
+ 															
+								\begin{itemize}
+											\item \textbf{El libro de \LaTeX{}} \cite{librolatex}. Bernardo Cascales, Pascual Lucas, Jos\'e 
+											Manuel Mira, Antonio Pallar\'es y Salvador S\'anchez-Pedre\~no. Prentice Hall, Madrid, 2003.
+											Se divide en dos partes: en la primera, que consta de 18 lecciones,  el lector encontrar\'a todo 
+											lo que necesita para componer documentos b\'asicos con \LaTeX{}, que incluso pueden llegar a 
+											alcanzar una complejidad tipogr\'afica notable. En la segunda parte, que tiene intenci\'on 
+											de servir como manual de referencia y uso avanzados, profundiza en todos los aspectos tratados 
+											en las lecciones y a\~nade otros nuevos.
+											
+											\item \textbf{Iniciaci\'on a \LaTeXe{}} \cite{botella}. Javier Sanguino Botella, Addison-Wesley (1997).
+											Uno de los mejores manuales para empezar a aprender.
+											
+											\item \textbf{Composici\'on de textos cient\'ificos con \LaTeX{}} \cite{valiente}. G. Valiente. 
+											Edicions UPC, Barcelona, 1997.
+											Pretende dar a conocer el sistema \LaTeX{} en el contexto de la composici\'on de textos 
+											cient\'ificos. As\'i, puede servir de introducci\'on a aquellos estudiantes que se inicien en 
+											la escritura cient\'ifica y, a la vez, puede resultar un texto de consulta permanente para 
+											profesores e investigadores. Instructivo y f\'acil de leer, puede adquirirse en versi\'on 
+											papel o en formato electr\'onico, a trav\'es del web de la editorial Edicions 
+											UPC \url{www.edicionsupc.es}.
+											
+											\item \textbf{\LaTeX{}, una imprenta en sus manos} \cite{imprenta}. Bernardo Cascales Salinas.
+											Aula Documental de Investigaci\'on, 2000.
+											Est\'a escrito a modo enciclop\'edico y toda la informaci\'on sobre un tema est\'a tratada en 
+											un \'unico lugar. Extensa obra que describe tanto tanto los comandos b\'asicos como las 
+											funcionalidades m\'as avanzadas de \LaTeX{}. Se incluye una descripci\'on de la programaci\'on 
+											de macros y generaci\'on de documentos para su publicaci\'on en Internet. Se muestran
+											interesantes ejemplos de uso en campos alejados de las matem\'aticas, como puede ser la
+											composici\'on tipogr\'afica en otros alfabetos, s\'imbolos qu\'imicos e incluso partituras 
+											musicales.
+ 
+								\end{itemize}
+								
+						\subsubsection{Libros en otros idiomas}
+									
+								\begin{itemize}
+											\item \textbf{A Guide to \LaTeX{}} \cite{aguide}. H. Kopka y P.W. Daly, Addison-Wesley 
+											Professional (2004).
+											Probablemente, el mejor manual existente sobre \LaTeX{}. Contiene una gu\'ia completa de 
+											\'ordenes, abundantes ejemplos e informaci\'on adicional. (Incluye las dos versiones en uso 
+											de \LaTeX{}, \LaTeXe{} y la m\'as antigua, \LaTeX{}2.09).
+											
+											\item \textbf{The \LaTeX{} Companion.} \cite{latexcomp}. Frank Mittelbach, Michel Goossens, 
+											Johannes Braams, David Carlisle, Chris Rowley, Addison Wesley Professional (2004).
+											Este manual sirve de ampliaci\'on a \cite{aguide}. Es una recopilaci\'on de informaci\'on 
+											sobre los llamados paquetes (packages), conjuntos de macros que distintos autores han puesto 
+											a disposici\'on p\'ublica.
+ 
+											\item \textbf{\LaTeX{}-A Document preparation system}\cite{adocument}. L. Lamport (dos ediciones) 
+														Addison-Wesley (1985 y 1994).
+														Escrito por Leslie Lamport (autor de \LaTeX{}) esto lo dice todo, contiene todo lo 
+														necesario para iniciarse en el mundo \LaTeX{}. Puede resultar un tanto insuficiente para
+														usuarios avanzados. 
+														
+								\end{itemize}
+		
+		\subsection{Varios}
+					\begin{description}
+											\item[Cervan\TeX{}] Grupo de usuarios hispanohablantes de \TeX{}. Esta asociaci\'on 
+											busca intercambiar experiencias sobre \TeX{} y \LaTeX{}, as\'i como sobre sus aplicaciones, 
+											y promoverlo de forma adecuada en el \'ambito hispanohablante (tanto Espa\~na como Am\'erica).
+											\url{http://www.cervantex.es}
+											
+											\item[CTAN: The Comprehensive \TeX{} Archive Network] Esta p\'agina es un repositorio 
+											de software y documentaci\'on relacionada con \TeX{}.\\ \url{http://www.ctan.org/}
+											
+											\item[The Prac\TeX{} Journal] Una revista de \TeX{} online y gratuita. 
+											Disponible en\\  \url{http://dw.tug.org/pracjourn/} 
+											
+											\item[LaTeX-project]
+											Aqui encontrar\'as material de referencia para aprender a utilizar y sacarle m\'as provecho a tu sistema 
+											de \LaTeX{}.\\  \url{http://www.LaTeX-project.org} 
+											
+					\end{description}
+											
+					

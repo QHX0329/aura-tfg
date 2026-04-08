@@ -1,0 +1,64 @@
+\chapter{Introducci\'on}\label{intro}
+
+\section{¿Qu\'e es \TeX{}?}
+
+	El creador de Tex es Donald E. Knuth, su trabajo fue un encargo de la American Mathematical Society a principios de los a\~nos 70. Esta sociedad buscaba un lenguaje para formatear sus art\'iculos llenos de teoremas y f\'ormulas matem\'aticas de gran complejidad. El resulatdo obtenido fue un lenguaje extremadamente potente, pero tambi\'en dif\'icil de aprender y usar. 
+
+	Basta decir que de hecho el sistema \LaTeX{} es el estandar de creaci\'on de textos cient\'ificos desde hace muchos a\~nos, sin embargo aprender \LaTeX{} no es cosa de un d\'ia, no es algo f\'acil pero tampoco imposible, de forma que con algo de paciencia se pueden conseguir resultados casi inmediatos. Para faclitar el trabajo con \TeX{} surgieron numerosas macros que agrupaban distintas instrucciones de \TeX{}.\\
+				
+	\subsection{¿Qu\'e es \LaTeX{}?}
+		\LaTeX{} es un paquete de macros, especialmente dise\~nado para la creaci\'on de textos t\'ecnicos y cient\'ificos, que permite componer e imprimir documentos de forma sencilla, con la mayor calidad tipogr\'afica, utilizando para ello patrones previamente definidos. Est\'a basado en un lenguaje de composici\'on de bajo nivel llamado \TeX{} y facilita el uso de este potente lenguaje. 
+		
+			A diferencia de otros sistemas para procesar textos, no se obtiene el resultado final a medida que se va escribiendo sino que primero se crea un c\'odigo fuente y seguidamente se procesa para llegar al documento final, en este sentido se asemeja mucho a los lenguajes de marcas como el HTML.
+		
+		\LaTeX{} fue escrito por Leslie Lamport en los a\~nos 80 y actualmente multitud de libros, revistas cient\'ificas 
+		est\'an escritas integramente en \LaTeX{}, incluso en numerosos foros cient\'ificos se ha convertido en el 
+		est\'andar exigido para la publicaci\'on de resultados. Una de las razones de la gran difusi\'on de \LaTeX{} es su 
+		precio. \LaTeX{} es freeware, es decir, puede conseguirse a trav\'es de internet y utilizarse de forma gratuita y 
+		legal. Sin embargo la ventaja fundamental entre \LaTeX{} y otros procesadores m\'as conocidos (Word Perfect, 
+		Microsoft Word) es la calidad de los documentos que genera, fundamantalmente cuando aparecen involucrados textos 
+		que incluyen numerosas f\'ormulas matem\'aticas, ecuaciones, tablas, etc. Adem\'as est\'a disponible para la 
+		pr\'actica totalidad de sistemas operativos actuales, incluyendo Windows, Linux, Unix ,etc. Otra de sus ventajas es 
+		la existencia de una gran cantidad de paquetes est\'andares pensados para dotar a los textos de toda la funcionalidad 
+		que se precise. As\'i existen paquetes para incluir gr\'aficos, textos de lenguajes de programación, f\'ormulas 
+		f\'isicas y qu\'imicas, diagramas matem\'aticos, etc. Por todo ello \LaTeX{} ha conocido una gran difusi\'on en el 
+		\'ambito cient\'ifico, siendo hoy d\'ia el procesador m\'as usado por matem\'aticos, f\'isicos y gran n\'umero 
+		de ingenieros.\\
+		
+			\figura{0.6}{img/knuth}{Donald E.Knuth}{img:knuth}{}
+			 
+		 
+\subsection{¿Qu\'e es \LaTeXe{} }
+		Revisi\'on completa desde la versi\'on \LaTeX{} 2.09, que fue durante muchos a\~nos la versi\'on estandard de \LaTeX{} hasta la apoarici\'on de \LaTeXe{}, uno de sus prop\'ositos centrales fue la integarci\'on dentro de un ambiente \'unico de \LaTeX{}. La idea fundamental de \LaTeXe{} es que toda futura adici\'on o extensi\'on de \LaTeX{} se haga por medio de paquetes individuales, que el usuario puede invocar por medio de la instrucci\'on \verb+\usepackage{...}+. De este modo se intenta poner fin a la proliferaci\'on de dialectos incompatibles.  
+		
+	
+
+\section{\LaTeX{} vs WYSIWYG}
+	¿Qui\'en no ha enviado un documento escrito con un procesador de textos cl\'asico a una impresora diferente de la de su ordenador y ha obtenido un  resultado desastroso, incluyendo cambio de fuentes, modificaci\'on de la paginaci\'on, etc.?. Todo esto es historia con \LaTeX{}. Digamos que en \LaTeX{}, el usuario se concentra en la estructura l\'ogica del documento m\'as que en su apariencia, ya que \'esta se define aparte. Ello permite modificar de forma r\'apida y eficaz la apariencia, sin modificar en absoluto el contenido.
+	    
+		\LaTeX{} desempe\~na el papel de dise\~nador tomando parte en el formato del documento (longitud del rengl\'on, tipo de letra, espacios, \ldots) para darle luego instrucciones al cajista, \TeX{}.	El tratmiento del texto es totalmente diferente a procesadores tales como Microsoft Word o Word Perfect en los cuales el autor ve en pantalla lo que exactamente aparecer\'a luego en la impresora. Esto tiene sus ventajas e inconvenientes como comentaremos m\'as adelante.
+		
+		Se le dar\'a mayor importancia a la legibilidad y comprensi\'on del texto que al aspecto m\'as o menos agradable que este pueda presentar. Con un sistema WYSIWYG \footnote{Siglas que significan, What you see is what you get, lo que ve es lo que obtendr\'a.} podemos obtener textos est\'eticamente bonitos pero con una estructura muy peque\~na o inconsistente. Sin embargo con \LaTeX{} esto no est\'a permitido ya que el autor est\'a forzado a seguir un orden e indicar una estructura.
+
+\subsection{Ventajas e inconvenientes de \LaTeX{}}%sacado de manual latex de universidad de cadiz
+Ventajas:
+
+\begin{itemize}
+	\item Facilita la composici\'on de f\'ormulas con un cuidado especial. 
+	\item Existe mayor cantidad de dise\~nos de textos profesionales a disposici\'on, con lo que realmente se pueden crear  documentos como si fueran de imprenta.
+	\item No hace falta preocuparse por los detalles. S\'olo es necesario introducir instrucciones para indicar la estructura del documento.
+	\item Las estructuras, tales como notas al pie de p\'agina, bibliograf\'ia, \'indices, tablas y muchas otras, pueden ser introducidas sin demasiado esfuerzo. 
+	\item Existen paquetes adicionales, sin coste alguno, para muchas tareas tipogr\'aficas aunque no se facilitan directamente por el \LaTeX{} b\'asico.
+	\item \LaTeX{} hace que los autores tiendan a escribir textos bien estructurados porque as\'i es como trabaja \LaTeX{}, o sea, indicando su estructura.
+	\item \TeX{} es altamente portable y gratis. Por eso, el sistema funciona pr\'acticamente en cualquier plataforma.
+\end{itemize}
+
+
+Inconvenientes:
+
+\begin{itemize} 
+	\item Si bien se pueden ajustar algunos par\'ametros de un dise\~no de documento predefinido, la creaci\'on de un dise\~no entero es dif\'icil y lleva mucho tiempo. 
+	\item El periodo de aprendizaje es mayor que los WYSIWYG.	
+	\item No sirve para maquetaci\'on de publicaciones. Se necesita
+invertir demasiado tiempo.
+\end{itemize}

@@ -1,0 +1,44 @@
+%%%%%%% DATOS DE PORTADA %%%%%%%%%%
+\newcommand{\autores}[2]{
+	\def\@autorUno{#1}\def\@autorDos{#2}}
+
+\newcommand{\autor}[1]{
+	\def\@autorUno{#1}}
+
+
+\newcommand{\@authorUno}{\ClassError{pclass}{
+	Falta especificar \string\autor{}
+	\MessageBreak Usa el comando 
+	\string\autor{} en el preambulo 
+	\MessageBreakpara especificar tu nombre.
+}}
+
+
+\newcommand{\titulacion}[1]{
+	\def\@titulacion{#1}}
+	\newcommand{\@titulacion}{\ClassError{pclass}{
+	Falta especificar \string\titulacion{} 
+	\MessageBreak Usa el comando 
+	\string\titulacion{} en el preambulo para 
+	\MessageBreak especificar la titulacion que cursas. 
+}}
+
+
+\newcommand{\titulopro}[1]{
+	\def\@titulopro{#1}}
+	\newcommand{\@titulopro}{\ClassError{pclass}{
+	Falta especificar \string\titulopro{} 
+	\MessageBreak Usa el comando 
+	\string\titulopro{} en el preambulo para 
+	\MessageBreak especificar el titulo de tu proyecto. 
+}}
+
+
+\newcommand{\tutor}[1]{
+	\def\@tutor{#1}}
+	\newcommand{\@tutor}{\ClassError{pclass}{
+	Falta especificar \string\tutor{} 
+	\MessageBreak Usa el comando 
+	\string\tutor{} en el preambulo para 
+	\MessageBreak especificar el nombre del tutor de tu proyecto. 
+}}

@@ -1,0 +1,89 @@
+\begin{thebibliography}{yPD04}
+\newcommand{\enquote}[1]{`#1'}
+\providecommand{\bibnamefont}[1]{#1}
+\providecommand{\bibfnamefont}[1]{#1}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi:\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{doi:\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
+\providecommand{\bibAnnoteFile}[1]{%
+  \IfFileExists{#1}{\begin{quotation}\noindent\textsc{Key:} #1\\
+  \textsc{Annotation:}\ \input{#1}\end{quotation}}{}}
+\providecommand{\bibAnnote}[2]{%
+  \begin{quotation}\noindent\textsc{Key:} #1\\
+  \textsc{Annotation:}\ #2\end{quotation}}
+
+\bibitem[BC03]{librolatex}
+\bibnamefont{Bernardo~Cascales}, \bibfnamefont{Pascual~Lucas, José Manuel Mira
+  Antonio Pallarés y Salvador Sánchez-Pedreño}, 2003; \emph{El libro de
+  LATEX}.
+\newblock Prentice Hall, Madrid.
+\bibAnnoteFile{librolatex}
+
+\bibitem[Bez07]{guiatitlesec}
+\bibnamefont{Bezos}, \bibfnamefont{Javier}, \enquote{The titlesec and titletoc
+  packages.}
+\newblock \emph{Guía propia titlesec}, (2007).
+\bibAnnoteFile{guiatitlesec}
+
+\bibitem[Bot97]{botella}
+\bibnamefont{Botella}, \bibfnamefont{Javier~Sanguino}, 1997; \emph{Iniciación
+  a LaTeX2e}.
+\newblock Addison-Wesley.
+\bibAnnoteFile{botella}
+
+\bibitem[Cas00]{imprenta}
+\bibnamefont{Cascales}, \bibfnamefont{Bernardo}, 2000; \emph{LaTeX, una
+  imprenta en sus manos}.
+\newblock Aula Documental de Investigación.
+\bibAnnoteFile{imprenta}
+
+\bibitem[dS04]{desousa}
+\bibnamefont{de~Sousa}, \bibfnamefont{José~Martínez}, 2004.;
+  \emph{Ortografía y ortotipografía del español actual}.
+\bibAnnoteFile{desousa}
+
+\bibitem[Gal92]{primpasos}
+\bibnamefont{Gallego}, \bibfnamefont{Fernando~Ortegón}, 1992; \emph{LaTeX
+  primeros pasos}.
+\newblock Editorial Masson.
+\bibAnnoteFile{primpasos}
+
+\bibitem[gui]{guiaa}
+; \emph{Cada instalación de LATEX debería proporcionar la llamada Guía Local
+  de LATEX, que explica las cosas que son particulares del sistema local.
+  Debería residir en un fichero llamado local.tex. Por desgracia, en algunos
+  sitios no se halla dicha guía. .}
+\bibAnnoteFile{guiaa}
+
+\bibitem[Lam94]{adocument}
+\bibnamefont{Lamport}, \bibfnamefont{Leslie}, 1994; \emph{LaTeX: A document
+  preparation system}.
+\newblock Addison-Wesley.
+\bibAnnoteFile{adocument}
+
+\bibitem[MG94]{latexcomp}
+\bibnamefont{Michel~Goossens}, \bibfnamefont{Frank~Mittelbach,
+  Alexander~Samarin}, 1994; \emph{The LaTeX Companion}.
+\newblock Addison-Wesley.
+\bibAnnoteFile{latexcomp}
+
+\bibitem[Val97]{valiente}
+\bibnamefont{Valiente}, \bibfnamefont{Gabriel}, 1997; \emph{Composición de
+  textos cientìficos con LaTeX}.
+\newblock Edicions UPC, Barcelona.
+\bibAnnoteFile{valiente}
+
+\bibitem[vO04]{guiafancy}
+\bibnamefont{van Oostrum}, \bibfnamefont{Piet}, \enquote{Dept. of computer
+  science utrecht university.}
+\newblock \emph{Guía propia fancyhdr}, (2004).
+\bibAnnoteFile{guiafancy}
+
+\bibitem[yPD04]{guidek}
+\bibnamefont{y~P.W.~Daly}, \bibfnamefont{H.~Kopka}, 2004; \emph{A Guide to
+  LaTeX}.
+\newblock Addison-Wesley Professional.
+\bibAnnoteFile{guidek}
+
+\end{thebibliography}

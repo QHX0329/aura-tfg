@@ -1,0 +1,18 @@
+% El comando \figura nos permite insertar figuras
+% comodamente, y utilizando siempre el mismo formato. 
+% Los parametros son:
+% 1 -> Porcentaje del ancho de pagina que ocupar
+	% la figura (de 0 a 1)
+% 2 --> Fichero de la imagen
+% 3 --> Texto a pie de imagen
+% 4 --> Etiqueta (label) para referencias
+% 5 --> Opciones que queramos pasarle al \includegraphics
+\newcommand{\figura}[5]{
+  \begin{figure}
+    \begin{center}
+    \includegraphics[width=#1\textwidth,#5]{#2}%
+    \caption{#3}
+    \label{#4}
+    \end{center}
+  \end{figure}
+}

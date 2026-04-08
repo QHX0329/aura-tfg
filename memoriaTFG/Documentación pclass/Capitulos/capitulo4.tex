@@ -1,0 +1,132 @@
+\chapter{Errores}\label{error}
+
+
+\section{Errores de compilación}\label{errores}
+En \LaTeX{} se pueden dividir los errores en dos tipos de mensajes básicamente:
+\begin{itemize}
+ \item \textbf{Avisos}:Son mensajes que indican la existencia de algún problema no fatal, de modo que LaTeX puede seguir analizando el documento y generando la salida (aunque probablemente ésta no sea satisfactoria). Básicamente:
+
+	\begin{itemize}
+         \item \textbf{Undefined references} (referencias no definidas): 
+	\begin{figure}[h]
+ 	\begin{fblock}
+  	\color{red}{
+  	\begin{verbatim}
+		LaTeX Warning: Reference `tab:tmn-std-informacion' 
+		on page 234 undefined on input line 4873.\end{verbatim}
+	}
+	 \end{fblock}
+	\end{figure}
+
+	Son frecuentes y no necesariamente dañinos. En la primera pasada, LaTeX normalmente no es capaz de resolver todas las referencias, por lo que es necesario dar una segunda pasada (es decir, volver a ejecutar LaTeX sobre el documento). A veces es necesaria una tercera pasada. Cuando es necesario dar una nueva pasada, LaTeX lo dice explícitamente:
+	\begin{figure}[h]
+ 	\begin{fblock}
+  	\color{red}{
+  	\begin{verbatim}LaTeX Warning: There were undefined references.
+		LaTeX Warning: Label(s) may have changed. 
+		Rerun to get cross-references right.\end{verbatim}
+	}
+	 \end{fblock}
+	\end{figure}
+	Sin embargo, otras veces se produce por haber introducido erróneamente la etiqueta en cuestión. En estos casos, después de la segunda/tercera pasada, LaTeX sigue informando del error, así que debemos subsanarlo. 
+	\end{itemize}
+
+	\begin{itemize}
+
+	\item  \textbf{Overfull hbox}:
+	se produce cuando LaTeX no sabe cómo dividir una palabra que cae al final de una línea, y que, por tanto, invade el margen derecho. Normalmente el resultado no es aceptable; la solución pasa por buscar la palabra en cuestión e indicar cómo hay que romperla. Hay casos más peliagudos, como el ejemplo que se muestra a continuación, en el que el problema se produce en el encabezado. En este caso, romper la palabra no sirve de mucho; habría que plantearse si modificar el formato de el encabezado para permitir dos líneas, si eliminar la palabra Capítulo, si obligar a LaTeX a usar minúsculas en el encabezado, o por supuesto, cambiar el nombre del capítulo a algo más corto. Nótese que el aviso indica cúanto espacio ha invadido la línea en el margen derecho \verb|(xx.xxxxxpt too wide)|; se indica en pt, es decir, en unidades de 1/72 pulgadas. A modo de referencia, cada 10pt son aproximadamente 3,5mm, por lo que el aviso del ejemplo nos indica una invasión del margen derecho de unos 14mm.
+	\begin{figure}[h]
+ 	\begin{fblock}
+  	\color{red}{
+  	\begin{verbatim}
+	 Overfull \hbox (39.74638pt too wide) has occurred while 
+	\output is active
+  	\end{verbatim}
+	}
+ 	\end{fblock}
+	
+	\end{figure}
+
+
+	\item  \textbf{Underfull hbox}:
+	se produce cuando, en el proceso de justificación, la línea queda con demasiados espacios en blanco entre palabras. Normalmente no son dañinos, pues el resultado no es demasiado desagradable a la vista. La única solución sería escribir las cosas de otra manera. La gravedad de la situación viene dada por el parámetro \verb|"badness"|; sin embago, incluso para valores altos puede verse que el resultado es aceptable, por ejemplo:
+	\begin{figure}[h]
+ 	\begin{fblock}
+  	\color{red}{
+  	\begin{verbatim}
+	Underfull \hbox (badness 10000) in paragraph
+	at lines 1398-1399
+  	\end{verbatim}
+	}
+ 	\end{fblock}
+	
+	\end{figure}
+	\end{itemize}
+
+
+\item \textbf{Errores}:Errores. Implican que la salida no será generada. Normalmente se deben a un olvido de algún \verb|'}'| o \verb|']'| o confusión entre ellos. En estos casos, LaTeX normalmente acierta al indicar la causa del error, pero no suele dar muchas pistas acerca de en qué línea está el problema.Otras veces es algún error de escritura en código o falta de algún paquete, o imágen, por ejemplo:
+
+	\begin{itemize}
+	\item  \textbf{inputenc Error}:
+	Se suele dar cuando hay algún carácter extraño en el texto y el compilador no lo reconoce.
+	\begin{figure}[h]
+ 	\begin{fblock}
+  	\color{red}{
+  	\begin{verbatim}
+	./Capitulos/capitulo3.tex:1122:Package inputenc Error: 
+	Keyboard character used is undefined(inputenc)
+	in inputencoding `utf8'. ...x¿ 
+  	\end{verbatim}
+	}
+ 	\end{fblock}
+	
+	\end{figure}
+	\end{itemize}
+
+	\begin{itemize}
+	\item  \textbf{missing}:
+	Este error salta cuando falta un llave  o algún paréntesis para cerrar las expresiones
+	\begin{figure}[h]
+ 	\begin{fblock}
+  	\color{red}{
+  	\begin{verbatim}
+	
+	./Capitulos/capitulo3.tex:1122:Missing } inserted. ...ux| 
+
+  	\end{verbatim}
+	}
+ 	\end{fblock}
+	
+	\end{figure}
+	\end{itemize}
+
+
+	\begin{itemize}
+	\item  \textbf{Cannot determine ...}:
+	Este error salta cuando hay algún problema con el tamaño de la imágen que queremos insertar
+	\begin{figure}[h]
+ 	\begin{fblock}
+  	\color{red}{
+  	\begin{verbatim}
+	
+	Capitulos/capitulo3.tex:10:Cannot determine size 
+	of graphic in img/portada.jpg (no BoundingBox)
+  	\end{verbatim}
+	}
+ 	\end{fblock}
+	
+	\end{figure}
+	\end{itemize}
+
+\section{Correcciones}
+	Una vez terminada la clase se producen errores tipográficos debido a fallos de los paquetes o del propio \LaTeX{}.
+	En el Títulos de Contenidos si en cualquier índice se llega a una numeración de sección con cuatro dígitos se une con el texto sin dejar espacio.
+	Tambíen debido al paquete fancyhdr la numeración románica de los Títulos de Contenido erán en minúscula en contra de la tipografía española que es numeración románica en mayúsculas.
+	Estos errores los hemos solucionado incluyendo un archivo \verb|\input{tocdef}| que contiene el siguiente código:
+	\codigofuente{TeX}{Correcciones}{tocdef}
+
+
+
+\end{itemize}
+
+

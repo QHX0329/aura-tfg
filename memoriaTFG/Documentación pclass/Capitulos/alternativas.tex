@@ -1,0 +1,132 @@
+\chapter{Comparaci\'on con otras alternativas}\label{alternativas}
+
+A la hora de escribir la memoria de un proyecto de fin de carrera, la mayor\'ia de usuarios recurre a los
+procesadores de texto m\'as comunes (Word Perfect, Microsoft Word,...). Dichos procesadores son conocidos como 
+procesadores de tipo pantalla o procesadores WYSIWYG, es decir, lo que ves es lo que obtienes. Sin embargo, existe una
+alternativa en el lenguaje \LaTeX{}, el cual nos proporcionar\'a m\'ultiples ventajas. A trav\'es de la utilizaci\'on
+de la clase \texttt{pclass} intentaremos que el usuario perciba estas innumerables ventajas.
+
+Para compara ambas alternativas describiremos las distintas etapas que componen la elaboraci\'on de un texto en \LaTeX{}
+y en los procesadores de pantalla. Estas etapas deber\'an ser completadas por el usuario partiendo de una primera
+versi\'on del documento en borrador, hasta llegar a la salida por la impresora del documento definitivo.
+
+De este modo durante la elaboraci\'ion del documento con \LaTeX{} podemos distinguir tres etapas:
+
+\begin{enumerate}
+	\item  \textbf{Etapa 1: Preparaci\'on}\\
+				Consiste en la escritura del documento a procesar mediante un editor de textos. Una vez finalizada esta etapa 
+				el documento podr\'a ser tratado por el procesador.
+				
+	\item \textbf{Etapa 2: Procesado}\\
+				Una vez que tenemos el texto escrito, \'este servir\'a de fichero fuente para el procesador. El procesador 
+				interpretar\'a las \'ordenes escritas en \'el y convertir\'a el texto en la llamada composici\'on.
+				
+				En caso de que el texto fuente contenga errores de programaci\'on, el procesador los localizar\'a y posiblemente 
+				no obtengamos una composici\'on con los resultados deseados. Si estamos en este caso deberemos volver a la etapa 1,
+				corregir tales errores y continuar.
+				  
+	\item \textbf{Etapa 3:Impresi\'on} \\
+				Una vez tenemos la composici\'on adecuada, \'esta ser\'a enviada a una impresora, obteniendo as\'i la versi\'on 
+				final del documento sobre el papel. Logicamente si la salida resulta impropia (faltas de ortograf\'ia, invasi\'on 
+				de m\'argenes,...) deberemos volver nuevamente a la etapa 1 para subsanar los errores ocurridos.
+\end{enumerate}
+
+Una vez descritas las etapas de creaci\'on de un documento \LaTeX{}, podemos observar que estas difieren notablemente
+de las que se realizan con los procesadores de tipo pantalla.
+
+En los procesadores de texto de pantalla la edici\'on y la composici\'on del documento se realizan al mismo tiempo, no
+existiendo distinci\'on entre una y otra. Durante la  edici\'on la pantalla mostrar\'a constantemente el resultado de 
+la composici\'on. Por ejemplo si queremos escribir la letra A, bastar\'a con pulsar la tecla correspondiente a dicho
+car\'acter. Pero si en cambio queremos que dicho car\'acter aparazca en negrita y a veinte puntos podremos hacerlo, y 
+sobre la pantalla dicho car\'acter aparecer\'a en negrtita y a 20 puntos.
+
+De esta manera s\'olo podemos distinguir dos etapas bien diferenciadas en la creaci\'on de un documento con un procesador
+de pantalla:
+
+\begin{enumerate}
+	\item \textbf{Etapa 1: Edici\'on/Composici\'on}\\
+				La composici\'on del documento se realiza de forma diraecta e interactiva. En todo momento, la pantalla muestra 
+				el estado actual de la misma, tal y como la ver\'iamos impresa sobre el papel.   
+				
+	
+	\item \textbf{Etapa 2: Impresi\'on}\\
+				Finalizada la etapa anterior, es deseable tener una versi\'on sobre el papel. Esta etapa coincide con la tercera 
+				etapa de la creaci\'on de un documento con \LaTeX{}.
+\end{enumerate}
+   
+Podemos observar que, a diferencia de \LaTeX{}, aqu\'i no existe el concepto de c\'odigo fuente sobre el que actuar\'a
+posteriormente el procesador. Para usuarios habituales de procesadores de pantalla , el hecho de que se muestre el estado actual de la composici\'on durante la edici\'on supone una enorme ventaja sobre \LaTeX{}.
+
+Dicho esto todos nos preguntamos cuales son las ventajas de \LaTeX{} sobre los procesadoers de pantalla. La respuesta 
+la podemos encontrar en el mismo nombre WYSIWYG, pero debiendo aclarar que lo que ves es lo que obtienes y nada m\'as.
+Ahora mostrar la composici\'on en pantalla durante la edici\'on se torna en un inconveniente: dificulatad para realizar 
+cambios globales en el documento, al modificar la numeraci\'on en un punto del escrito (por ejemplo, introduciendo un
+cap\'itulo nuevo o secci\'on) deberemos modificar a mano el resto de la numeraci\'on, etc. Por el contrario, la 
+composici\'on con \LaTeX{} no representa la rigidez de los procesadores de pantalla, esto se debe a que \'esta se 
+efect\'ua a partir de las instrucciones contenidas en el fichero fuente.
+
+Por otro lado debemos a\~nadir que \LaTeX{} se comporta como un lenguaje de programaci\'on y componedor al mismo tiempo,
+lo que le confiere unas posibilidades que ning\'un otro procesador posee, la calidad de composici\'on de los documentos
+elaborados bajo sus \'ordenes as\'i lo avalan.
+        
+\begin{figure}
+	\centering
+		\setlength{\unitlength}{5mm}
+		\begin{picture}(40,19)
+			\put(8,0){\framebox(16,5)[t]{\raisebox{-4ex}{\large Impresi\'on}}}
+			\put(8,7){\framebox(16,5)[t]{\raisebox{-4ex}{\large Procesado}}}
+			\put(8,14){\framebox(16,5)[t]{\raisebox{-4ex}{\large Preparaci\'on}}}
+			\put(9,1){\framebox(5,2){Impresora}}
+			\put(14,2){\vector(1,0){4}}
+			\put(18,1){\framebox(5,2){\shortstack{Composici\'on \\ en papel}}}
+			\put(9,8){\framebox(5,2){Procesador}}
+			\put(14,9){\vector(1,0){4}}
+			\put(18,8){\framebox(5,2){Composici\'on}}
+			\put(9,15){\framebox(5,2){Editor}}
+			\put(14,16){\vector(1,0){4}}
+			\put(18,15){\framebox(5,2){Texto fuente}}
+			\put(16,7){\vector(0,-1){2}}
+			\put(16,14){\vector(0,-1){2}}
+			\put(4,13){\oval(6,2)}
+			\put(28,6){\oval(5,2)}
+			\put(4,13){\makebox(0,0){\shortstack{Error de \\ programaci\'on}}}
+			\put(28,6){\makebox(0,0){\shortstack{Salida \\ impropia}}}
+			\put(8,14){\oval(8,4)[tl]}
+			\put(8,16){\vector(1,0){0}}
+			\put(8,12){\oval(8,6)[bl]}
+			\put(24,7){\oval(8,18)[tr]}
+			\put(24,16){\vector(-1,0){0}}
+			\put(24,5){\oval(8,6)[br]}
+		\end{picture}
+	\caption{Etapas de creaci\'on de un documento \LaTeX{}}
+	\label{fig:etapas}
+\end{figure}
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+	
+	 
+
+
+
+

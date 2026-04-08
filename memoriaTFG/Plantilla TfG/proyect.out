@@ -1,0 +1,55 @@
+\BOOKMARK [0][-]{section*.4}{\315ndice general}{}
+\BOOKMARK [0][-]{section*.6}{\315ndice de cuadros}{}
+\BOOKMARK [0][-]{section*.8}{\315ndice de figuras}{}
+\BOOKMARK [0][-]{chapter.1}{Introducci\363n}{}
+\BOOKMARK [1][-]{section.1.1}{Qu\351 es TeX?}{chapter.1}
+\BOOKMARK [2][-]{section*.9}{Qu\351 no es TeX}{section.1.1}
+\BOOKMARK [2][-]{subsection.1.1.1}{Qu\351 es LaTeX?}{section.1.1}
+\BOOKMARK [2][-]{subsection.1.1.2}{Qu\351 es LaTeX2e }{section.1.1}
+\BOOKMARK [1][-]{section.1.2}{LaTeX vs WYSIWYG}{chapter.1}
+\BOOKMARK [2][-]{subsection.1.2.1}{Ventajas e inconvenientes de LaTeX}{section.1.2}
+\BOOKMARK [0][-]{chapter.2}{Conceptos b\341sicos}{}
+\BOOKMARK [1][-]{section.2.1}{Primeros pasos en LaTeX}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.1.1}{Instalaci\363n de LaTeX y TeX}{section.2.1}
+\BOOKMARK [3][-]{section*.10}{LaTeX en Windows}{subsection.2.1.1}
+\BOOKMARK [3][-]{section*.10}{LaTeX en Linux}{subsection.2.1.1}
+\BOOKMARK [1][-]{section.2.2}{Lo que necesita saber sobre LaTeX}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.2.1}{Ficheros de entrada de LaTeX}{section.2.2}
+\BOOKMARK [3][-]{section*.11}{Signos de espacio}{subsection.2.2.1}
+\BOOKMARK [3][-]{section*.11}{Caracteres especiales}{subsection.2.2.1}
+\BOOKMARK [3][-]{section*.11}{Las \363rdenes de LaTeX}{subsection.2.2.1}
+\BOOKMARK [3][-]{section*.11}{Comentarios}{subsection.2.2.1}
+\BOOKMARK [2][-]{subsection.2.2.2}{Estructura de un fichero de entrada}{section.2.2}
+\BOOKMARK [2][-]{subsection.2.2.3}{El formato del documento}{section.2.2}
+\BOOKMARK [3][-]{section*.12}{Clases de documetos}{subsection.2.2.3}
+\BOOKMARK [3][-]{section*.12}{Paquetes}{subsection.2.2.3}
+\BOOKMARK [3][-]{section*.12}{Estilo de p'agina}{subsection.2.2.3}
+\BOOKMARK [2][-]{subsection.2.2.4}{Proyectos grandes}{section.2.2}
+\BOOKMARK [1][-]{section.2.3}{Qu'e software utilizar?}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.3.1}{LaTeX en Linux}{section.2.3}
+\BOOKMARK [2][-]{subsection.2.3.2}{LaTeX en Windows}{section.2.3}
+\BOOKMARK [1][-]{section.2.4}{Qu'e documentaci\363n hay disponible sobre TeX/LaTeX?}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.4.1}{Tutoriales}{section.2.4}
+\BOOKMARK [3][-]{section*.13}{Tutoriales en castellano}{subsection.2.4.1}
+\BOOKMARK [3][-]{section*.13}{Tutoriales en otros idiomas}{subsection.2.4.1}
+\BOOKMARK [2][-]{subsection.2.4.2}{Libros}{section.2.4}
+\BOOKMARK [3][-]{section*.14}{Libros en castellano}{subsection.2.4.2}
+\BOOKMARK [3][-]{section*.14}{Libros en otros idiomas}{subsection.2.4.2}
+\BOOKMARK [2][-]{subsection.2.4.3}{Varios}{section.2.4}
+\BOOKMARK [0][-]{chapter.3}{Clase Proyecto Fin de Carrera}{}
+\BOOKMARK [1][-]{section.3.1}{Introducci\363n}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.1.1}{Escribir una clase para LaTeX2e}{section.3.1}
+\BOOKMARK [2][-]{subsection.3.1.2}{Informaci\363n adicional}{section.3.1}
+\BOOKMARK [1][-]{section.3.2}{Estructura de la clase}{chapter.3}
+\BOOKMARK [1][-]{section.3.3}{Clase PFC}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.3.1}{Frontmatter}{section.3.3}
+\BOOKMARK [2][-]{subsection.3.3.2}{Portada}{section.3.3}
+\BOOKMARK [2][-]{subsection.3.3.3}{Mainmatter}{section.3.3}
+\BOOKMARK [3][-]{section*.15}{Listas y descripciones \(itemize, enumerate, description\)}{subsection.3.3.3}
+\BOOKMARK [2][-]{subsection.3.3.4}{Backmatter}{section.3.3}
+\BOOKMARK [1][-]{section.3.4}{Packages}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.4.1}{fancyhdr}{section.3.4}
+\BOOKMARK [2][-]{subsection.3.4.2}{titlesec}{section.3.4}
+\BOOKMARK [1][-]{section.3.5}{Macros}{chapter.3}
+\BOOKMARK [0][-]{chapter.4}{Informaci\363n}{}
+\BOOKMARK [0][-]{section*.17}{Bibliograf\355a}{}
