@@ -1,4 +1,5 @@
-﻿<div align="center">
+﻿<!-- generated-by: gsd-doc-writer -->
+<div align="center">
   <img src="./docs/assets/logo.png" alt="BarGAIN Logo" width="400">
 </div>
 
@@ -165,6 +166,21 @@ make test-frontend
 
 # Todo
 make test
+```
+
+## 💻 Ejemplos de uso
+
+```bash
+# Levantar backend y frontend
+make dev
+make frontend
+
+# Ejecutar validaciones de calidad
+make lint
+make test
+
+# Generar OpenAPI
+make docs
 ```
 
 ## 📚 Documentación
