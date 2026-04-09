@@ -109,6 +109,7 @@
 \fancyhead[RO]{\bfseries\thepage}%N√∫meros de p{\'a}ginas en cabecera
 \renewcommand{\headrulewidth}{0.4pt}%L{\'\i}nea de cabecera
 \renewcommand{\footrulewidth}{0.0pt}%L{\'\i}nea de pie  de p{\'a}gina
+\setlength{\headheight}{15pt}
 
 \renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}%Cabecera de cap{\'\i}tulo de la forma ``1. Introduccion''
 %\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}%Si ‚ÄúSecci{\'o}n 2.2. Primeros pasos‚Äù es la secci{\'o}n acutal,este comando nos cambia a ``2.2. Primeros pasos'' 

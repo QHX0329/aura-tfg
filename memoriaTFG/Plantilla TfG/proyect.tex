@@ -1,14 +1,17 @@
 % !TEX encoding = UTF-8 Unicode
 \documentclass{pclass}
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc} % para linux y mac
+\usepackage{lmodern}
 
 %DIFERENTES TIPOS DE LETRA
 %\usepackage{palatino}
 %\usepackage{times}
-\usepackage{helvet}
-\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\familydefault}{\rmdefault}
+\renewcommand{\sfdefault}{\rmdefault}
 
-\usepackage{amsmath}  % para ecuaciones del optimizador
+\DeclareRobustCommand{\textrightarrow}{\ensuremath{\rightarrow}}
+\usepackage[hidelinks,unicode]{hyperref}
 
 \begin{document}
 \tipo{Grado}   % Grado o M\'aster

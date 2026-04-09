@@ -34,20 +34,29 @@ Cada aplicaci\'on Django del backend sigue una estructura modular consistente:
 
 \begin{verbatim}
 apps/<modulo>/
-├── models.py          # Entidades de dominio (ORM)
-├── serializers.py     # Transformacion de datos (entrada/salida)
-├── views.py           # ViewSets y vistas (controladores)
-├── urls.py            # Rutas del modulo
-├── services.py        # Logica de negocio
-├── tasks.py           # Tareas Celery asincronas
-├── permissions.py     # Logica de autorizacion
-└── tests/
+|-- models.py          # Entidades de dominio (ORM)
+|-- serializers.py     # Transformacion de datos (entrada/salida)
+|-- views.py           # ViewSets y vistas (controladores)
+|-- urls.py            # Rutas del modulo
+|-- services.py        # Logica de negocio
+|-- tasks.py           # Tareas Celery asincronas
+|-- permissions.py     # Logica de autorizacion
+`-- tests/
 \end{verbatim}
 
 La separaci\'on entre \texttt{views.py} y \texttt{services.py} es deliberada: los ViewSets se
 limitan a la gesti\'on HTTP (autenticaci\'on, serializaci\'on, c\'odigos de respuesta), mientras
 que la l\'ogica de negocio reside exclusivamente en los servicios, lo que permite invocarla desde
 tareas Celery o tests sin simular peticiones HTTP.
+
+La Figura~\ref{fig:arquitectura-capas} resume la distribuci\'on por capas de la soluci\'on.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{../../docs/diagramas/arquitectura/arquitectura-capas.png}
+\caption{Arquitectura por capas de BargAIN}
+\label{fig:arquitectura-capas}
+\end{figure}
 
 \subsection{Comunicaci\'on entre componentes}\label{subsec:comunicacion}
 
