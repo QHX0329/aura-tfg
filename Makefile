@@ -113,13 +113,26 @@ logs-backend: ## Ver logs del backend (desarrollo)
 logs-frontend: ## Ver logs del frontend (desarrollo)
 	docker compose -f docker-compose.dev.yml logs -f frontend
 
-deploy-staging: ## Deploy a staging (Render via render.yaml)
-	@echo "Deploy a Render — proceso:"
-	@echo "  1. Push a main activa auto-deploy via render.yaml"
-	@echo "  2. Configurar env vars en Render Dashboard (las marcadas con sync: false)"
-	@echo "     SECRET_KEY, ALLOWED_HOSTS, ORS_API_KEY, GOOGLE_MAPS_API_KEY,"
-	@echo "     GEMINI_API_KEY, GOOGLE_CLOUD_VISION_API_KEY, CORS_ALLOWED_ORIGINS"
-	@echo "  3. Verificar health: https://<render-url>/api/v1/health/"
+deploy-staging: ## Desplegar a Render staging (requiere render.yaml y env vars configuradas)
+	@echo "Deploy a Render staging:"
+	@echo "  1. Asegurate de que render.yaml esta en la raiz y los cambios estan en main"
+	@echo "  2. git push origin main  (dispara auto-deploy en Render)"
+	@echo "  3. O ve a Render Dashboard -> bargain-api -> Manual Deploy"
+	@echo ""
+	@echo "  Variables requeridas en Render (sync:false):"
+	@echo "  SECRET_KEY, ALLOWED_HOSTS, ORS_API_KEY, GOOGLE_MAPS_API_KEY,"
+	@echo "  GEMINI_API_KEY, GOOGLE_CLOUD_VISION_API_KEY, CORS_ALLOWED_ORIGINS"
+	@echo ""
+	@echo "  Verificar: curl https://<render-url>/api/v1/health/"
+
+ios-build: ## Disparar build iOS en GitHub Actions (requiere push al repo)
+	@echo "Build iOS en GitHub Actions:"
+	@echo "  Opcion 1: GitHub -> Actions -> 'iOS Build' -> Run workflow"
+	@echo "  Opcion 2: git tag ios-$(shell date +%Y%m%d-%H%M%S) && git push --tags"
+	@echo ""
+	@echo "  Artefacto: BargAIn-unsigned-*.ipa (disponible 7 dias)"
+	@echo "  Sideload: Sideloadly en Windows con Apple ID gratuito"
+	@echo "  IMPORTANTE: Re-sideload 1-2 dias antes de la defensa (cert caduca en 7 dias)"
 
 clean: ## Limpiar archivos temporales y caché
 	@python -c "from pathlib import Path; import shutil; root=Path('.'); [shutil.rmtree(p, ignore_errors=True) for p in root.rglob('__pycache__') if p.is_dir()]; [shutil.rmtree(p, ignore_errors=True) for p in root.rglob('.pytest_cache') if p.is_dir()]; [p.unlink(missing_ok=True) for p in root.rglob('*.pyc') if p.is_file()]; shutil.rmtree(root / 'frontend' / 'node_modules' / '.cache', ignore_errors=True)"
