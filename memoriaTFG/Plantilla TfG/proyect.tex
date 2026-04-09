@@ -1,53 +1,51 @@
 % !TEX encoding = UTF-8 Unicode
 \documentclass{pclass}
-\usepackage[utf8]{inputenc} % para linux y mac 
-%\usepackage[latin1]{inputenc} % para windows
-  
+\usepackage[utf8]{inputenc} % para linux y mac
 
 %DIFERENTES TIPOS DE LETRA
 %\usepackage{palatino}
-\usepackage{times}   
+%\usepackage{times}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
 
+\usepackage{amsmath}  % para ecuaciones del optimizador
 
 \begin{document}
 \tipo{Grado}   % Grado o M\'aster
-\titulopro{Especificaciones de formato}
-\tutor{Junta de Centro}
-\departamento{Comisi\'on de Trabajos fin de Grado de la E.T.S.I.I.}
-%\autores{Nombre 1}{Nombre 2}  % Dos autores
-\autores{(ponente): Jos\'e Ra. Portillo Fernández}{{\ }}   % Un autor
-\dia{1 de marzo de 2017 (v.0.91)}
-\titulacion{GIC, GIS y GITI}
+\titulopro{BargAIN: Sistema inteligente de optimizaci\'on de la cesta de la compra}
+\tutor{Juan Vicente Guti\'errez Santacreu}
+\departamento{Matem\'atica Aplicada I}
+\autores{Nicol\'as Parrilla Geniz}{{\ }}   % Un autor
+\dia{Junio 2026}
+\titulacion{Grado en Ingenier\'ia Inform\'atica (Ingenier\'ia del Software)}
 
 \hacerportada
 
 	\input{tocdef}
 \frontmatter
-        
+
     \input{resumen}
-    \input{agradecimientos}	
+    \input{agradecimientos}
 
 	\tableofcontents % Índice de contenidos
- 	\listoftables % Índice de cuadros
- 	\listoffigures % Índice de figuras
- 	\lstlistoflistings %Índice de códigos
+	\listoftables    % Índice de cuadros
+	\listoffigures   % Índice de figuras
 
- \mainmatter  
-    
-     \input{Capitulos/capitulo1}
-     \input{Capitulos/capitulo2}
-%     \input{Capitulos/defobjetivos}
-%     \input{Capitulos/requisitos}
-%     \input{Capitulos/analanteced}
-%     \input{Capitulos/analtemporal}
-%     \input{Capitulos/alternativas}
-%     \input{Capitulos/pruebas}
-%     \input{Capitulos/manual}
+\mainmatter
+
+     \input{Capitulos/defobjetivos}
+     \input{Capitulos/analanteced}
+     \input{Capitulos/alternativas}
+     \input{Capitulos/analtemporal}
+     \input{Capitulos/requisitos}
+     \input{Capitulos/cap08}
+     \input{Capitulos/cap09}
+     \input{Capitulos/cap10}
+     \input{Capitulos/cap11}
 
 \backmatter
 
 % \input{Capitulos/apendices}
-%\bibliographystyle{sousa5}
 
 \bibliographystyle{apacite}
 

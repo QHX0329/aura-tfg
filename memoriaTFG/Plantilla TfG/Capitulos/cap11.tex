@@ -1,0 +1,138 @@
+% !TEX root = ../proyect.tex
+
+\chapter{Conclusiones}\label{cap11}
+
+\section{Grado de cumplimiento}\label{sec:cumplimiento}
+
+El proyecto BargAIn ha completado todos los bloques de desarrollo planificados:
+
+\begin{itemize}
+  \item \textbf{F1:} an\'alisis, requisitos y dise\~no de arquitectura.
+  \item \textbf{F2:} infraestructura base de desarrollo y CI/CD.
+  \item \textbf{F3:} backend core completo con todos los m\'odulos de dominio y API documentada.
+  \item \textbf{F4:} frontend base y avanzado --- autenticaci\'on, listas, cat\'alogo, mapa,
+    notificaciones, perfil, portal business y Places enrichment.
+  \item \textbf{F5:} sistema de optimizaci\'on multicriterio (OR-Tools + OpenRouteService),
+    scraping de precios (Scrapy + Playwright, 4 cadenas), OCR de tickets (Google Cloud Vision API
+    + fuzzy matching), asistente LLM (Google Gemini 2.0 Flash) y wiring de pantallas m\'oviles a
+    endpoints reales.
+  \item \textbf{F6:} portal business completo para PYMEs --- servicio de aprobaci\'on compartido,
+    gesti\'on de precios y promociones, tests de integraci\'on, UAT verificada, notificaciones push
+    y email, sincronizaci\'on documental.
+\end{itemize}
+
+El sistema est\'a desplegado en staging (Render.com) y los cuatro flujos E2E cr\'iticos han sido
+verificados de forma automatizada con Playwright.
+
+\section{Aportaciones principales del trabajo}\label{sec:aportaciones}
+
+\begin{itemize}
+  \item \textbf{Algoritmo de optimizaci\'on multicriterio propio:} funci\'on de scoring ponderada
+    (precio, distancia, tiempo) con OR-Tools para el VRP y OpenRouteService para distancias reales
+    de conducci\'on. Es el n\'ucleo diferencial del TFG.
+
+  \item \textbf{Pipeline de datos de precios automatizado:} cuatro spiders Scrapy para Mercadona,
+    Carrefour, Lidl y DIA, con programaci\'on peri\'odica v\'ia Celery Beat y normalizaci\'on de
+    producto contra cat\'alogo interno.
+
+  \item \textbf{OCR sobre tickets con Google Vision API:} extracci\'on de texto, fuzzy matching
+    contra cat\'alogo y conversi\'on autom\'atica a \'items de lista. Elimina la entrada manual.
+
+  \item \textbf{Portal business para PYMEs:} flujo completo de registro, aprobaci\'on por
+    administrador, gesti\'on de precios y promociones, con visibilidad para el consumidor final.
+
+  \item \textbf{Asistente LLM con guardrails de dominio:} Gemini 2.0 Flash con restricci\'on
+    tem\'atica a consultas de compra, historial de conversaci\'on y rate limiting.
+
+  \item \textbf{Arquitectura full-stack coherente:} separaci\'on clara entre apps Django, workers
+    Celery independientes, PostGIS para geoespacial y React Native + Expo para iOS/Android desde
+    una \'unica base de c\'odigo.
+
+  \item \textbf{Verificaci\'on automatizada:} suite de tests backend (unitarios + integraci\'on,
+    \textgreater80\% cobertura), tests E2E con Playwright (4 flujos cr\'iticos) y UAT manual en
+    iPhone.
+\end{itemize}
+
+\section{Limitaciones}\label{sec:limitaciones}
+
+\begin{itemize}
+  \item \textbf{Cobertura de scraping:} el sistema cubre actualmente cuatro cadenas de
+    supermercados (Mercadona, Carrefour, Lidl, DIA). Las cadenas con protecci\'on agresiva contra
+    scrapers (Alcampo, Aldi) requieren mantenimiento adicional de los spiders.
+
+  \item \textbf{Caducidad de precios:} los precios de scraping tienen TTL de 48 horas y los de
+    crowdsourcing 24 horas; pueden no reflejar cambios de precio intradiarios.
+
+  \item \textbf{Cold starts en Render free tier:} el plan gratuito de Render puede tener tiempos
+    de arranque de hasta 30 segundos tras inactividad prolongada, lo que afecta a la primera
+    petici\'on tras un per\'iodo de reposo.
+
+  \item \textbf{Certificado iOS gratuito:} la distribuci\'on con Sideloadly y Apple ID gratuito
+    genera certificados con caducidad de 7 d\'ias, que requieren re-sideload peri\'odico para el
+    dispositivo de demo.
+
+  \item \textbf{NFR-05 sin load test real:} la justificaci\'on de escalabilidad a 10.000 usuarios
+    concurrentes es arquitectural (Celery workers independientes, PostGIS spatial index, API
+    stateless). Un load test completo requeriría infraestructura de pago fuera del alcance del TFG.
+\end{itemize}
+
+\section{Lecciones aprendidas}\label{sec:lecciones}
+
+\begin{itemize}
+  \item \textbf{Modelo h\'ibrido backend Docker / frontend nativo en host:} determinante para la
+    productividad en Windows. Docker volumes en Windows rompen el HMR de Metro/Expo; ejecutar el
+    frontend nativo elimina este problema manteniendo el backend aislado.
+
+  \item \textbf{Contratos API expl\'icitos y documentaci\'on viva:} mantener TASKS.md, ADRs y la
+    memoria actualizados durante el desarrollo (no al final) reduce la fricci\'on entre backend y
+    frontend y facilita la incorporaci\'on de agentes IA al flujo.
+
+  \item \textbf{OR-Tools frente a algoritmo propio:} usar la librer\'ia de optimizaci\'on
+    combinatoria de Google (producci\'on en empresas log\'isticas) es preferible a reinventar el
+    VRP desde cero. El valor del TFG est\'a en la integraci\'on y la funci\'on de scoring, no en
+    reimplementar un solucionador gen\'erico.
+
+  \item \textbf{OCR cloud vs local:} Google Vision API supera a Tesseract en precisi\'on sobre
+    tickets de supermercado reales (texto impreso variable), justificando el coste de la llamada
+    API frente a la alternativa local.
+
+  \item \textbf{Playwright request fixture para flujos mobile-only:} los flujos de lista y
+    optimizador son exclusivos de la app m\'ovil. Cubrirlos con tests API-level (Playwright
+    \texttt{request} fixture) permite automatizaci\'on completa sin necesitar una interfaz web
+    consumer.
+\end{itemize}
+
+\section{Trabajo futuro}\label{sec:trabajofuturo}
+
+\begin{enumerate}
+  \item \textbf{Publicaci\'on en App Store y Google Play:} el proyecto est\'a t\'ecnicamente listo
+    para iniciar el proceso de publicaci\'on. Requiere cuenta de desarrollador Apple/Google y
+    revisi\'on de las gu\'ias de contenido.
+
+  \item \textbf{Ampliaci\'on de scrapers:} incorporar Alcampo, Aldi, Lidl.es (versi\'on
+    alternativa), El Corte Ingl\'es alimentaci\'on y PYMEs locales v\'ia integraci\'on API propia.
+
+  \item \textbf{Precios en tiempo real:} varios supermercados est\'an desplegando APIs semi-p\'ublicas
+    o feeds RSS de precios; la arquitectura est\'a preparada para incorporarlos como fuente
+    \texttt{api} en el modelo \texttt{Price}.
+
+  \item \textbf{Sistema de rese\~nas de productos:} los usuarios podr\'ian valorar la
+    calidad/frescura de productos por tienda, a\~nadiendo una dimensi\'on cualitativa al
+    comparador.
+
+  \item \textbf{Suscripci\'on premium para PYMEs:} el modelo de negocio contempla tres tiers
+    (\texttt{free}, \texttt{basic}, \texttt{premium}) con funcionalidades diferenciadas; la
+    implementaci\'on actual es el tier gratuito.
+
+  \item \textbf{Internacionalizaci\'on:} la arquitectura soporta m\'ultiples pa\'ises; la
+    expansi\'on requiere scrapers por mercado y ajuste de la l\'ogica de normalizaci\'on de
+    cadenas.
+\end{enumerate}
+
+\section{Cierre}\label{sec:cierre}
+
+BargAIn demuestra que es posible construir, en el marco de un TFG, un sistema full-stack de
+complejidad real que integra optimizaci\'on combinatoria, geoespacial, procesamiento de im\'agenes,
+generaci\'on de lenguaje natural y scraping automatizado bajo una arquitectura coherente y
+verificada. El proyecto cumple todos los objetivos planteados en la fase de an\'alisis y deja una
+base t\'ecnica s\'olida para su evoluci\'on como producto real.

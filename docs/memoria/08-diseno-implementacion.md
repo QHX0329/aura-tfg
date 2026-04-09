@@ -16,7 +16,7 @@ La arquitectura global se divide en cinco bloques principales que se comunican d
 2. **API Backend:** Django REST Framework como núcleo de la lógica de negocio, expuesto bajo HTTPS mediante Gunicorn + Nginx.
 3. **Capa de datos:** PostgreSQL 16 con extensión PostGIS 3.4 para consultas geoespaciales.
 4. **Capa de tareas asíncronas:** Celery con Redis como broker, para scraping periódico, envío de notificaciones, procesamiento OCR y cálculos pesados de optimización.
-5. **Integraciones y servicios auxiliares:** Claude API (Anthropic), Google Maps / OSRM,
+5. **Integraciones y servicios auxiliares:** Google Gemini API (asistente LLM), Google Maps / OpenRouteService (ORS),
    Sentry y Google Cloud Vision API como proveedor OCR backend.
 
 ```
@@ -79,7 +79,7 @@ La separación entre `views.py` y `services.py` es deliberada: los ViewSets se l
 - **Backend → Celery:** Encolar tareas mediante `.delay()` o `.apply_async()` sobre el broker Redis.
 - **Backend → PostgreSQL:** Django ORM con consultas geoespaciales mediante
   `django.contrib.gis` y capacidades nativas de PostGIS.
-- **Backend → APIs externas:** Clientes HTTP aislados en `apps/<modulo>/clients/` para Google Maps, Claude API y OSRM. Esto permite mockearlos en tests sin afectar a la lógica de negocio.
+- **Backend → APIs externas:** Clientes HTTP aislados en `apps/<modulo>/clients/` para Google Maps, Gemini API y OpenRouteService (ORS). Esto permite mockearlos en tests sin afectar a la lógica de negocio.
 
 ---
 
@@ -798,15 +798,20 @@ def evaluate_combination(
 
 **Fase 4: Cálculo de distancias reales**
 
-Las distancias entre tiendas se calculan usando la **API de OSRM** (Open Source Routing Machine), que ofrece distancias de conducción reales en lugar de distancias en línea recta. Para optimizar el número de llamadas a la API, se calcula la **matriz de distancias** entre todas las tiendas candidatas en una sola petición.
+Las distancias entre tiendas se calculan usando la **API de OpenRouteService (ORS)**, que ofrece distancias de conducción reales por carretera en lugar de distancias en línea recta. Para optimizar el número de llamadas a la API, se calcula la **matriz de distancias** entre todas las tiendas candidatas en una sola petición.
 
 ```
-POST http://router.project-osrm.org/table/v1/driving/
-     lng1,lat1;lng2,lat2;...lngN,latN
-     ?annotations=duration,distance
+POST https://api.openrouteservice.org/v2/matrix/driving-car
+Authorization: {ORS_API_KEY}
+
+{
+  "locations": [[lng1, lat1], [lng2, lat2], ..., [lngN, latN]],
+  "metrics": ["distance", "duration"],
+  "units": "km"
+}
 ```
 
-La respuesta incluye la matriz completa de tiempos y distancias entre todos los puntos. Se cachean los resultados con Redis (TTL de 24 horas) para evitar llamadas redundantes.
+La respuesta incluye la matriz completa de tiempos (`durations`, en segundos) y distancias (`distances`, en km) entre todos los puntos. Se utiliza el plan gratuito de ORS, que admite hasta 40 peticiones por minuto y 2.000 peticiones diarias — suficiente para el entorno de staging y para la demo. El fallback haversine se activa automáticamente si ORS no está disponible (por ejemplo, en tests unitarios sin `ORS_API_KEY` configurada).
 
 **Fase 5: Scoring y ranking**
 
@@ -932,11 +937,11 @@ def extract_text_from_image(image_bytes: bytes) -> list[str]:
 
 ### 8.8.1 Arquitectura del asistente
 
-El asistente conversacional utiliza la **Claude API de Anthropic** como modelo subyacente. El backend actúa como proxy, añadiendo contexto de la compra del usuario (lista activa, precios cercanos, historial) al sistema de prompts antes de enviar cada mensaje a la API.
+El asistente conversacional utiliza la **Google Gemini API** (`gemini-2.0-flash-lite`) como modelo subyacente (ADR-008). El backend actúa como proxy, añadiendo contexto de la compra del usuario (lista activa, precios cercanos, historial) al sistema de prompts antes de enviar cada mensaje a la API. El cliente Python utilizado es `google-genai` SDK, no el SDK de Anthropic.
 
 ```
 Usuario → Frontend → POST /api/v1/assistant/.../messages/
-        → Backend añade contexto → Claude API
+        → Backend añade contexto → Gemini API (google-genai)
         → Respuesta → Persistida en BD → Frontend
 ```
 
@@ -999,9 +1004,9 @@ El repositorio incluye tres workflows de GitHub Actions:
 
 - **`ci-backend.yml`:** Ejecuta `ruff check`, `ruff format --check` y `pytest --cov` en cada push a cualquier rama.
 - **`ci-frontend.yml`:** Ejecuta `eslint`, `prettier --check` y `jest --coverage` en cada push.
-- **`deploy-staging.yml`:** Desplegado automático a Render al hacer merge a `main`.
+- **`ios-build.yml`:** Genera el `.ipa` firmado de forma vacía mediante `expo prebuild` + `xcodebuild` en un runner `macos-latest`. El artefacto se descarga y se instala en el iPhone de demo con Sideloadly.
 
-Los deploys a staging solo se ejecutan si ambos workflows de CI pasan satisfactoriamente (dependencia de jobs en GitHub Actions).
+El deploy a staging se realiza a través de **Render Blueprints** (`render.yaml` en la raíz del repositorio), que define declarativamente los 5 servicios: Web Service (Django Gunicorn), PostgreSQL, Redis, Celery worker y Celery beat. Cada push a `main` dispara un redespliegue automático.
 
 ### 8.9.4 Monitorización
 

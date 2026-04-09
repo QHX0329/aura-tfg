@@ -1,0 +1,191 @@
+% !TEX root = ../proyect.tex
+
+\chapter{Manual de Usuario}\label{cap09}
+
+\section{Introducci\'on}\label{sec:manual-intro}
+
+BargAIN permite al usuario gestionar su compra diaria desde una app m\'ovil (iOS y Android) y un
+portal web para PYMEs, comparar precios entre supermercados cercanos, y calcular la ruta de compra
+m\'as eficiente seg\'un sus preferencias de precio, distancia y tiempo.
+
+\section{Requisitos de uso}\label{sec:manual-requisitos}
+
+\begin{itemize}
+  \item Dispositivo m\'ovil iOS (14+) o Android (10+) con la app instalada, o navegador web
+    moderno para el portal business.
+  \item Conexi\'on a Internet.
+  \item Cuenta de usuario registrada en el sistema.
+  \item Permisos de ubicaci\'on concedidos a la app (para funciones de mapa y optimizaci\'on).
+\end{itemize}
+
+Para el entorno de desarrollo local:
+\begin{itemize}
+  \item Backend levantado en Docker (\texttt{make dev}).
+  \item Base de datos migrada (\texttt{make migrate-docker}).
+  \item Frontend Expo en host (\texttt{make frontend}).
+\end{itemize}
+
+\section{Flujo de acceso}\label{sec:manual-acceso}
+
+\begin{enumerate}
+  \item Abrir la app en Expo/Web.
+  \item Seleccionar ``Iniciar sesi\'on'' o ``Registrarse''.
+  \item Introducir credenciales v\'alidas.
+  \item Tras autenticaci\'on, se carga la navegaci\'on principal por pesta\~nas.
+\end{enumerate}
+
+El sistema usa JWT con refresco autom\'atico. Si el access token expira, la sesi\'on se recupera
+sin intervenci\'on del usuario cuando el refresh token sigue siendo v\'alido (7 d\'ias desde el
+\'ultimo uso).
+
+\section{Pantalla principal (Home)}\label{sec:manual-home}
+
+La pantalla de inicio centraliza la informaci\'on m\'as relevante del usuario:
+
+\begin{itemize}
+  \item Resumen de listas activas con el precio estimado en la tienda m\'as barata cercana.
+  \item CTA para crear lista cuando el usuario no tiene listas activas.
+  \item Buscador global para navegar r\'apidamente a catálogo o funciones de compra.
+  \item Acceso directo al asistente y a las alertas de precio activas.
+\end{itemize}
+
+\section{Gesti\'on de listas de compra}\label{sec:manual-listas}
+
+\begin{enumerate}
+  \item Crear lista con nombre personalizado (pesta\~na ``Mi Lista'' \textrightarrow{}
+    bot\'on ``Nueva lista'').
+  \item Abrir detalle de lista para ver \'items agrupados por categor\'ia.
+  \item A\~nadir productos desde cat\'alogo o buscador con autocompletado.
+  \item Ajustar cantidades con controles r\'apidos ``$+$/$-$''.
+  \item Marcar productos como comprados (swipe-to-check) o eliminarlos (swipe-to-delete).
+  \item Renombrar listas o convertirlas en plantilla para reutilizaci\'on futura.
+  \item Compartir lista con colaboradores (hasta 10 usuarios por lista).
+  \item Abrir ``Ruta optimizada'' para calcular, guardar y reutilizar la \'ultima ruta por lista.
+\end{enumerate}
+
+\section{Cat\'alogo y detalle de producto}\label{sec:manual-catalogo}
+
+\begin{itemize}
+  \item Cat\'alogo paginado con filtros plegables por categor\'ia, precio y distancia.
+  \item Tarjetas de producto con precio m\'inimo detectado y nombre de la tienda m\'as barata.
+  \item Acci\'on de a\~nadido r\'apido a lista desde la tarjeta (un tap).
+  \item Detalle de producto con comparaci\'on de precios por tienda (tabla ordenable).
+  \item Hist\'orico de precios con gr\'afico de evoluci\'on temporal.
+\end{itemize}
+
+\section{Mapa de tiendas}\label{sec:manual-mapa}
+
+\begin{itemize}
+  \item Visualizaci\'on de tiendas cercanas sobre mapa interactivo (React Native Maps).
+  \item Marcadores diferenciados por cadena con badge de precio m\'inimo de la lista activa.
+  \item Panel de tiendas plegable con detalles de la tienda seleccionada.
+  \item Apertura de perfil de tienda desde el mapa y desde la lista de favoritas.
+  \item Gesti\'on de tiendas favoritas (guardar, eliminar, acceder r\'apido).
+\end{itemize}
+
+\section{Alertas y notificaciones}\label{sec:manual-notificaciones}
+
+\begin{itemize}
+  \item Creaci\'on de alertas de precio: al abrir el detalle de un producto, pulsar ``Crear
+    alerta'' e introducir el precio objetivo.
+  \item Edici\'on y eliminaci\'on de alertas existentes desde la pantalla ``Mis alertas''.
+  \item Bandeja de notificaciones con marcado como le\'ido individual o masivo y borrado
+    funcional (soft-delete).
+  \item Notificaciones push en el dispositivo para alertas de precio, nuevas promociones y
+    cambios en listas compartidas.
+\end{itemize}
+
+\section{Perfil y preferencias}\label{sec:manual-perfil}
+
+El usuario puede desde la pesta\~na ``Perfil'':
+
+\begin{itemize}
+  \item Editar datos b\'asicos (nombre, foto de avatar, tel\'efono).
+  \item Ajustar preferencias del optimizador: radio de b\'usqueda (1--20 km), pesos
+    $w_{precio}$/$w_{distancia}$/$w_{tiempo}$ (sliders que suman 1.0) y modo de
+    optimizaci\'on (precio / distancia / balanced).
+  \item Configurar preferencias de notificaciones (push, email, tipos de alerta).
+  \item Cerrar sesi\'on (invalida el refresh token).
+\end{itemize}
+
+\section{Ruta optimizada persistente y rec\'alculo}\label{sec:manual-ruta}
+
+Flujo recomendado:
+
+\begin{enumerate}
+  \item Entrar en una lista y pulsar ``Ruta optimizada''.
+  \item Si existe una ruta previa para esa lista, se carga autom\'aticamente desde base de datos.
+  \item Revisar paradas, productos por parada y precio total estimado.
+  \item Pulsar ``Recalcular ruta'' para lanzar una nueva optimizaci\'on con ubicaci\'on y pesos
+    actuales.
+  \item Pulsar ``Ver en mapa'' para abrir la ruta circular en la app de mapas del dispositivo.
+\end{enumerate}
+
+Comportamiento persistente: la app no pierde la ruta al salir de la pantalla. Al volver, recupera
+la \'ultima optimizaci\'on guardada de esa lista.
+
+\section{M\'odulo OCR: captura de ticket}\label{sec:manual-ocr}
+
+El flujo de captura de lista por c\'amara sigue un wizard de tres pasos:
+
+\begin{enumerate}
+  \item \textbf{Captura:} Acceder desde ``Mi Lista'' \textrightarrow{} icono de c\'amara.
+    Apuntar la c\'amara al ticket o lista escrita. Se puede usar la galer\'ia como alternativa.
+  \item \textbf{Revisi\'on:} La app muestra los productos reconocidos con nivel de confianza
+    (chip de color: verde $\geq$ 80\%, amarillo 50--79\%, rojo $<$ 50\%).
+    El usuario puede corregir el texto de cualquier \'item inline o eliminar los no deseados.
+  \item \textbf{Confirmaci\'on:} Seleccionar la lista destino (existente o nueva) y confirmar
+    para a\~nadir todos los \'items reconocidos.
+\end{enumerate}
+
+\section{Asistente LLM}\label{sec:manual-asistente}
+
+La pantalla del asistente sigue el patr\'on de chat est\'andar:
+
+\begin{itemize}
+  \item Mensajes del usuario alineados a la derecha (burbuja verde).
+  \item Respuestas del asistente alineadas a la izquierda (burbuja gris).
+  \item Las respuestas con productos, precios o tiendas incluyen chips interactivos para a\~nadir
+    el producto a la lista activa directamente desde el chat.
+  \item El asistente s\'olo responde preguntas relacionadas con la compra dom\'estica. Si se hace
+    una pregunta fuera de ese \'ambito, responde educadamente indicando su alcance.
+\end{itemize}
+
+\section{Checklist en bloqueo de iPhone}\label{sec:manual-lockscreen}
+
+Desde la pantalla de ruta optimizada, el bot\'on ``Checklist en bloqueo'' publica una notificaci\'on
+interactiva con las acciones de marcar cada producto como comprado. Al pulsar una acci\'on en
+pantalla bloqueada, el \'item se marca como comprado y la notificaci\'on se actualiza.
+
+\section{Portal Business (web)}\label{sec:manual-business}
+
+Para cuentas PYME, el portal web (\texttt{/business}) ofrece:
+
+\begin{enumerate}
+  \item \textbf{Registro:} Formulario de onboarding con datos del negocio (nombre, CIF, direcci\'on,
+    web). La cuenta queda en estado ``pendiente'' hasta que un administrador la aprueba.
+  \item \textbf{Gesti\'on de precios:} Tabla editable con todos los productos del negocio y sus
+    precios actuales. Actualizaci\'on individual o mediante carga masiva en CSV.
+  \item \textbf{Gesti\'on de promociones:} Crear, activar y desactivar promociones con descuento
+    fijo o porcentual, fecha de fin y cantidad m\'inima.
+  \item \textbf{Perfil de negocio:} Editar descripci\'on, horario, tel\'efono, imagen.
+  \item \textbf{Estad\'isticas:} N\'umero de visualizaciones del perfil y comparativa de precios
+    con competidores del entorno (alerta autom\'atica cuando la diferencia supera el umbral
+    configurado).
+\end{enumerate}
+
+\section{Resoluci\'on de incidencias comunes}\label{sec:manual-incidencias}
+
+\begin{itemize}
+  \item \textbf{Frontend no conecta con backend:} verificar que el backend est\'a levantado
+    (\texttt{make dev}) y expuesto en \texttt{http://localhost:8000}.
+  \item \textbf{Errores JWT al navegar:} cerrar sesi\'on e iniciar de nuevo para regenerar
+    credenciales.
+  \item \textbf{No aparecen tiendas en mapa:} comprobar permisos de ubicaci\'on del dispositivo
+    o usar coordenadas v\'alidas desde preferencias de perfil.
+  \item \textbf{OCR no reconoce texto:} asegurarse de que hay buena iluminaci\'on y el texto es
+    legible; usar la opci\'on de galer\'ia con una foto de mayor calidad.
+  \item \textbf{Optimizaci\'on muy lenta:} la primera optimizaci\'on tras arrancar el backend puede
+    tardar hasta 30 s (cold start en Render free tier). Las siguientes son instant\'aneas porque
+    el worker Celery est\'a caliente.
+\end{itemize}
