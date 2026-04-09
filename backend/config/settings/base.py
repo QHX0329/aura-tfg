@@ -350,6 +350,12 @@ GEMINI_PRODUCT_MATCH_MODEL = os.environ.get(
     "gemini-3-flash-preview",
 )
 
-# ── Graphhopper (Routing) ─────────────────────────────
+# ── Graphhopper (Routing) — mantenido por compatibilidad retroactiva ──────────
 
 GRAPHHOPPER_URL = os.environ.get("GRAPHHOPPER_URL", "http://graphhopper:8989")
+
+# ── OpenRouteService (Routing) ────────────────────────
+# Usado por el optimizador para la matriz de distancias en staging/produccion.
+# Vacío → fallback haversine automatico (sin llamada externa).
+
+ORS_API_KEY = os.environ.get("ORS_API_KEY", "")
