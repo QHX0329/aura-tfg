@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 7 in progress - 07-03 complete
-stopped_at: Completed 07-03-PLAN.md (iOS Build workflow + Render deploy docs)
-last_updated: "2026-04-09T12:00:00.000Z"
+status: Phase 7 in progress - 07-02 and 07-03 complete
+stopped_at: Completed 07-02-PLAN.md (Playwright E2E setup — 4 spec files)
+last_updated: "2026-04-09T10:51:00.000Z"
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 6
-  completed_plans: 3
-  percent: 50
+  completed_plans: 4
+  percent: 67
 ---
 
 # Project State
@@ -18,7 +18,7 @@ progress:
 ## Current Position
 
 Phase: 07 (testing-deploy-thesis) - IN PROGRESS
-Current Plan: 07-03 COMPLETE
+Current Plan: 07-02 COMPLETE (also 07-03 COMPLETE)
 
 ## Summary
 
@@ -63,6 +63,8 @@ Current Plan: 07-03 COMPLETE
 - 07-03: Descubrimiento dinamico de workspace/scheme con ls + xcodebuild -list para evitar nombres hardcoded tras expo prebuild
 - 07-03: method ad-hoc en ExportOptions.plist permite re-firma con Sideloadly y Apple ID gratuito
 - 07-03: Re-sideload planificado 1-2 dias antes de la defensa documentado en Makefile y ADR-011
+- 07-02: Flujos auth y business son UI-driven (web companion tiene /login, /onboarding, /dashboard); optimizer y OCR son API-level via request fixture (pantallas de lista/cámara son móviles)
+- 07-02: Fixture JPEG mínimo (1x1 px) versionado en e2e/fixtures/ para independencia de archivos externos
 
 ## Roadmap Evolution
 
@@ -71,7 +73,7 @@ Current Plan: 07-03 COMPLETE
 
 ## Last Session
 
-- **Stopped at:** Completed 07-03-PLAN.md (iOS Build workflow + Render deploy docs)
+- **Stopped at:** Completed 07-02-PLAN.md (Playwright E2E setup — 4 spec files)
 - **Date:** 2026-04-09
 
 ---

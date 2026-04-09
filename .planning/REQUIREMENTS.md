@@ -81,7 +81,7 @@ Audit-ready coverage: 2/49 satisfied
 | [ ] | NFR-01 | Phase 08 | Pending | Audit gap: orphaned in milestone audit trail |
 | [x] | NFR-03 | Phase 03 | Audit Ready | Passed verification and summary metadata aligned |
 | [ ] | NFR-02 | Phase 07 | Pending | Future scope |
-| [ ] | NFR-04 | Phase 07 | Pending | Future scope |
+| [ ] | NFR-04 | Phase 07 | Complete | Future scope |
 | [ ] | NFR-05 | Phase 07 | Pending | Future scope |
 | [ ] | SVC-01 | Phase 09 | Pending | Audit gap: Phase 06 summary metadata missing requirements-completed |
 | [ ] | PRO-01 | Phase 09 | Pending | Audit gap: Phase 06 summary metadata missing requirements-completed |
