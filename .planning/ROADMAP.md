@@ -122,5 +122,15 @@ Plans:
 | 9. Traceability Normalization | Not started | Reparacion de requirements-completed y trazabilidad audit-ready |
 | 10. Contract Alignment Cleanup | Not started | Alinear IDs ambiguos y contrato OCR antes de re-auditar |
 
+### Phase 11: Auditar memoria TFG contra guías oficiales y preparar despliegue reproducible
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 10
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 11 to break down)
+
 ---
 Last updated: 2026-04-05

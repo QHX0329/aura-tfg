@@ -8,7 +8,7 @@
 > **GitHub Repo:** https://github.com/QHX0329/bargain-tfg
 > **GitHub Issues:** https://github.com/QHX0329/bargain-tfg/issues
 >
-> Última sincronización: 2026-04-05 (sincronización documental integral local: docs, memory y Obsidian alineados con F6 completada, F5 en progreso y F7 activa)
+> Última sincronización: 2026-04-09 (memoria y despliegue staging revisados; cierre F7 mantenido)
 
 ---
 
@@ -225,7 +225,7 @@ Nota F5-17: bloqueada en Expo managed. Requiere extensión nativa iOS (ActivityK
 | 09 — Manual de usuario | `docs/memoria/09-manual-usuario.md` | ✅ |
 | 10 — Pruebas | `docs/memoria/10-pruebas.md` | ✅ |
 | 11 — Conclusiones | `docs/memoria/11-conclusiones.md` | ✅ |
-| 12 — Bibliografía | `docs/memoria/12-bibliografia.md` | ⬜ |
+| 12 — Bibliografía | `docs/memoria/12-bibliografia.md` | ✅ |
 
 ---
 

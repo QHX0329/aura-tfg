@@ -71,6 +71,7 @@ Phase: 07 COMPLETE — TFG BargAIn v1.0 listo para defensa
 - Phase 6 added: Portal Business y App Movil - Admin UI, CSV prices, EAN-13 validation, UX loading states, business approval notification, RF-019 mobile proposal screen, shared lists verification, email notifications
 - Phase 6 complete: service extraction, 11 integration tests, UAT verification, frontend screen validation
 - Phase 7 complete: ORS+Render deploy, E2E Playwright, iOS build CI, memoria LaTeX, defensa slides
+- Phase 11 added: Auditoria memoria TFG contra guias oficiales y preparacion de despliegue reproducible
 
 ## Last Session
 
