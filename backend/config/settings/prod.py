@@ -3,6 +3,7 @@
 import logging
 import os
 
+from django.core.exceptions import ImproperlyConfigured
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -10,8 +11,31 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 from .base import *  # noqa: F401, F403
 
+
+def _split_env_list(key: str) -> list[str]:
+    """Parsea variables de entorno separadas por coma eliminando espacios."""
+    return [item.strip() for item in os.environ.get(key, "").split(",") if item.strip()]
+
+
 DEBUG = False
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = _split_env_list("ALLOWED_HOSTS")
+
+if not ALLOWED_HOSTS:
+    raise ImproperlyConfigured(
+        "ALLOWED_HOSTS debe definirse en producción (lista separada por comas)."
+    )
+
+if SECRET_KEY == "INSECURE-dev-key-change-me":  # noqa: F405
+    raise ImproperlyConfigured("SECRET_KEY insegura en producción.")
+
+CSRF_TRUSTED_ORIGINS = _split_env_list("CSRF_TRUSTED_ORIGINS")
+if not CSRF_TRUSTED_ORIGINS:
+    # Reutiliza CORS como fallback razonable para despliegues sencillos en staging/prod.
+    CSRF_TRUSTED_ORIGINS = [
+        origin
+        for origin in CORS_ALLOWED_ORIGINS  # noqa: F405
+        if origin.startswith("http://") or origin.startswith("https://")
+    ]
 
 # Security headers
 SECURE_BROWSER_XSS_FILTER = True

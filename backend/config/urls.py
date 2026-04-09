@@ -8,6 +8,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 urlpatterns = [
     # Health check (sin autenticación, para Docker / load balancers)
+    path("api/v1/health/", include("apps.core.urls")),
     path("api/health/", include("apps.core.urls")),
     # Admin
     path("admin/", admin.site.urls),

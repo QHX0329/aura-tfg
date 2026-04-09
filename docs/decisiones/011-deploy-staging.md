@@ -180,12 +180,15 @@ a `https://api.openrouteservice.org/v2/matrix/driving-car` con la API key como v
    GOOGLE_CLOUD_VISION_API_KEY=<Google Cloud Console>
    CORS_ALLOWED_ORIGINS=http://localhost:5173,https://bargain-api.onrender.com
    ```
-   Repetir `DATABASE_URL`, `REDIS_URL`, `SECRET_KEY`, `DJANGO_SETTINGS_MODULE` para los workers.
+   Para workers, Render ya inyecta `DATABASE_URL` y `REDIS_URL` desde `render.yaml`
+   (`fromDatabase` / `fromService`). Solo define las variables `sync: false` que aplique
+   a cada servicio (por ejemplo `SECRET_KEY`, `ORS_API_KEY`).
 
-3. **Primer deploy y migraciones:**
+3. **Primer deploy:**
+   - El servicio `bargain-api` ejecuta automáticamente `migrate` y `collectstatic`
+     en `dockerCommand` antes de levantar Gunicorn.
+   - Tras desplegar, crea únicamente el superusuario desde Render Dashboard → Shell:
    ```bash
-   # Tras el primer deploy exitoso, ejecutar desde Render Dashboard → Shell:
-   python manage.py migrate --noinput
    python manage.py createsuperuser
    ```
 
