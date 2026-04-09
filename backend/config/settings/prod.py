@@ -19,6 +19,10 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
+# Render termina SSL en el load balancer y reenvía HTTP internamente.
+# SECURE_PROXY_SSL_HEADER evita redirect loops al indicar que X-Forwarded-Proto
+# es la fuente de verdad para el esquema HTTPS.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True

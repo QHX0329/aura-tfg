@@ -98,9 +98,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # ── Database ─────────────────────────────────────────
 
+# Render (y otros proveedores) emiten DATABASE_URL con prefijo postgresql://.
+# Django GIS requiere postgis:// para activar el backend PostGIS.
+# La conversion se hace aqui antes de pasar la URL a dj_database_url.
+_db_url = os.environ.get("DATABASE_URL", "")
+if _db_url.startswith("postgresql://"):
+    _db_url = _db_url.replace("postgresql://", "postgis://", 1)
+
 DATABASES = {
     "default": dj_database_url.config(
-        default="postgis://bargain_user:bargain_password@localhost:5432/bargain_db",
+        default=_db_url or "postgis://bargain_user:bargain_password@localhost:5432/bargain_db",
         engine="django.contrib.gis.db.backends.postgis",
     )
 }

@@ -1,4 +1,4 @@
-.PHONY: help setup dev stop test test-backend test-backend-cov test-frontend lint lint-backend lint-backend-fix lint-frontend migrate makemigrations seed createsuperuser scrape scrape-mercadona docs build build-dev logs logs-backend logs-frontend deploy-staging clean frontend frontend-install frontend-web ip
+.PHONY: help setup dev stop test test-backend test-backend-cov test-frontend lint lint-backend lint-backend-fix lint-frontend migrate makemigrations seed createsuperuser scrape scrape-mercadona docs build build-dev logs logs-backend logs-frontend deploy-staging ios-build clean frontend frontend-install frontend-web ip
 
 help: ## Mostrar esta ayuda
 	@python -c "import re, pathlib; mf=pathlib.Path('Makefile'); rows=[]; [rows.append((m.group(1), m.group(2))) for line in mf.read_text(encoding='utf-8').splitlines() if (m:=re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line))]; [print(f'{k:20} {v}') for k, v in sorted(rows)]"
@@ -113,10 +113,13 @@ logs-backend: ## Ver logs del backend (desarrollo)
 logs-frontend: ## Ver logs del frontend (desarrollo)
 	docker compose -f docker-compose.dev.yml logs -f frontend
 
-deploy-staging: ## Deploy a staging (Render)
-	@echo "🚀 Desplegando a staging..."
-	docker compose build
-	@echo "⚠️  Configura las variables de entorno en Render y empuja la imagen."
+deploy-staging: ## Deploy a staging (Render via render.yaml)
+	@echo "Deploy a Render — proceso:"
+	@echo "  1. Push a main activa auto-deploy via render.yaml"
+	@echo "  2. Configurar env vars en Render Dashboard (las marcadas con sync: false)"
+	@echo "     SECRET_KEY, ALLOWED_HOSTS, ORS_API_KEY, GOOGLE_MAPS_API_KEY,"
+	@echo "     GEMINI_API_KEY, GOOGLE_CLOUD_VISION_API_KEY, CORS_ALLOWED_ORIGINS"
+	@echo "  3. Verificar health: https://<render-url>/api/v1/health/"
 
 clean: ## Limpiar archivos temporales y caché
 	@python -c "from pathlib import Path; import shutil; root=Path('.'); [shutil.rmtree(p, ignore_errors=True) for p in root.rglob('__pycache__') if p.is_dir()]; [shutil.rmtree(p, ignore_errors=True) for p in root.rglob('.pytest_cache') if p.is_dir()]; [p.unlink(missing_ok=True) for p in root.rglob('*.pyc') if p.is_file()]; shutil.rmtree(root / 'frontend' / 'node_modules' / '.cache', ignore_errors=True)"

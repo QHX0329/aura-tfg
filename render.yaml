@@ -1,0 +1,113 @@
+# render.yaml — Infraestructura de staging BargAIn en Render.com
+# Docs: https://render.com/docs/infrastructure-as-code
+#
+# Servicios declarados:
+#   1. bargain-api          Web Service Django (Gunicorn)
+#   2. bargain-redis        Redis gestionado (broker Celery + cache)
+#   3. bargain-celery-worker  Background Worker Celery
+#   4. bargain-celery-beat    Background Worker Celery Beat
+#
+# Base de datos:
+#   - bargain-postgres      PostgreSQL gestionado por Render
+#
+# Variables con sync: false se configuran en el Render Dashboard (no se guardan en el repo).
+
+databases:
+  - name: bargain-postgres
+    databaseName: bargain
+    user: bargain
+    plan: free
+
+services:
+  # ── Web Service: Django API con Gunicorn ────────────────────────────────────
+  - type: web
+    name: bargain-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    buildCommand: "python manage.py collectstatic --noinput && python manage.py migrate --noinput"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 60"
+    healthCheckPath: /api/v1/health/
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
+      - key: SECRET_KEY
+        sync: false
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bargain-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: bargain-redis
+          type: redis
+          property: connectionString
+      - key: ORS_API_KEY
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_CLOUD_VISION_API_KEY
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+
+  # ── Redis: broker Celery + cache Google Places ──────────────────────────────
+  - type: redis
+    name: bargain-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+
+  # ── Background Worker: Celery worker ───────────────────────────────────────
+  - type: worker
+    name: bargain-celery-worker
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    startCommand: "celery -A config worker -l info --concurrency 4"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bargain-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: bargain-redis
+          type: redis
+          property: connectionString
+      - key: ORS_API_KEY
+        sync: false
+
+  # ── Background Worker: Celery beat (scraping programado) ───────────────────
+  - type: worker
+    name: bargain-celery-beat
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    startCommand: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bargain-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: bargain-redis
+          type: redis
+          property: connectionString
