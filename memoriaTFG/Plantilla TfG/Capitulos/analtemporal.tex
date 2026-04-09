@@ -1,8 +1,89 @@
-\chapter{An\'alisis temporal y costes de desarrollo}\label{anatemporal}
+\chapter{Analisis temporal y costes de desarrollo}\label{anatemporal}
 
-\section{An\'alisis temporal}
-	
-\section{Costes de desarrollo}		
-	
+\section{Planificacion temporal}
 
-	
+La planificacion de BargAIn se definio con una dedicacion objetivo de 300 horas,
+distribuidas en fases funcionales y tecnicas. El proyecto se ejecuto de forma iterativa,
+manteniendo trazabilidad en \texttt{TASKS.md} y en el arbol \texttt{.planning/}.
+
+\begin{table}[h]
+\centering
+\caption{Resumen por fases del proyecto}
+\label{tab:fases-temporales}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Fase} & \textbf{Semanas} & \textbf{Horas est.} & \textbf{Estado} \\
+\hline
+F1 Analisis y diseno & S1--S3 & 45 & Completada \\
+F2 Infraestructura base & S3--S5 & 30 & Completada \\
+F3 Desarrollo core backend & S5--S12 & 95 & Completada \\
+F4 Desarrollo frontend & S8--S16 & 70 & Completada \\
+F5 IA, optimizador y scraping & S10--S17 & 35 & Completada \\
+F6 Pruebas, deploy y cierre & S17--S20 & 25 & Completada \\
+F7 Cierre final defensa & Extra & 25 & Completada \\
+\hline
+\textbf{Total} & & \textbf{300} & \textbf{Cerrado} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Metodologia de trabajo}
+
+Se aplico una metodologia incremental con ciclos cortos por fase:
+
+\begin{itemize}
+	\item definicion de alcance y criterios de aceptacion,
+	\item implementacion por modulos,
+	\item validacion automatizada (lint + tests),
+	\item verificacion funcional y documental,
+	\item cierre de fase con artefactos de evidencia.
+\end{itemize}
+
+Este enfoque permitio absorber cambios sin comprometer estabilidad del sistema.
+
+\section{Estimacion de costes}
+
+La estimacion economica se realizo mediante coste-hora por rol junior,
+alineada con referencias del informe de perfiles TIC de la Junta de Andalucia (2018).
+
+\begin{table}[h]
+\centering
+\caption{Coste estimado del desarrollo}
+\label{tab:coste-estimado}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Bloque} & \textbf{Horas} & \textbf{Coste (EUR)} \\
+\hline
+Analisis y diseno & 45 & 1.490,40 \\
+Infraestructura & 30 & 861,60 \\
+Backend + frontend & 165 & 4.738,80 \\
+IA, optimizador y scraping & 35 & 1.005,20 \\
+Pruebas y despliegue & 25 & 594,25 \\
+\hline
+\textbf{Total} & \textbf{300} & \textbf{8.690,25} \\
+\hline
+\end{tabular}
+\end{table}
+
+Adicionalmente, el coste operativo en staging se mantuvo bajo durante el TFG
+gracias al uso de planes gratuitos o de bajo consumo (Render, Sentry, GitHub Actions).
+
+\section{Riesgos y mitigaciones}
+
+Los riesgos operativos principales fueron:
+
+\begin{itemize}
+	\item \textbf{Cambios en fuentes de scraping:} mitigado con spiders modulares y
+		fallback de crowdsourcing.
+	\item \textbf{Dependencia de APIs externas:} mitigado con cache y degradacion controlada.
+	\item \textbf{Carga de trabajo en fases finales:} mitigado con cierre incremental de
+		entregables y automatizacion de validacion.
+\end{itemize}
+
+\section{Resultado de planificacion}
+
+La planificacion permitio completar el alcance funcional priorizado del TFG,
+incluyendo arquitectura, implementacion, pruebas y despliegue de staging,
+manteniendo coherencia entre roadmap, requisitos y evidencias de verificacion.
+
+

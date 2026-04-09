@@ -1,29 +1,49 @@
 \cdpchapter{Resumen}
 
-El resumen del Trabajo fin de Grado consiste, como su propio nombre indica, es un resumen de la memoria en formato apropiado 
-para ser indexado en las bases de datos bibliotecarias. No debe ocupar m\'as de una carilla de texto
-y en ella hay que exponer en pocas palabras la finalidad y objetivos del trabajo, 
-as{\'\i} como las aportaciones realizadas. En general,
-no incluir\'a figuras, cuadros ni referencias bibliogr\'aficas.
+BargAIn es una plataforma de compra inteligente orientada a optimizar la cesta de la compra
+del consumidor combinando tres variables de decision: precio, distancia y tiempo.
+El proyecto desarrolla una solucion full-stack con backend en Django/DRF,
+base de datos PostgreSQL + PostGIS, cliente movil en React Native (Expo),
+y companion web para el portal de comercios.
 
-El resumen es obligatorio en espa{\~n}ol para todos los TfG. Es opcional incluir un \emph{Abstract} (resumen en ingl\'es)
-en una hoja separada. Debe ser traducci\'on dle correspodiente resumen en español. En los TfG presentados en ingl\'es,
-la inclusi\'on del \emph{abstract} es tmabi\'en obligatoria, as{\'\i} como en los TfG correspondientes a la titulaci\'on
-de Ingenier{\'\i}a de la Salud.
+La propuesta integra cuatro capacidades diferenciales en una unica aplicacion:
+(1) comparacion multi-tienda de precios,
+(2) optimizacion multicriterio de ruta con OR-Tools,
+(3) digitalizacion de listas y tickets mediante OCR con Google Cloud Vision,
+y (4) asistente conversacional basado en modelo LLM via backend proxy.
 
-El resumen de este documento es el siguiente:
+Desde la perspectiva de ingenieria del software, el trabajo cubre el ciclo completo:
+analisis de requisitos, diseno arquitectonico, implementacion modular,
+pruebas unitarias/integracion/E2E, despliegue en staging y documentacion tecnica.
+La arquitectura se organiza en dominios desacoplados
+(users, products, stores, prices, shopping\_lists, optimizer, ocr, assistant, business,
+notifications), con tareas asincronas en Celery y Redis para procesos pesados.
 
-Este trabajo pretende ser una gu{\'\i}a para uniformar los formatos de las memorias de los Trabajos fin de Grado de las titulaciones: 
-\begin{itemize}
-\item Grado en Ingenier{\'\i}a Inform\'atica --- Ingenier{\'\i}a de Computadores
-\item Grado en Ingenier{\'\i}a Inform\'atica --- Ingenier{\'\i}a del Software
-\item Grado en Ingenier{\'\i}a Inform\'atica --- Tecnolog{\'\i}as Inform\'aticas
-\end{itemize}
+Como resultado, se obtiene un prototipo funcional validado en entorno de desarrollo y staging,
+con cobertura de pruebas en modulos criticos, flujos E2E automatizados para web companion,
+y verificaciones manuales en flujos moviles dependientes de GPS/camara.
+La memoria documenta ademas limitaciones, decisiones arquitectonicas y lineas de evolucion
+para convertir BargAIn en producto escalable.
 
-de la Escuela T\'ecnica Superior de Ingenier{\'\i}a Inform\'atica de la Universidad de Sevilla.
+\cdpchapter{Abstract}
 
-Al mismo tiempo, se pretende que el documento sea un ejemplo de la realizaci\'on de un memoria de Trabajo fin de Grado. 
-Debido a ello, hemos estructurado el documento en cap{\'\i}tulos e incluido diversos {\'\i}ndices y bibliograf{\'\i}a,
-aunque obviamente no hubiera sido necesario.
+BargAIn is an intelligent shopping platform focused on optimizing grocery baskets by combining
+three decision variables: price, distance, and time. The project delivers a full-stack solution
+with a Django/DRF backend, PostgreSQL + PostGIS geospatial storage,
+React Native (Expo) mobile client, and a web companion for small businesses.
+
+The proposal integrates four key capabilities in a single system:
+(1) multi-store price comparison,
+(2) multicriteria route optimization with OR-Tools,
+(3) OCR-based list/ticket digitization using Google Cloud Vision,
+and (4) a conversational assistant powered by an LLM through a backend proxy.
+
+From a software engineering standpoint, the work covers the whole lifecycle:
+requirements analysis, architecture design, modular implementation,
+unit/integration/E2E testing, staging deployment, and technical documentation.
+
+The final outcome is a functional prototype validated through automated and manual tests,
+with clear traceability of technical decisions, current limitations,
+and future evolution paths toward production readiness.
 
 
