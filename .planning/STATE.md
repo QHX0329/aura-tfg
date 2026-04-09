@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 7 in progress - 07-01 complete
-stopped_at: Completed 07-01-PLAN.md (ORS + render.yaml)
-last_updated: "2026-04-09T10:50:22.276Z"
+status: Phase 7 in progress - 07-03 complete
+stopped_at: Completed 07-03-PLAN.md (iOS Build workflow + Render deploy docs)
+last_updated: "2026-04-09T12:00:00.000Z"
 progress:
   total_phases: 4
   completed_phases: 0
@@ -18,7 +18,7 @@ progress:
 ## Current Position
 
 Phase: 07 (testing-deploy-thesis) - IN PROGRESS
-Current Plan: 07-01 COMPLETE
+Current Plan: 07-03 COMPLETE
 
 ## Summary
 
@@ -28,18 +28,19 @@ Current Plan: 07-01 COMPLETE
 - F4 completada
 - F5 completada (9/9 UAT tests passed)
 - F6 completada (servicio compartido, tests integracion, UAT aprobada)
-- F7 pendiente (testing final, deploy staging, memoria TFG)
+- F7 en progreso (07-01 ORS+Render, 07-02 Playwright, 07-03 iOS Build completados)
 
 ## Risks
 
 - Integraciones F5 con dependencia externa (scraping estable, OR-Tools, OCR, LLM) pueden afectar calendario.
 - Necesidad de cerrar validacion final E2E y rendimiento en F7.
+- Certificado Sideloadly caduca en 7 dias — re-sideload 1-2 dias antes de la defensa.
 
 ## Immediate Next Steps
 
-1. Plan and execute Phase 7 (testing final, deploy, thesis)
-2. Run full E2E test suite
-3. Close thesis documentation
+1. Ejecutar 07-04 (tests E2E Playwright)
+2. Ejecutar 07-05 (memoria TFG capitulos pendientes)
+3. Ejecutar 07-06 (cierre: SUMMARY fase, TASKS.md, presentacion)
 
 ## Key Decisions
 
@@ -59,6 +60,9 @@ Current Plan: 07-01 COMPLETE
 - 07-01: ORS replaces Graphhopper as distance matrix provider; fallback haversine when ORS_API_KEY empty
 - 07-01: render.yaml declares 5 services (web+postgres+redis+2 workers); secrets use sync:false (Render Dashboard)
 - 07-01: DATABASE_URL postgresql:// converted to postgis:// in base.py before dj_database_url
+- 07-03: Descubrimiento dinamico de workspace/scheme con ls + xcodebuild -list para evitar nombres hardcoded tras expo prebuild
+- 07-03: method ad-hoc en ExportOptions.plist permite re-firma con Sideloadly y Apple ID gratuito
+- 07-03: Re-sideload planificado 1-2 dias antes de la defensa documentado en Makefile y ADR-011
 
 ## Roadmap Evolution
 
@@ -67,7 +71,7 @@ Current Plan: 07-01 COMPLETE
 
 ## Last Session
 
-- **Stopped at:** Completed 07-01-PLAN.md (ORS + render.yaml)
+- **Stopped at:** Completed 07-03-PLAN.md (iOS Build workflow + Render deploy docs)
 - **Date:** 2026-04-09
 
 ---

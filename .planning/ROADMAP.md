@@ -67,11 +67,11 @@ Plans:
 
 **Requirements:** [NFR-02, NFR-04, NFR-05]
 
-**Plans:** 2/6 plans executed
+**Plans:** 3/6 plans executed
 
 Plans:
 - [x] 07-01-PLAN.md - ORS API integration + Render deployment fixes (Wave 1)
-- [ ] 07-02-PLAN.md - E2E Playwright: 4 flujos automatizados (Wave 1)
+- [x] 07-02-PLAN.md - E2E Playwright: 4 flujos automatizados (Wave 1)
 - [x] 07-03-PLAN.md - iOS GitHub Actions build + Render staging deploy process (Wave 2)
 - [ ] 07-04-PLAN.md - Memoria TFG: caps. 8-11 actualizados + conversión LaTeX (Wave 2)
 - [ ] 07-05-PLAN.md - Slides de defensa (Marp) + script demo grabada (Wave 3)
