@@ -1,0 +1,116 @@
+name: iOS Build (unsigned IPA)
+# Disparo manual o por tag ios-* — NO en cada push (build tarda ~15 min)
+on:
+  workflow_dispatch:
+    inputs:
+      node_version:
+        description: 'Node.js version'
+        required: false
+        default: '22'
+  push:
+    tags:
+      - 'ios-*'
+
+jobs:
+  build-ios:
+    name: Build unsigned iOS IPA
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ github.event.inputs.node_version || '22' }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Cache Expo CLI
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-expo-cli-${{ hashFiles('frontend/package.json') }}
+
+      - name: Expo prebuild (genera directorio ios/)
+        working-directory: frontend
+        run: npx expo prebuild --platform ios --clean --non-interactive
+        env:
+          EXPO_PUBLIC_GOOGLE_MAPS_KEY: ${{ secrets.EXPO_PUBLIC_GOOGLE_MAPS_KEY }}
+
+      - name: Verify generated workspace
+        working-directory: frontend/ios
+        run: |
+          echo "=== Workspaces generados ==="
+          ls *.xcworkspace || echo "WARN: No xcworkspace found"
+          echo "=== Schemes disponibles ==="
+          xcodebuild -list 2>/dev/null | head -20 || true
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: frontend/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('frontend/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install CocoaPods
+        working-directory: frontend/ios
+        run: pod install --repo-update
+
+      - name: Build unsigned .xcarchive
+        working-directory: frontend/ios
+        run: |
+          WORKSPACE=$(ls *.xcworkspace | head -1)
+          SCHEME=$(xcodebuild -list -workspace "$WORKSPACE" 2>/dev/null | \
+            awk '/Schemes:/,0' | grep -v 'Schemes:' | grep -v '^$' | head -1 | xargs)
+          echo "Building workspace: $WORKSPACE, scheme: $SCHEME"
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath ../../build/BargAIn.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            archive | xcpretty --color || \
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath ../../build/BargAIn.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            archive
+
+      - name: Export unsigned .ipa
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/BargAIn.xcarchive \
+            -exportPath build/output \
+            -exportOptionsPlist frontend/ExportOptions.plist \
+            -allowProvisioningUpdates
+
+      - name: List build output
+        run: |
+          echo "=== Contenido de build/output ==="
+          ls -la build/output/ || echo "No output directory"
+          find build/ -name "*.ipa" 2>/dev/null
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BargAIn-unsigned-${{ github.sha }}
+          path: |
+            build/output/*.ipa
+            build/output/**/*.ipa
+          retention-days: 7
+          if-no-files-found: warn
