@@ -1,13 +1,13 @@
 ﻿# Estado de Documentacion - BarGAIN
 
-Fecha de sincronización: 2026-04-05
+Fecha de sincronización: 2026-04-09
 
 ## Alcance de esta sincronización
 
-- README y CLAUDE alineados con el estado actual (F6 completada, F5 en progreso, F7 activa).
-- TASKS actualizado como espejo operativo de sincronización documental.
-- Memoria TFG (secciones 09, 10, 11 y 12) ajustada a la fecha de corte vigente.
-- Documentacion API marcada como sincronizada al estado backend/frontend actual.
+- README, CLAUDE y TASKS alineados con el estado técnico de cierre v1.0.
+- Se documenta la excepción operativa de F4-21 en TASKS como mejora post-cierre.
+- Memoria TFG revisada para coherencia de estado y stack tecnológico vigente.
+- Documentación API marcada como sincronizada al estado backend/frontend actual.
 - Memoria de contexto (`memory/`) actualizada al snapshot vigente.
 - Dashboard y notas clave de `Obsidian-TFG/` sincronizadas con el estado real del proyecto.
 
@@ -16,10 +16,10 @@ Fecha de sincronización: 2026-04-05
 - F1: completada
 - F2: completada
 - F3: completada
-- F4: en progreso (hasta F4-31 completada; F4-21 pendiente)
-- F5: en progreso
+- F4: completada para cierre técnico v1.0 (con F4-21 pendiente en backlog operativo)
+- F5: en progreso (entregables críticos cerrados para v1.0)
 - F6: completada
-- F7: activa (pendiente de cierre)
+- F7: cierre técnico completado
 
 ## Nota
 

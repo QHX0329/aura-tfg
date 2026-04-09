@@ -4,7 +4,8 @@
 
 BarGAIN permite al usuario gestionar su compra diaria desde una app móvil/web, comparar precios,
 consultar tiendas cercanas y configurar preferencias de optimización. Esta versión del manual
-describe los flujos implementados hasta el estado del proyecto a fecha **2026-04-05** (F4-31 completada; F4-21 pendiente).
+describe los flujos implementados hasta el estado del proyecto a fecha **2026-04-09**
+(cierre de F7 con validación funcional de los módulos activos).
 
 ## 9.2 Requisitos de uso
 
@@ -89,9 +90,10 @@ Comportamiento persistente:
 Estado actual:
 - Existe interfaz de captura/revisión OCR en frontend (flujo UI).
 - Existe interfaz de chat del asistente con historial local (flujo UI).
-- La decisión aprobada para el OCR backend es migrar a Google Cloud Vision API, motivada por la
-  falta de claridad de Tesseract en fotos reales. La alineación completa del código queda
-  planificada en F5.
+- El backend OCR utiliza Google Cloud Vision API (ADR-007), con extracción de texto y
+  normalización contra catálogo.
+- El asistente conversacional integra Google Gemini API vía backend proxy (ADR-008), con
+  guardrails para restringir respuestas al dominio de la compra.
 
 ## 9.12 Uso en pantalla bloqueada de iPhone
 
@@ -121,5 +123,23 @@ Para cuentas PYME:
 Este manual cubre el uso funcional implementado hasta la persistencia de optimización
 y recálculo sobre F5. El checklist nativo en lock screen de iOS queda condicionado a la
 ejecución del ADR-010 (extensión nativa ActivityKit).
+
+## 9.16 Evidencias visuales (capturas)
+
+Capturas web:
+
+![Login web](../diagramas/capturas/web-login.png)
+![Registro web](../diagramas/capturas/web-register.png)
+![Onboarding business web](../diagramas/capturas/web-onboarding-business.png)
+![Dashboard business web](../diagramas/capturas/web-dashboard-business.png)
+![Aprobación admin web](../diagramas/capturas/web-admin-approval.png)
+
+Capturas móvil:
+
+![Autenticación móvil](../diagramas/capturas/mobile-auth.png)
+![Lista de compra móvil](../diagramas/capturas/mobile-shopping-list.png)
+![Resultado optimizador móvil](../diagramas/capturas/mobile-optimizer-result.png)
+![OCR móvil](../diagramas/capturas/mobile-ocr.png)
+![Chat asistente móvil](../diagramas/capturas/mobile-assistant-chat.png)
 
 

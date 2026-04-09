@@ -16,16 +16,16 @@ BarGAIN es una aplicación móvil y web que elimina la ineficiencia en la compra
 
 Este proyecto es un **Trabajo Fin de Grado** del Grado en Ingeniería Informática — Ingeniería del Software, Universidad de Sevilla (ETSII).
 
-## 📌 Estado Actual (2026-04-05)
+## 📌 Estado Actual (2026-04-09)
 
 - F1 (Análisis y Diseño): completada.
 - F2 (Infraestructura Base): completada.
 - F3 (Core Backend): completada.
-- F4 (Frontend): en progreso con tareas hasta F4-31 completadas y F4-21 pendiente.
-- F5: en progreso.
+- F4 (Frontend): completada para cierre técnico v1.0 (F4-21 queda como mejora operativa en TASKS).
+- F5: en progreso (entregables críticos cerrados para v1.0).
 - F6: completada.
-- F7: activa (pendiente de cierre).
-- Progreso global aproximado: 62%.
+- F7: cierre técnico completado.
+- Progreso global aproximado: 100% del alcance técnico v1.0.
 
 [![Ver Dashboard](https://img.shields.io/badge/Ver_Dashboard_Interactivo-2EA043?style=for-the-badge&logo=github)](https://qhx0329.github.io/bargain-tfg/dashboard.html)
 
@@ -74,10 +74,10 @@ Nota sobre OCR:
 | F1 — Análisis y Diseño | ✅ | Requisitos, comparativa y base documental del TFG |
 | F2 — Infraestructura | ✅ | Backend en Docker, frontend nativo en host (ADR-002) |
 | F3 — Core Backend | ✅ | Módulos de dominio + API + tests + docs OpenAPI |
-| F4 - Frontend | 🔄 | UX y flujos principales operativos; F4-21 pendiente |
+| F4 - Frontend | ✅ | UX y flujos principales operativos en cierre técnico v1.0; F4-21 queda como mejora post-cierre |
 | F5 - IA/Optimización/Scraping | 🔄 | Integraciones IA/optimizer/scraping en progreso, con entregables parciales cerrados |
 | F6 - Cierre | ✅ | E2E, deploy a staging y cierre documental/UAT completados |
-| F7 - Cierre final | 🔄 | Verificación final, ajustes de entrega y cierre definitivo |
+| F7 - Cierre final | ✅ | Cierre técnico completado; seguimiento administrativo en TASKS |
 
 ## 🚀 Inicio Rápido
 

@@ -158,7 +158,7 @@ A partir del análisis de competidores y de las tendencias del mercado descritas
 
 **Brecha 3 — La fricción de la lista.** La creación manual de la lista de la compra es el principal punto de abandono en las aplicaciones de comparación. El OCR de BargAIn permite digitalizar automáticamente una lista escrita a mano o extraer los productos de un ticket anterior, reduciendo a cero el esfuerzo de creación de la lista para el caso de uso más frecuente (reutilizar una compra anterior).
 
-**Brecha 4 — La consulta en lenguaje natural.** El paradigma actual de interacción con comparadores de precios es el de búsqueda por producto (el usuario introduce el nombre de un artículo). Este paradigma no permite consultas complejas como «¿qué me conviene más, ir a Mercadona o a Lidl esta semana dado que tengo una lista de 20 artículos y no quiero alejarme más de 2 km?». El asistente conversacional de BargAIn, basado en la API de Claude, responde precisamente a este tipo de consultas.
+**Brecha 4 — La consulta en lenguaje natural.** El paradigma actual de interacción con comparadores de precios es el de búsqueda por producto (el usuario introduce el nombre de un artículo). Este paradigma no permite consultas complejas como «¿qué me conviene más, ir a Mercadona o a Lidl esta semana dado que tengo una lista de 20 artículos y no quiero alejarme más de 2 km?». El asistente conversacional de BargAIn, basado en la API de Gemini, responde precisamente a este tipo de consultas.
 
 ### 4.4.2 Riesgos competitivos
 

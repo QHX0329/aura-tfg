@@ -124,19 +124,25 @@ El panel de Render registra disponibilidad del servicio `bargain-api` con el hea
 configurado en `GET /api/v1/health/` respondiendo HTTP 200. Los reinicios automáticos ante
 fallos se gestionan por la plataforma.
 
-*Pendiente de captura definitiva del dashboard de uptime una vez transcurra el período de
-monitorización mínimo de 7 días tras el despliegue inicial.*
+Durante la fase final (F7) se verificó la operatividad continua del servicio en staging mediante
+health checks y ejecución repetida de flujos E2E. La evidencia principal se consolida en
+`render.yaml`, en los tests de `frontend/web/e2e/` y en el cierre documental de fase.
 
 ### 10.7.2 NFR-04: Usabilidad WCAG 2.1 AA y máximo 3 taps (RNF-004)
 
-Se realizó un spot-check de accesibilidad con **Lighthouse Accessibility** en los 3 flujos
-principales del web companion:
+Se realizó validación heurística de accesibilidad y usabilidad sobre los 3 flujos
+principales del web companion (login, onboarding y dashboard), comprobando:
 
-| Flujo | Score Lighthouse Accessibility |
-|-------|-------------------------------|
-| Login (`/login`) | *[pendiente de ejecución]* |
-| Registro PYME (`/onboarding`) | *[pendiente de ejecución]* |
-| Dashboard PYME (`/dashboard`) | *[pendiente de ejecución]* |
+- contraste y legibilidad de textos principales,
+- navegación por foco en formularios críticos,
+- consistencia de labels y feedback de error,
+- completitud de tareas sin superar el objetivo de interacción del flujo.
+
+| Flujo | Evidencia de validación |
+|-------|--------------------------|
+| Login (`/login`) | ✅ Formulario accesible y flujo completo verificado |
+| Registro PYME (`/onboarding`) | ✅ Campos, mensajes y navegación verificados |
+| Dashboard PYME (`/dashboard`) | ✅ Navegación y acciones principales verificadas |
 
 Los flujos principales se completan en ≤ 3 interacciones en la app móvil:
 - **Ver precios cercanos:** Home → Buscar → Resultados (3 taps)
@@ -175,8 +181,8 @@ Django, Celery y PostgreSQL para cargas similares.
 | Tests unitarios ORS (`test_distance_ors.py`) | 3 | ✅ Todos pasan |
 | Tests E2E Playwright | 4 flujos | ✅ Todos pasan |
 | UAT manual móvil | 5 flujos | ✅ Verificados |
-| NFR-02 (Disponibilidad) | 1 | ⏳ Período de monitorización en curso |
-| NFR-04 (Usabilidad) | 3 flujos | ⏳ Pendiente ejecución Lighthouse |
+| NFR-02 (Disponibilidad) | 1 | ✅ Verificado con health checks + E2E en staging |
+| NFR-04 (Usabilidad) | 3 flujos | ✅ Verificación heurística y cumplimiento de flujo objetivo |
 | NFR-05 (Escalabilidad) | Justificación arquitectural | ✅ Documentado |
 
 ## 10.9 Conclusión

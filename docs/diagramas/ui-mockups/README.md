@@ -325,7 +325,7 @@ Fija en la parte superior del listado. Informa del total de productos detectados
 
 #### Descripción
 
-Interfaz de chat conversacional impulsada por la API de Claude (Anthropic). El asistente está especializado exclusivamente en consultas relacionadas con la compra, el ahorro, productos, precios, tiendas y recetas (RN-007). Las consultas fuera de este ámbito son rechazadas con un mensaje informativo y amable.
+Interfaz de chat conversacional impulsada por la Google Gemini API. El asistente está especializado exclusivamente en consultas relacionadas con la compra, el ahorro, productos, precios, tiendas y recetas (RN-007). Las consultas fuera de este ámbito son rechazadas con un mensaje informativo y amable.
 
 #### Estructura del chat
 
@@ -345,7 +345,7 @@ Cada conversación se almacena en el modelo `Conversation` con sus mensajes en `
 
 #### Módulo Django
 
-`apps.assistant` — endpoint `POST /api/v1/assistant/messages/` que gestiona el historial de la conversación y llama a la API de Anthropic con el contexto del usuario (listas activas, precios recientes, ubicación).
+`apps.assistant` — endpoint `POST /api/v1/assistant/messages/` que gestiona el historial de la conversación y llama a Gemini con el contexto del usuario (listas activas, precios recientes, ubicación).
 
 #### Requisitos cubiertos
 

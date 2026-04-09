@@ -41,7 +41,7 @@ hasta que el código se alinee con esta ADR.
 - **Mejor ajuste al producto**: el valor para el usuario depende de reducir correcciones manuales
   tras fotografiar tickets o listas.
 - **Consistencia arquitectónica**: el proyecto ya acepta dependencias externas controladas
-  (Claude API, Google Maps/Places), por lo que introducir Vision no rompe el modelo operativo.
+  (Gemini API, Google Maps/Places), por lo que introducir Vision no rompe el modelo operativo.
 
 ## Consecuencias
 

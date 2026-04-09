@@ -12,7 +12,7 @@ Desarrollar una aplicación móvil y web que optimice la compra diaria del usuar
 
 3. **Implementar un módulo de visión artificial (OCR)** capaz de procesar fotografías de listas de compra escritas a mano y tickets de compra anteriores, reconociendo los productos y añadiéndolos automáticamente a la lista digital del usuario.
 
-4. **Integrar un asistente conversacional basado en LLM** (Claude API) que permita al usuario realizar consultas complejas en lenguaje natural relacionadas con su compra, como "¿Dónde comprar los ingredientes para una paella para 10 personas al mejor precio en un radio de 5 km?".
+4. **Integrar un asistente conversacional basado en LLM** (Google Gemini API) que permita al usuario realizar consultas complejas en lenguaje natural relacionadas con su compra, como "¿Dónde comprar los ingredientes para una paella para 10 personas al mejor precio en un radio de 5 km?".
 
 5. **Crear un portal de gestión para PYMES y comercio local** que permita a pequeños comercios posicionar sus productos y ofertas en igualdad de condiciones técnicas frente a las grandes cadenas, fomentando la inclusión del comercio de proximidad.
 

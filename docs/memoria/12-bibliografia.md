@@ -76,9 +76,9 @@ profesionales en el ámbito informático," 2018.
 
 ## 12.5 Nota de actualización
 
-Esta bibliografía se ha sincronizado con el estado del proyecto a 2026-04-05. En la entrega final
-de la memoria se incorporarán DOI/ISBN y formato IEEE definitivo para todas las referencias
-académicas y técnicas usadas durante F5/F7.
+Esta bibliografía se ha sincronizado con el estado del proyecto a 2026-04-09.
+Las referencias listadas corresponden al stack técnico y al marco académico/metodológico
+empleado en la implementación y cierre del TFG.
 
 
 

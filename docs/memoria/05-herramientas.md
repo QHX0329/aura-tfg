@@ -28,7 +28,7 @@ la decisión adoptada para el proyecto.
 | Scraping                  | Scrapy + Playwright                      | BeautifulSoup + requests, Selenium                                               | Escalabilidad scraping, sitios dinámicos, robustez                  | Se combina Scrapy (pipeline y rendimiento) con Playwright (renderizado JS) para cubrir supermercados con distintos niveles de complejidad web.                                    |
 | OCR                       | Google Cloud Vision API (backend)        | Tesseract OCR, AWS Textract                                                      | Precisión real, dependencia externa, coste operativo, integración    | Se adopta Google Vision API porque Tesseract mostró falta de claridad en fotos reales de tickets y listas; se acepta el coste y la dependencia externa a cambio de mayor robustez. |
 | Optimización de rutas     | OR-Tools + algoritmo ponderado propio    | Heurísticas ad hoc puras, motores externos cerrados                              | Calidad de solución, reproducibilidad, control experimental         | OR-Tools aporta solvers de referencia y permite combinar un modelo formal con la función multicriterio definida para BargAIn.                                                     |
-| Asistente LLM             | Claude API (vía backend)                 | OpenAI API, modelos open source autoalojados                                     | Calidad conversacional, integración, gobernanza de acceso           | Se integra Claude vía backend para centralizar seguridad, trazabilidad y control del contexto de compra.                                                                          |
+| Asistente LLM             | Google Gemini API (vía backend proxy)    | OpenAI API, Claude API, modelos open source autoalojados                         | Calidad conversacional, integración, gobernanza de acceso           | Se integra Gemini vía backend proxy para centralizar seguridad, trazabilidad y control del contexto de compra.                                                                    |
 | Observabilidad            | Sentry + structlog                       | Logging básico, Rollbar                                                          | Trazabilidad de errores, depuración, coste                          | Sentry facilita captura estructurada de excepciones y structlog estandariza logs para diagnóstico en desarrollo y staging.                                                        |
 | CI/CD                     | GitHub Actions                           | GitLab CI, Jenkins                                                               | Integración con repositorio, mantenimiento, coste                   | GitHub Actions reduce fricción operativa al estar integrado con el control de versiones del proyecto.                                                                             |
 | Contenedores y entorno    | Docker + Docker Compose (modelo híbrido) | Entorno totalmente local sin contenedores, Docker full-stack incluyendo frontend | Reproducibilidad backend, DX en Windows, complejidad                | Se adopta modelo híbrido: backend en Docker y frontend nativo en host, evitando problemas de HMR/volúmenes en Expo sobre Windows.                                                 |
@@ -79,7 +79,7 @@ servicio ante tareas costosas (ingesta de precios, recálculos, jobs periódicos
 
 ### 5.3.5 IA y optimización
 
-- Claude API (integración backend)
+- Google Gemini API (integración backend)
 - Google Cloud Vision API
 - OR-Tools
 - thefuzz
@@ -117,7 +117,7 @@ de evolución futura a un despliegue productivo.
 Aunque la selección tecnológica es adecuada al alcance del TFG, se identifican
 limitaciones relevantes que condicionan la evolución del sistema:
 
-1. Dependencia de servicios de terceros. Integraciones como Claude API y Google
+1. Dependencia de servicios de terceros. Integraciones como Gemini API y Google
    Maps/OSRM introducen riesgo de variación en costes, cuotas y latencia, además de
    dependencia de disponibilidad externa.
 2. Sensibilidad del scraping ante cambios de interfaz. La combinación Scrapy +

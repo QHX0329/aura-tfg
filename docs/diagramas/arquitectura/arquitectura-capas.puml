@@ -24,7 +24,7 @@ package "Capa de Lógica de Negocio" as negocio #FFF3E0 {
     [Servicio de\nOptimización\n(OR-Tools + PostGIS)] as optimizer
     [Servicio de\nComparación\nde Precios] as prices_svc
     [Servicio OCR\n(Google Cloud Vision API)] as ocr
-    [Servicio Asistente\n(Claude API)] as llm
+    [Servicio Asistente\n(Gemini API)] as llm
     [Servicio de\nNotificaciones\n(Push + Email)] as notif
 }
 
@@ -43,7 +43,7 @@ package "Capa de Integraciones Externas" as externas #F5F5F5 {
     cloud "Google Maps API\n(Geocoding + Directions)" as gmaps
     cloud "Google Cloud Vision API\n(OCR)" as gvision
     cloud "OSRM\n(Alternativa OSS\nrutas)" as osrm
-    cloud "Claude API\n(Anthropic)" as claude
+    cloud "Google Gemini API" as gemini
 }
 
 ' Relaciones
@@ -65,7 +65,7 @@ optimizer --> osrm : Alternativa
 prices_svc --> db : select_related
 ocr --> gvision : OCR backend
 ocr --> db : Matching fuzzy
-llm --> claude : API proxy
+llm --> gemini : API proxy
 notif --> redis : Queue
 
 workers --> db : Read/Write

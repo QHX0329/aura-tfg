@@ -1,6 +1,6 @@
-﻿# Referencia de la API REST — BargAIn (Fases 1-4)
+﻿# Referencia de la API REST — BargAIn (Corte técnico v1.0)
 
-> Estado de sincronización: 2026-04-05. La API backend core (F3) está completada, F4 mantiene consumo activo de contratos y el roadmap operativo sigue en F5/F7 según TASKS.md.
+> Estado de sincronización: 2026-04-09. La API backend core y su consumo principal están cerrados para el hito técnico F7; la evolución posterior se gestiona como mantenimiento incremental según TASKS.md.
 
 ## Índice
 

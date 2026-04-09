@@ -152,7 +152,7 @@ El proyecto BargAIn se planifica con una duración estimada de **20 semanas** (5
 | Servicio de procesamiento de imágenes (Google Vision API) | 3      | S15    | `apps/ocr/services.py`          |
 | Matching fuzzy de texto OCR contra catálogo               | 2      | S16    | Integración                     |
 | **Asistente LLM**                                         |        |        |                                 |
-| Integración Claude API con contexto de compra             | 3      | S16    | `apps/assistant/services.py`    |
+| Integración Gemini API con contexto de compra             | 3      | S16    | `apps/assistant/services.py`    |
 | Prompt engineering y guardrails                           | 2      | S17    | Templates de prompts            |
 | **Subtotal**                                              | **35** |        |                                 |
 
@@ -209,7 +209,7 @@ El coste total estimado del proyecto BargAIn asciende a **8.690,25 € (sin IVA)
 | Render (Staging)       |      0 €      | Plan gratuito durante desarrollo |
 | PostgreSQL (Render)    |      0 €      | Plan gratuito (90 días)          |
 | Google Maps API        |     ~10 €     | Crédito gratuito 200$/mes        |
-| Claude API (Anthropic) |     ~15 €     | Consumo moderado                 |
+| Gemini API (Google)    |     ~15 €     | Consumo moderado                 |
 | Sentry                 |      0 €      | Plan developer                   |
 | **Total mensual**      |   **~25 €**   |                                  |
 
