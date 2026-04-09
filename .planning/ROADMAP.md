@@ -12,7 +12,7 @@ Roadmap operativo sincronizado a 2026-04-05. El proyecto tiene F1-F6 finalizadas
 - [x] Phase 4: Frontend advanced polish y cierre F4 - Completada (2026-03-23)
 - [x] Phase 5: Optimizer, Scraping, OCR, LLM - Completada (5 planes)
 - [x] Phase 6: Portal Business y App Movil - cierre de flujos, tests, UAT, sync docs - Completada
-- [ ] Phase 7: Testing Final, Deploy, Memoria y Defensa - Planeada (6 planes listos, 2026-04-09)
+- [x] Phase 7: Testing Final, Deploy, Memoria y Defensa - Completada (2026-04-09)
 - [ ] Phase 8: Milestone Evidence Recovery - Pendiente
 - [ ] Phase 9: Traceability Normalization - Pendiente
 - [ ] Phase 10: Contract Alignment Cleanup - Pendiente
@@ -73,9 +73,9 @@ Plans:
 - [x] 07-01-PLAN.md - ORS API integration + Render deployment fixes (Wave 1)
 - [x] 07-02-PLAN.md - E2E Playwright: 4 flujos automatizados (Wave 1)
 - [x] 07-03-PLAN.md - iOS GitHub Actions build + Render staging deploy process (Wave 2)
-- [ ] 07-04-PLAN.md - Memoria TFG: caps. 8-11 actualizados + conversión LaTeX (Wave 2)
-- [ ] 07-05-PLAN.md - Slides de defensa (Marp) + script demo grabada (Wave 3)
-- [ ] 07-06-PLAN.md - Cierre formal: VERIFICATION.md, TASKS.md, PDF, commit (Wave 3)
+- [x] 07-04-PLAN.md - Memoria TFG: caps. 8-11 actualizados + conversión LaTeX (Wave 2)
+- [x] 07-05-PLAN.md - Slides de defensa (Marp) + script demo grabada (Wave 3)
+- [x] 07-06-PLAN.md - Cierre formal: VERIFICATION.md, TASKS.md, PDF, commit (Wave 3)
 
 ### Phase 8: Milestone Evidence Recovery
 
@@ -117,7 +117,7 @@ Plans:
 | 4. Frontend Advanced | Complete | Google Places integration done (2 plans, 2 waves) |
 | 5. IA + Optimizer + Scraping | Complete | 5 plans - scraping/OCR/LLM/optimizer/frontend |
 | 6. Business Portal + Mobile App | Complete | Service extraction, 11 integration tests, UAT passed |
-| 7. Final QA + Deploy + Thesis | Planned (6 plans) | ORS, E2E, iOS, Memoria, Slides, Cierre — 2026-04-09 |
+| 7. Final QA + Deploy + Thesis | Complete | ORS+Render, E2E Playwright, iOS build CI, Memoria LaTeX, Defensa slides (2026-04-09) |
 | 8. Milestone Evidence Recovery | Not started | Backfill de VERIFICATION.md y cierre formal de evidencia |
 | 9. Traceability Normalization | Not started | Reparacion de requirements-completed y trazabilidad audit-ready |
 | 10. Contract Alignment Cleanup | Not started | Alinear IDs ambiguos y contrato OCR antes de re-auditar |

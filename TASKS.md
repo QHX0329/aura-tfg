@@ -35,9 +35,9 @@
 
 ## Estado actual del proyecto
 
-**Fase activa:** F7 — Pruebas finales, deploy y cierre (pendiente)
-**Horas consumidas:** ~185 h / 300 h totales
-**Progreso global:** █████████████░░░░░░░ ~62%
+**Fase activa:** — TFG BargAIn v1.0 completado ✅
+**Horas consumidas:** ~210 h / 300 h totales (F7: ~25 h)
+**Progreso global:** ████████████████████ ~100%
 
 ---
 
@@ -222,10 +222,36 @@ Nota F5-17: bloqueada en Expo managed. Requiere extensión nativa iOS (ActivityK
 | 06 — Planificación | `docs/memoria/06-planificacion.md` | ✅ |
 | 07 — Requisitos | `docs/memoria/07-requisitos.md` | ✅ |
 | 08 — Diseño e Implementación | `docs/memoria/08-diseno-implementacion.md` | ✅ |
-| 09 — Manual de usuario | `docs/memoria/09-manual-usuario.md` | ⬜ |
-| 10 — Pruebas | `docs/memoria/10-pruebas.md` | ⬜ |
-| 11 — Conclusiones | `docs/memoria/11-conclusiones.md` | ⬜ |
+| 09 — Manual de usuario | `docs/memoria/09-manual-usuario.md` | ✅ |
+| 10 — Pruebas | `docs/memoria/10-pruebas.md` | ✅ |
+| 11 — Conclusiones | `docs/memoria/11-conclusiones.md` | ✅ |
 | 12 — Bibliografía | `docs/memoria/12-bibliografia.md` | ⬜ |
+
+---
+
+## F7 — Testing Final, Deploy, Memoria y Defensa (25 h) · ✅ Completada
+
+> 2026-04-09
+
+| ID | Tarea | Prioridad | Estado | Horas est. | Horas reales | Entregable |
+|----|-------|-----------|--------|:---:|:---:|------------|
+| F7-01 | ORS API integration + Render deployment fixes | 🔴 Crítica | ✅ | 5 | 5 | `render.yaml`, `distance.py`, `prod.py` |
+| F7-02 | E2E Playwright: 4 flujos automatizados | 🔴 Crítica | ✅ | 5 | 4 | `frontend/web/e2e/*.spec.ts` |
+| F7-03 | iOS GitHub Actions build workflow | 🟠 Alta | ✅ | 4 | 3 | `.github/workflows/ios-build.yml` |
+| F7-04 | Memoria caps. 8-11 + conversión LaTeX | 🔴 Crítica | ✅ | 6 | 7 | `docs/memoria/`, `memoriaTFG/Plantilla TfG/Capitulos/cap08-11.tex` |
+| F7-05 | Slides de defensa (Marp) + script demo | 🟠 Alta | ✅ | 3 | 3 | `docs/defensa/slides.md`, `demo-script.md`, `slides-outline.md` |
+| F7-06 | Cierre formal: VERIFICATION.md, TASKS.md, STATE.md | 🔴 Crítica | ✅ | 2 | 3 | `07-VERIFICATION.md`, `TASKS.md`, `STATE.md`, `BUILD-INSTRUCTIONS.md` |
+
+### Artefactos entregables Phase 7
+
+- `render.yaml` — infraestructura staging en Render.com (5 servicios)
+- `frontend/web/e2e/` — 4 flujos E2E Playwright (auth, business, optimizer, OCR)
+- `.github/workflows/ios-build.yml` — build iOS en CI (macos-latest)
+- `docs/memoria/` — capítulos 8-11 actualizados (ORS, Vision API, Gemini, F5/F6 completos)
+- `memoriaTFG/Plantilla TfG/Capitulos/cap08-11.tex` — LaTeX caps. 8-11
+- `docs/defensa/` — slides Marp, outline 20 slides, script demo 5 escenas
+- `memoriaTFG/BUILD-INSTRUCTIONS.md` — instrucciones PDF (pdflatex / Overleaf)
+- `.planning/phases/07-testing-deploy-memoria/07-VERIFICATION.md` — PASS
 
 ---
 
