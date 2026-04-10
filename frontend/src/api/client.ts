@@ -32,7 +32,8 @@ import { useAuthStore } from "@/store/authStore";
  * localhost y falle fuera de la maquina de desarrollo.
  */
 const DEFAULT_API_BASE_URL = "https://bargain-api-8yr0.onrender.com/api/v1";
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL?.trim() || DEFAULT_API_BASE_URL;
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL?.trim() || DEFAULT_API_BASE_URL;
 
 function createBaseClient() {
   return axios.create({
