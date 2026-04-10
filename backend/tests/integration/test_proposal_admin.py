@@ -99,9 +99,7 @@ class TestProposalAdminApprove:
         proposal.refresh_from_db()
         assert proposal.status == ProductProposal.Status.APPROVED
 
-    def test_approve_proposal_idempotent_barcode(
-        self, admin_client, pending_proposal_with_price
-    ):
+    def test_approve_proposal_idempotent_barcode(self, admin_client, pending_proposal_with_price):
         from apps.prices.models import Price
         from apps.products.models import Product, ProductProposal
         from tests.factories import ProductFactory
@@ -148,9 +146,7 @@ class TestProposalAdminApprove:
         proposal.refresh_from_db()
         assert proposal.status == ProductProposal.Status.APPROVED
 
-    def test_approve_already_approved_returns_400(
-        self, admin_client, pending_proposal_with_price
-    ):
+    def test_approve_already_approved_returns_400(self, admin_client, pending_proposal_with_price):
         proposal = pending_proposal_with_price
 
         first_response = admin_client.post(_approve_url(proposal.id), {}, format="json")
@@ -165,9 +161,7 @@ class TestProposalAdminApprove:
         )
 
         assert second_response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "Solo se pueden aprobar propuestas pendientes" in second_response.json()[
-            "detail"
-        ]
+        assert "Solo se pueden aprobar propuestas pendientes" in second_response.json()["detail"]
 
     def test_non_admin_cannot_approve(self, authenticated_client, pending_proposal_with_price):
         proposal = pending_proposal_with_price

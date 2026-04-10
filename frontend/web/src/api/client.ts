@@ -44,10 +44,10 @@ if (apiClient?.interceptors?.request) {
 if (apiClient?.interceptors?.response) {
   // Refresh token state management
   let isRefreshing = false;
-  let failedQueue: Array<{
+  let failedQueue: {
     resolve: (token: string) => void;
     reject: (error: unknown) => void;
-  }> = [];
+  }[] = [];
 
   const processQueue = (error: unknown, token: string | null) => {
     failedQueue.forEach((prom) => {

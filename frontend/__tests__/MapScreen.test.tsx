@@ -90,15 +90,6 @@ const mockResolvedNoMatch: PlacesResolved = {
   // No matched_store_id — non-DB place
 };
 
-const mockResolvedWithMatch: PlacesResolved = {
-  place_id: "ChIJmercadona",
-  name: "Mercadona Triana",
-  address: "C/ Pagés del Corro, 90, Sevilla",
-  lat: 37.3886,
-  lng: -5.9823,
-  matched_store_id: "s1",
-};
-
 // ─── Setup helpers ────────────────────────────────────────────────────────────
 
 function setupLocationMocks() {

@@ -9,6 +9,7 @@
 
 [![CI Backend](https://img.shields.io/badge/CI-Backend-blue)](https://github.com/QHX0329/bargain-tfg/actions/workflows/ci-backend.yml)
 [![CI Frontend](https://img.shields.io/badge/CI-Frontend-green)](https://github.com/QHX0329/bargain-tfg/actions/workflows/ci-frontend.yml)
+[![CD Render Staging](https://img.shields.io/badge/CD-Render%20Staging-orange)](https://github.com/QHX0329/bargain-tfg/actions/workflows/cd-render-staging.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 📋 Descripción
@@ -63,6 +64,30 @@ BarGAIN actúa como un **orquestador inteligente de la cesta de la compra** medi
 | Async         | Celery + Redis                        |
 | CI/CD         | GitHub Actions                        |
 | Infra         | Docker + Docker Compose (dev híbrido) + Render |
+
+## CD a staging (Render)
+
+El despliegue continuo del backend se ejecuta con el workflow:
+
+- `.github/workflows/cd-render-staging.yml`
+
+Se dispara automáticamente en `push` a `main` cuando hay cambios en `backend/**` o `render.yaml`,
+y también puede lanzarse manualmente con `workflow_dispatch`.
+
+Secrets requeridos en GitHub:
+
+- `RENDER_API_KEY`
+- `RENDER_WEB_SERVICE_ID`
+- `RENDER_WORKER_SERVICE_ID`
+- `RENDER_BEAT_SERVICE_ID`
+- `RENDER_STAGING_HEALTHCHECK_URL` (opcional, para smoke test HTTP)
+
+El flujo realiza:
+
+1. Validación de secretos.
+2. Deploy secuencial de web, worker y beat vía API de Render.
+3. Espera activa hasta estado `live` en cada servicio.
+4. Smoke test contra el endpoint de salud (si está configurado).
 
 Nota sobre OCR:
 - La decisión de diseño vigente adopta Google Cloud Vision API como proveedor OCR backend.

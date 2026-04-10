@@ -99,5 +99,5 @@ export interface BusinessStats {
 export interface BulkUpdateResult {
   created: number;
   updated: number;
-  errors: Array<{ index: number; errors: Record<string, string> }>;
+  errors: { index: number; errors: Record<string, string> }[];
 }

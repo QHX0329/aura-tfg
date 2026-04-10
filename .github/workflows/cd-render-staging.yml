@@ -1,0 +1,161 @@
+name: CD Render Staging
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'render.yaml'
+      - '.github/workflows/cd-render-staging.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: cd-render-staging
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy backend services to Render
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RENDER_API_URL: https://api.render.com/v1
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RENDER_WEB_SERVICE_ID: ${{ secrets.RENDER_WEB_SERVICE_ID }}
+      RENDER_WORKER_SERVICE_ID: ${{ secrets.RENDER_WORKER_SERVICE_ID }}
+      RENDER_BEAT_SERVICE_ID: ${{ secrets.RENDER_BEAT_SERVICE_ID }}
+      RENDER_STAGING_HEALTHCHECK_URL: ${{ secrets.RENDER_STAGING_HEALTHCHECK_URL }}
+
+    steps:
+      - name: Validate required secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required=(
+            RENDER_API_KEY
+            RENDER_WEB_SERVICE_ID
+            RENDER_WORKER_SERVICE_ID
+            RENDER_BEAT_SERVICE_ID
+          )
+
+          for key in "${required[@]}"; do
+            if [ -z "${!key:-}" ]; then
+              echo "Missing required secret: $key"
+              exit 1
+            fi
+          done
+
+      - name: Trigger deploys and wait for live status
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          auth_header="Authorization: Bearer ${RENDER_API_KEY}"
+
+          trigger_deploy() {
+            local service_id="$1"
+            local service_name="$2"
+
+            echo "Triggering deploy for ${service_name} (${service_id})..." >&2
+
+            local response
+            response=$(curl --silent --show-error --fail \
+              --request POST \
+              --url "${RENDER_API_URL}/services/${service_id}/deploys" \
+              --header "${auth_header}" \
+              --header 'Accept: application/json' \
+              --header 'Content-Type: application/json' \
+              --data '{}')
+
+            local deploy_id
+            deploy_id=$(python3 -c "import json,sys; print(json.load(sys.stdin)['id'])" <<<"${response}")
+
+            if [ -z "${deploy_id}" ]; then
+              echo "Could not extract deploy id for ${service_name}" >&2
+              echo "Response: ${response}" >&2
+              exit 1
+            fi
+
+            echo "Deploy id for ${service_name}: ${deploy_id}" >&2
+            echo "${deploy_id}"
+          }
+
+          wait_for_live() {
+            local service_id="$1"
+            local deploy_id="$2"
+            local service_name="$3"
+            local max_attempts=120
+            local sleep_seconds=15
+
+            echo "Waiting for ${service_name} deploy ${deploy_id} to reach live status..."
+
+            for ((attempt=1; attempt<=max_attempts; attempt++)); do
+              local response
+              response=$(curl --silent --show-error --fail \
+                --request GET \
+                --url "${RENDER_API_URL}/services/${service_id}/deploys/${deploy_id}" \
+                --header "${auth_header}" \
+                --header 'Accept: application/json')
+
+              local status
+              status=$(python3 -c "import json,sys; print(json.load(sys.stdin).get('status',''))" <<<"${response}")
+
+              echo "${service_name}: attempt ${attempt}/${max_attempts} status=${status}"
+
+              case "${status}" in
+                live)
+                  echo "${service_name} is live."
+                  return 0
+                  ;;
+                build_failed|update_failed|failed|canceled)
+                  echo "${service_name} deploy failed with status=${status}"
+                  echo "Deploy payload: ${response}"
+                  return 1
+                  ;;
+              esac
+
+              sleep "${sleep_seconds}"
+            done
+
+            echo "Timeout waiting for ${service_name} deploy ${deploy_id}"
+            return 1
+          }
+
+          web_deploy_id=$(trigger_deploy "${RENDER_WEB_SERVICE_ID}" "web")
+          wait_for_live "${RENDER_WEB_SERVICE_ID}" "${web_deploy_id}" "web"
+
+          worker_deploy_id=$(trigger_deploy "${RENDER_WORKER_SERVICE_ID}" "worker")
+          wait_for_live "${RENDER_WORKER_SERVICE_ID}" "${worker_deploy_id}" "worker"
+
+          beat_deploy_id=$(trigger_deploy "${RENDER_BEAT_SERVICE_ID}" "beat")
+          wait_for_live "${RENDER_BEAT_SERVICE_ID}" "${beat_deploy_id}" "beat"
+
+      - name: Smoke check API health endpoint
+        if: ${{ env.RENDER_STAGING_HEALTHCHECK_URL != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Running health check against ${RENDER_STAGING_HEALTHCHECK_URL}"
+
+          for attempt in {1..20}; do
+            if curl --silent --show-error --fail "${RENDER_STAGING_HEALTHCHECK_URL}" > health.json; then
+              echo "Health check passed on attempt ${attempt}."
+              cat health.json
+              exit 0
+            fi
+
+            echo "Health check failed on attempt ${attempt}, retrying..."
+            sleep 10
+          done
+
+          echo "Health check did not pass in time."
+          exit 1
+
+      - name: Smoke check skipped
+        if: ${{ env.RENDER_STAGING_HEALTHCHECK_URL == '' }}
+        run: echo "RENDER_STAGING_HEALTHCHECK_URL is not configured, skipping smoke check."

@@ -44,9 +44,7 @@ def test_render_yaml_has_web_service(render_config):
     """Existe al menos un servicio con type: web (Django API)."""
     services = render_config.get("services", [])
     web_services = [s for s in services if s.get("type") == "web"]
-    assert len(web_services) >= 1, (
-        "No se encontró ningún servicio con type: web en render.yaml"
-    )
+    assert len(web_services) >= 1, "No se encontró ningún servicio con type: web en render.yaml"
 
 
 def test_render_yaml_has_worker_service(render_config):
@@ -62,9 +60,7 @@ def test_render_yaml_has_database(render_config):
     """La sección databases contiene al menos una entrada (PostgreSQL)."""
     databases = render_config.get("databases", [])
     assert isinstance(databases, list), "databases debe ser una lista"
-    assert len(databases) >= 1, (
-        "No se encontró ninguna base de datos declarada en render.yaml"
-    )
+    assert len(databases) >= 1, "No se encontró ninguna base de datos declarada en render.yaml"
 
 
 def test_docker_runtime_services_use_docker_command(render_config):

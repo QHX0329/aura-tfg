@@ -8,14 +8,17 @@ on:
         required: false
         default: '22'
   push:
-    tags:
-      - 'ios-*'
+    branches: [main, develop]
+    paths: ['frontend/**', 'backend/**']
 
 jobs:
   build-ios:
     name: Build unsigned iOS IPA
     runs-on: macos-latest
     timeout-minutes: 60
+    env:
+      ARCHIVE_PATH: ${{ github.workspace }}/build/BargAIn.xcarchive
+      EXPORT_PATH: ${{ github.workspace }}/build/output
 
     steps:
       - name: Checkout
@@ -67,6 +70,7 @@ jobs:
       - name: Build unsigned .xcarchive
         working-directory: frontend/ios
         run: |
+          mkdir -p "$(dirname "$ARCHIVE_PATH")"
           WORKSPACE=$(ls *.xcworkspace | head -1)
           SCHEME=$(xcodebuild -list -workspace "$WORKSPACE" 2>/dev/null | \
             awk '/Schemes:/,0' | grep -v 'Schemes:' | grep -v '^$' | head -1 | xargs)
@@ -76,7 +80,7 @@ jobs:
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
-            -archivePath ../../build/BargAIn.xcarchive \
+            -archivePath "$ARCHIVE_PATH" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             archive | xcpretty --color || \
@@ -85,25 +89,38 @@ jobs:
             -scheme "$SCHEME" \
             -configuration Release \
             -sdk iphoneos \
-            -archivePath ../../build/BargAIn.xcarchive \
+            -archivePath "$ARCHIVE_PATH" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             archive
 
+      - name: Verify archive exists
+        run: |
+          if [ -d "$ARCHIVE_PATH" ]; then
+            echo "Archive found at $ARCHIVE_PATH"
+            ls -la "$ARCHIVE_PATH"
+          else
+            echo "ERROR: archive not found at $ARCHIVE_PATH"
+            echo "Discovered .xcarchive files in workspace:"
+            find "$GITHUB_WORKSPACE" -maxdepth 6 -name "*.xcarchive" 2>/dev/null || true
+            exit 1
+          fi
+
       - name: Export unsigned .ipa
         run: |
+          mkdir -p "$EXPORT_PATH"
           xcodebuild \
             -exportArchive \
-            -archivePath build/BargAIn.xcarchive \
-            -exportPath build/output \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
             -exportOptionsPlist frontend/ExportOptions.plist \
             -allowProvisioningUpdates
 
       - name: List build output
         run: |
           echo "=== Contenido de build/output ==="
-          ls -la build/output/ || echo "No output directory"
-          find build/ -name "*.ipa" 2>/dev/null
+          ls -la "$EXPORT_PATH" || echo "No output directory"
+          find "$GITHUB_WORKSPACE/build" -name "*.ipa" 2>/dev/null
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4

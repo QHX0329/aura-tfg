@@ -3,8 +3,8 @@
 import logging
 import os
 
-from django.core.exceptions import ImproperlyConfigured
 import sentry_sdk
+from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration

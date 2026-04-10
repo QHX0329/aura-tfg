@@ -35,14 +35,14 @@ export async function deletePrice(id: number): Promise<void> {
 
 /** Actualización masiva de precios por lote. */
 export async function bulkUpdatePrices(
-  items: Array<{
+  items: {
     product: number;
     store: number;
     price: string;
     unit_price?: string | null;
     offer_price?: string | null;
     offer_end_date?: string | null;
-  }>,
+  }[],
 ): Promise<BulkUpdateResult> {
   const res = await apiClient.post<BulkUpdateResult>('/business/prices/bulk-update/', items);
   return res.data;

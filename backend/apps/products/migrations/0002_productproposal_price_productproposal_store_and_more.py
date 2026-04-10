@@ -5,26 +5,40 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('products', '0001_initial'),
-        ('stores', '0003_store_google_place_id'),
+        ("products", "0001_initial"),
+        ("stores", "0003_store_google_place_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='productproposal',
-            name='price',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, verbose_name='Precio'),
+            model_name="productproposal",
+            name="price",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=10, null=True, verbose_name="Precio"
+            ),
         ),
         migrations.AddField(
-            model_name='productproposal',
-            name='store',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='product_proposals', to='stores.store', verbose_name='Tienda'),
+            model_name="productproposal",
+            name="store",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="product_proposals",
+                to="stores.store",
+                verbose_name="Tienda",
+            ),
         ),
         migrations.AddField(
-            model_name='productproposal',
-            name='unit_price',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, verbose_name='Precio unitario'),
+            model_name="productproposal",
+            name="unit_price",
+            field=models.DecimalField(
+                blank=True,
+                decimal_places=2,
+                max_digits=10,
+                null=True,
+                verbose_name="Precio unitario",
+            ),
         ),
     ]

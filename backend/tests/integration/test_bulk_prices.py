@@ -42,7 +42,9 @@ class TestBulkPriceUpdate:
         assert data["created"] == 2
         assert data["updated"] == 0
         assert data["errors"] == []
-        assert Price.objects.filter(store=business_store, source=Price.Source.BUSINESS).count() == 2
+        assert (
+            Price.objects.filter(store=business_store, source=Price.Source.BUSINESS).count() == 2
+        )
 
     def test_bulk_update_invalid_product_id(
         self,
@@ -73,7 +75,9 @@ class TestBulkPriceUpdate:
         assert len(data["errors"]) == 1
         assert data["errors"][0]["index"] == 1
         assert "product" in data["errors"][0]["errors"]
-        assert Price.objects.filter(store=business_store, source=Price.Source.BUSINESS).count() == 1
+        assert (
+            Price.objects.filter(store=business_store, source=Price.Source.BUSINESS).count() == 1
+        )
 
     def test_bulk_update_store_not_owned(
         self,
@@ -133,7 +137,9 @@ class TestBulkPriceUpdate:
         assert len(data["errors"]) == 1
         assert data["errors"][0]["index"] == 0
         assert "price" in data["errors"][0]["errors"]
-        assert Price.objects.filter(store=business_store, source=Price.Source.BUSINESS).count() == 0
+        assert (
+            Price.objects.filter(store=business_store, source=Price.Source.BUSINESS).count() == 0
+        )
 
     def test_bulk_update_requires_verified_profile(
         self,
