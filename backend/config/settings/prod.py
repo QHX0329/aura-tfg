@@ -21,6 +21,7 @@ def _split_env_list(key: str) -> list[str]:
 DEBUG = False
 ALLOWED_HOSTS = _split_env_list("ALLOWED_HOSTS")
 
+
 def _is_web_server_process() -> bool:
     """Detecta procesos HTTP donde ALLOWED_HOSTS sí es obligatorio."""
     argv = [arg.lower() for arg in sys.argv]
