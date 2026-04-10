@@ -66,7 +66,37 @@ jobs:
           extract_first_deploy_id() {
             local payload="$1"
 
-            python3 -c $'import json,sys\npayload=sys.argv[1]\nif not payload.strip():\n    print("")\n    raise SystemExit(0)\ntry:\n    data=json.loads(payload)\nexcept json.JSONDecodeError:\n    print("")\n    raise SystemExit(0)\ndef first_id_from_list(items):\n    if not isinstance(items, list):\n        return ""\n    for item in items:\n        if isinstance(item, dict):\n            deploy_id=item.get("id")\n            if isinstance(deploy_id, str):\n                return deploy_id\n    return ""\nif isinstance(data, dict):\n    deploy_id=data.get("id")\n    if isinstance(deploy_id, str):\n        print(deploy_id)\n        raise SystemExit(0)\n    print(first_id_from_list(data.get("data")))\n    raise SystemExit(0)\nprint(first_id_from_list(data))' "${payload}"
+            python3 -c $'import json,sys\npayload=sys.argv[1]\nif not payload.strip():\n    print("")\n    raise SystemExit(0)\ntry:\n    data=json.loads(payload)\nexcept json.JSONDecodeError:\n    print("")\n    raise SystemExit(0)\ndef to_text(value):\n    if value is None:\n        return ""\n    if isinstance(value, (str, int, float)):\n        return str(value)\n    return ""\ndef first_id_from_list(items):\n    if not isinstance(items, list):\n        return ""\n    for item in items:\n        if isinstance(item, dict):\n            deploy_id=to_text(item.get("id"))\n            if deploy_id:\n                return deploy_id\n    return ""\nif isinstance(data, dict):\n    deploy_id=to_text(data.get("id"))\n    if deploy_id:\n        print(deploy_id)\n        raise SystemExit(0)\n    for key in ("data", "items", "deploys", "results"):\n        from_list = first_id_from_list(data.get(key))\n        if from_list:\n            print(from_list)\n            raise SystemExit(0)\n    print("")\n    raise SystemExit(0)\nprint(first_id_from_list(data))' "${payload}"
+          }
+
+          lookup_latest_deploy_id() {
+            local service_id="$1"
+            local service_name="$2"
+            local attempts=10
+            local sleep_seconds=3
+
+            for ((attempt=1; attempt<=attempts; attempt++)); do
+              local latest_response
+              latest_response=$(curl --silent --show-error --fail \
+                --request GET \
+                --url "${RENDER_API_URL}/services/${service_id}/deploys?limit=1" \
+                --header "${auth_header}" \
+                --header 'Accept: application/json')
+
+              local deploy_id
+              deploy_id=$(extract_first_deploy_id "${latest_response}")
+
+              if [ -n "${deploy_id}" ]; then
+                echo "${deploy_id}"
+                return 0
+              fi
+
+              echo "No deploy id yet for ${service_name} (attempt ${attempt}/${attempts})." >&2
+              echo "Latest deploy lookup response: ${latest_response}" >&2
+              sleep "${sleep_seconds}"
+            done
+
+            return 1
           }
 
           trigger_deploy() {
@@ -88,22 +118,13 @@ jobs:
             deploy_id=$(json_get_string "${response}" "id")
 
             if [ -z "${deploy_id}" ]; then
-              echo "No deploy id in trigger response for ${service_name}. Trying latest deploy lookup..." >&2
-
-              local latest_response
-              latest_response=$(curl --silent --show-error --fail \
-                --request GET \
-                --url "${RENDER_API_URL}/services/${service_id}/deploys?limit=1" \
-                --header "${auth_header}" \
-                --header 'Accept: application/json')
-
-              deploy_id=$(extract_first_deploy_id "${latest_response}")
+              echo "No deploy id in trigger response for ${service_name}. Trying latest deploy lookup with retries..." >&2
+              deploy_id=$(lookup_latest_deploy_id "${service_id}" "${service_name}" || true)
             fi
 
             if [ -z "${deploy_id}" ]; then
               echo "Could not extract deploy id for ${service_name}" >&2
               echo "Trigger response: ${response}" >&2
-              echo "Latest deploy lookup response was also empty or invalid JSON." >&2
               exit 1
             fi
 

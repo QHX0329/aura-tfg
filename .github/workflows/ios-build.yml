@@ -51,7 +51,7 @@ jobs:
         working-directory: frontend/ios
         run: |
           echo "=== Workspaces generados ==="
-          ls *.xcworkspace || echo "WARN: No xcworkspace found"
+          find . -maxdepth 1 -type d -name "*.xcworkspace" -print | sed 's|^\./||' || true
           echo "=== Schemes disponibles ==="
           xcodebuild -list 2>/dev/null | head -20 || true
 
@@ -70,11 +70,24 @@ jobs:
       - name: Build unsigned .xcarchive
         working-directory: frontend/ios
         run: |
-          set -o pipefail
+          set -euo pipefail
           mkdir -p "$(dirname "$ARCHIVE_PATH")"
-          WORKSPACE=$(ls *.xcworkspace | head -1)
+
+          WORKSPACE=$(find . -maxdepth 1 -type d -name "*.xcworkspace" -print | sed 's|^\./||' | head -1)
+          if [ -z "$WORKSPACE" ]; then
+            echo "ERROR: No .xcworkspace found in $(pwd)"
+            exit 1
+          fi
+
           SCHEME=$(xcodebuild -list -workspace "$WORKSPACE" 2>/dev/null | \
             awk '/Schemes:/,0' | grep -v 'Schemes:' | grep -v '^$' | head -1 | xargs)
+
+          if [ -z "$SCHEME" ]; then
+            echo "ERROR: Could not determine an Xcode scheme from workspace $WORKSPACE"
+            xcodebuild -list -workspace "$WORKSPACE" || true
+            exit 1
+          fi
+
           echo "Building workspace: $WORKSPACE, scheme: $SCHEME"
           echo "Expected archive path: $ARCHIVE_PATH"
           xcodebuild \

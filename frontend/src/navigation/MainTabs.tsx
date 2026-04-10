@@ -73,7 +73,7 @@ const HomeStackNavigator: React.FC = () => (
     screenOptions={{
       headerShown: false,
       animation: "slide_from_right",
-      gestureResponseDistance: { horizontal: STACK_BACK_SWIPE_EDGE_WIDTH },
+      gestureResponseDistance: { start: STACK_BACK_SWIPE_EDGE_WIDTH },
     }}
   >
     <HomeStack.Screen name="Home" component={HomeScreen} />
@@ -116,7 +116,7 @@ const ListsStackNavigator: React.FC = () => (
       headerStyle: { backgroundColor: colors.surface },
       headerTintColor: colors.text,
       animation: "slide_from_right",
-      gestureResponseDistance: { horizontal: STACK_BACK_SWIPE_EDGE_WIDTH },
+      gestureResponseDistance: { start: STACK_BACK_SWIPE_EDGE_WIDTH },
     }}
   >
     <ListsStack.Screen
@@ -162,7 +162,7 @@ const MapStackNavigator: React.FC = () => (
     screenOptions={{
       headerShown: false,
       animation: "slide_from_right",
-      gestureResponseDistance: { horizontal: STACK_BACK_SWIPE_EDGE_WIDTH },
+      gestureResponseDistance: { start: STACK_BACK_SWIPE_EDGE_WIDTH },
     }}
   >
     <MapStack.Screen name="Map" component={MapScreen} />
@@ -179,7 +179,7 @@ const AssistantStackNavigator: React.FC = () => (
     screenOptions={{
       headerShown: false,
       animation: "slide_from_right",
-      gestureResponseDistance: { horizontal: STACK_BACK_SWIPE_EDGE_WIDTH },
+      gestureResponseDistance: { start: STACK_BACK_SWIPE_EDGE_WIDTH },
     }}
   >
     <AssistantStack.Screen name="Assistant" component={AssistantScreen} />
@@ -192,7 +192,7 @@ const ProfileStackNavigator: React.FC = () => (
       headerStyle: { backgroundColor: colors.surface },
       headerTintColor: colors.text,
       animation: "slide_from_right",
-      gestureResponseDistance: { horizontal: STACK_BACK_SWIPE_EDGE_WIDTH },
+      gestureResponseDistance: { start: STACK_BACK_SWIPE_EDGE_WIDTH },
     }}
   >
     <ProfileStack.Screen
