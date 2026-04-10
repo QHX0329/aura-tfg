@@ -2,6 +2,7 @@
 
 import logging
 import os
+import sys
 
 import sentry_sdk
 from django.core.exceptions import ImproperlyConfigured
@@ -20,7 +21,14 @@ def _split_env_list(key: str) -> list[str]:
 DEBUG = False
 ALLOWED_HOSTS = _split_env_list("ALLOWED_HOSTS")
 
-if not ALLOWED_HOSTS:
+def _is_web_server_process() -> bool:
+    """Detecta procesos HTTP donde ALLOWED_HOSTS sí es obligatorio."""
+    argv = [arg.lower() for arg in sys.argv]
+    web_markers = ("gunicorn", "uvicorn", "daphne", "runserver")
+    return any(any(marker in arg for marker in web_markers) for arg in argv)
+
+
+if _is_web_server_process() and not ALLOWED_HOSTS:
     raise ImproperlyConfigured(
         "ALLOWED_HOSTS debe definirse en producción (lista separada por comas)."
     )
