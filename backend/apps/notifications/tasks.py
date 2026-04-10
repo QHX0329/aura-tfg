@@ -137,8 +137,10 @@ def notify_new_promo_at_store(self, promotion_id: int) -> None:
         logger.warning("notify_new_promo_promotion_not_found", promotion_id=promotion_id)
         return
 
-    users = promotion.store.favorited_by.filter(push_notifications_enabled=True).exclude(
-        notify_new_promos=False
+    favorites = list(
+        promotion.store.favorited_by.select_related("user")
+        .filter(user__push_notifications_enabled=True)
+        .exclude(user__notify_new_promos=False)
     )
 
     product_name = promotion.product.name if promotion.product else "producto"
@@ -148,7 +150,8 @@ def notify_new_promo_at_store(self, promotion_id: int) -> None:
         else f"{promotion.discount_value}% de descuento en {product_name}"
     )
 
-    for user in users:
+    for favorite in favorites:
+        user = favorite.user
         dispatch_push_notification.delay(
             user_id=user.id,
             title=f"Nueva promoción en {promotion.store.name}",
@@ -164,7 +167,7 @@ def notify_new_promo_at_store(self, promotion_id: int) -> None:
     logger.info(
         "notify_new_promo_dispatched",
         promotion_id=promotion_id,
-        users_notified=users.count(),
+        users_notified=len(favorites),
     )
 
 

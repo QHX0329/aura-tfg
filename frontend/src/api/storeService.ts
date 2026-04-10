@@ -320,11 +320,7 @@ export const storeService = {
   /** GET /stores/{id}/products/ — productos con precio en la tienda */
   getProducts: async (
     storeId: string,
-    {
-      page = 1,
-      pageSize = 20,
-      categoryId,
-    }: StoreProductsParams = {},
+    { page = 1, pageSize = 20, categoryId }: StoreProductsParams = {},
   ): Promise<StoreProductsResult> => {
     const payload = await publicApiClient.get<
       never,

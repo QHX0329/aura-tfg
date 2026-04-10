@@ -12,7 +12,11 @@
  */
 
 import axios from "axios";
-import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import type {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import {
   getItem as getStoredItem,
   setItem as setStoredItem,

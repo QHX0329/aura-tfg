@@ -224,10 +224,10 @@ function normalizeOptimizeResponse(raw: RawOptimizeResponse): OptimizeResponse {
 export const optimizeRoute = async (
   data: OptimizeRequest,
 ): Promise<OptimizeResponse> => {
-  const payload = await apiClient.post<never, RawOptimizeResponse | { data: RawOptimizeResponse }>(
-    "/optimize/",
-    data,
-  );
+  const payload = await apiClient.post<
+    never,
+    RawOptimizeResponse | { data: RawOptimizeResponse }
+  >("/optimize/", data);
 
   const raw =
     payload && typeof payload === "object" && "data" in payload
@@ -240,12 +240,12 @@ export const optimizeRoute = async (
 export const getLatestOptimizedRoute = async (
   shoppingListId: number,
 ): Promise<OptimizeResponse | null> => {
-  const payload = await apiClient.get<never, RawOptimizeResponse | { data: RawOptimizeResponse } | null>(
-    "/optimize/",
-    {
-      params: { shopping_list_id: shoppingListId },
-    },
-  );
+  const payload = await apiClient.get<
+    never,
+    RawOptimizeResponse | { data: RawOptimizeResponse } | null
+  >("/optimize/", {
+    params: { shopping_list_id: shoppingListId },
+  });
 
   if (payload == null) {
     return null;

@@ -4,9 +4,35 @@ Fixtures globales de pytest para el backend de BargAIn.
 Disponibles en todos los módulos de tests sin importar explícitamente.
 """
 
+import os
+import sys
+from pathlib import Path
+
 import pytest
 from django.contrib.gis.geos import Point
 from rest_framework.test import APIClient
+
+
+def _bootstrap_scraping_path() -> None:
+    """Asegura que el paquete bargain_scraping sea importable en tests backend."""
+    repo_root = Path(__file__).resolve().parents[2]
+    default_scraping_dir = repo_root / "scraping"
+
+    candidates: list[Path] = []
+    env_scraping_dir = os.environ.get("SCRAPING_PROJECT_DIR")
+    if env_scraping_dir:
+        candidates.append(Path(env_scraping_dir))
+    candidates.append(default_scraping_dir)
+
+    for candidate in candidates:
+        resolved_candidate = candidate.resolve()
+        candidate_str = str(resolved_candidate)
+        if resolved_candidate.is_dir() and candidate_str not in sys.path:
+            sys.path.insert(0, candidate_str)
+            return
+
+
+_bootstrap_scraping_path()
 
 
 @pytest.fixture

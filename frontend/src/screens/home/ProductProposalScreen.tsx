@@ -73,7 +73,7 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
         .then((result) => {
           const list = Array.isArray(result)
             ? result
-            : (result as { results?: StoreOption[] }).results ?? [];
+            : ((result as { results?: StoreOption[] }).results ?? []);
           setStoresLoadFailed(false);
           setStores(
             list.slice(0, 20).map((s) => ({ id: Number(s.id), name: s.name })),
@@ -102,7 +102,8 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
       errs.name = "El nombre debe tener al menos 2 caracteres";
     }
     if (barcode && !validateEAN13(barcode)) {
-      errs.barcode = "EAN-13 inválido: debe tener 13 dígitos con dígito de control correcto";
+      errs.barcode =
+        "EAN-13 inválido: debe tener 13 dígitos con dígito de control correcto";
     }
     // Fix F6: el backend acepta propuestas sin precio; solo exigimos tienda cuando se envía precio.
     const hasPrice = price.trim().length > 0;
@@ -145,7 +146,10 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
           "Tu sesión ha expirado. Inicia sesión de nuevo antes de enviar la propuesta.",
         );
       } else {
-        Alert.alert("Error", "No se pudo enviar la propuesta. Inténtalo de nuevo.");
+        Alert.alert(
+          "Error",
+          "No se pudo enviar la propuesta. Inténtalo de nuevo.",
+        );
       }
     } finally {
       setSubmitting(false);
@@ -160,7 +164,10 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backBtn}
+          >
             <Ionicons name="chevron-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Proponer producto</Text>
@@ -184,7 +191,9 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
               placeholder="Ej. Leche semidesnatada 1L"
               placeholderTextColor={colors.light.textSecondary}
             />
-            {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
+            {errors.name ? (
+              <Text style={styles.errorText}>{errors.name}</Text>
+            ) : null}
           </View>
 
           {/* Brand */}
@@ -211,10 +220,14 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
               keyboardType="numeric"
               maxLength={13}
             />
-            {errors.barcode ? <Text style={styles.errorText}>{errors.barcode}</Text> : null}
+            {errors.barcode ? (
+              <Text style={styles.errorText}>{errors.barcode}</Text>
+            ) : null}
           </View>
 
-          <Text style={[styles.sectionLabel, { marginTop: spacing.lg }]}>Precio</Text>
+          <Text style={[styles.sectionLabel, { marginTop: spacing.lg }]}>
+            Precio
+          </Text>
 
           {/* Price */}
           <View style={styles.fieldWrap}>
@@ -227,7 +240,9 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
               placeholderTextColor={colors.light.textSecondary}
               keyboardType="decimal-pad"
             />
-            {errors.price ? <Text style={styles.errorText}>{errors.price}</Text> : null}
+            {errors.price ? (
+              <Text style={styles.errorText}>{errors.price}</Text>
+            ) : null}
           </View>
 
           {/* Unit price */}
@@ -247,7 +262,11 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
           {stores.length > 0 && (
             <View style={styles.fieldWrap}>
               <Text style={styles.label}>Tienda</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.storeRow}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.storeRow}
+              >
                 {stores.map((s) => (
                   <TouchableOpacity
                     key={s.id}
@@ -255,12 +274,15 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
                       styles.storeChip,
                       selectedStoreId === s.id && styles.storeChipSelected,
                     ]}
-                    onPress={() => setSelectedStoreId(selectedStoreId === s.id ? null : s.id)}
+                    onPress={() =>
+                      setSelectedStoreId(selectedStoreId === s.id ? null : s.id)
+                    }
                   >
                     <Text
                       style={[
                         styles.storeChipText,
-                        selectedStoreId === s.id && styles.storeChipTextSelected,
+                        selectedStoreId === s.id &&
+                          styles.storeChipTextSelected,
                       ]}
                     >
                       {s.name}
@@ -268,17 +290,22 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-              {errors.store ? <Text style={styles.errorText}>{errors.store}</Text> : null}
+              {errors.store ? (
+                <Text style={styles.errorText}>{errors.store}</Text>
+              ) : null}
             </View>
           )}
 
-          {stores.length === 0 && (storesLoadFailed || price.trim().length > 0) ? (
+          {stores.length === 0 &&
+          (storesLoadFailed || price.trim().length > 0) ? (
             <View style={styles.fieldWrap}>
               <Text style={styles.label}>Tienda</Text>
               <Text style={styles.helperText}>
                 No hemos podido cargar tiendas cercanas en este momento.
               </Text>
-              {errors.store ? <Text style={styles.errorText}>{errors.store}</Text> : null}
+              {errors.store ? (
+                <Text style={styles.errorText}>{errors.store}</Text>
+              ) : null}
             </View>
           ) : null}
 
@@ -300,7 +327,9 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
           {/* Submit */}
           <TouchableOpacity
             style={[styles.submitBtn, submitting && styles.submitBtnDisabled]}
-            onPress={() => { void handleSubmit(); }}
+            onPress={() => {
+              void handleSubmit();
+            }}
             disabled={submitting}
             activeOpacity={0.8}
           >
@@ -308,14 +337,20 @@ export const ProductProposalScreen: React.FC<Props> = ({ navigation }) => {
               <ActivityIndicator color="#fff" size="small" />
             ) : (
               <>
-                <Ionicons name="send-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="send-outline"
+                  size={18}
+                  color="#fff"
+                  style={{ marginRight: 8 }}
+                />
                 <Text style={styles.submitBtnText}>Enviar propuesta</Text>
               </>
             )}
           </TouchableOpacity>
 
           <Text style={styles.disclaimer}>
-            Las propuestas son revisadas por el equipo de BarGAIN antes de aparecer en el catálogo.
+            Las propuestas son revisadas por el equipo de BarGAIN antes de
+            aparecer en el catálogo.
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>

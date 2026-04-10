@@ -462,7 +462,9 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
               <TouchableOpacity
                 style={[
                   styles.categoryChip,
-                  selectedCategoryId === "all" ? styles.categoryChipActive : null,
+                  selectedCategoryId === "all"
+                    ? styles.categoryChipActive
+                    : null,
                 ]}
                 onPress={() => {
                   void handleSelectCategory("all");
@@ -473,7 +475,9 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
                 <Text
                   style={[
                     styles.categoryChipText,
-                    selectedCategoryId === "all" ? styles.categoryChipTextActive : null,
+                    selectedCategoryId === "all"
+                      ? styles.categoryChipTextActive
+                      : null,
                   ]}
                 >
                   Todas
@@ -485,7 +489,10 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
                 return (
                   <TouchableOpacity
                     key={category.id}
-                    style={[styles.categoryChip, isActive ? styles.categoryChipActive : null]}
+                    style={[
+                      styles.categoryChip,
+                      isActive ? styles.categoryChipActive : null,
+                    ]}
                     onPress={() => {
                       void handleSelectCategory(category.id);
                     }}
@@ -541,7 +548,9 @@ export const StoreProfileScreen: React.FC<Props> = ({ route, navigation }) => {
           isLoadingMore ? (
             <View style={styles.listFooterLoading}>
               <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={styles.listFooterText}>Cargando más productos...</Text>
+              <Text style={styles.listFooterText}>
+                Cargando más productos...
+              </Text>
             </View>
           ) : null
         }

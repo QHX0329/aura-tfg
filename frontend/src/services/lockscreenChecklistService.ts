@@ -1,12 +1,12 @@
-import { Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
+import { Platform } from "react-native";
+import * as Notifications from "expo-notifications";
 
-import { listService } from '@/api/listService';
-import type { ShoppingListItem } from '@/types/domain';
+import { listService } from "@/api/listService";
+import type { ShoppingListItem } from "@/types/domain";
 
-const ACTION_PREFIX = 'check-item:';
-const CATEGORY_PREFIX = 'shopping-checklist-';
-const TYPE_LOCKSCREEN_CHECKLIST = 'lockscreen-checklist';
+const ACTION_PREFIX = "check-item:";
+const CATEGORY_PREFIX = "shopping-checklist-";
+const TYPE_LOCKSCREEN_CHECKLIST = "lockscreen-checklist";
 const MAX_ACTIONS = 4;
 const MAX_LINES = 10;
 
@@ -25,7 +25,7 @@ function parseOrderedItemIds(value: unknown): string[] {
   }
 
   return value
-    .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
+    .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
     .filter((entry) => entry.length > 0);
 }
 
@@ -58,10 +58,10 @@ function buildChecklistBody(items: OrderedChecklistItem[]): string {
   const rows = items
     .slice(0, MAX_LINES)
     .map(({ item, isChecked: itemChecked }) => {
-      const mark = itemChecked ? '[x]' : '[ ]';
+      const mark = itemChecked ? "[x]" : "[ ]";
       return `${mark} ${item.name} x${item.quantity}`;
     })
-    .join('\n');
+    .join("\n");
 
   if (items.length <= MAX_LINES) {
     return rows;
@@ -81,13 +81,15 @@ async function ensureNotificationPermissions(): Promise<boolean> {
   return requested.granted;
 }
 
-async function cancelPreviousChecklistNotifications(listId: string): Promise<void> {
+async function cancelPreviousChecklistNotifications(
+  listId: string,
+): Promise<void> {
   const pending = await Notifications.getAllScheduledNotificationsAsync();
   const toCancel = pending.filter((scheduled) => {
     const data = scheduled.content.data as Record<string, unknown> | undefined;
     return (
       data?.type === TYPE_LOCKSCREEN_CHECKLIST &&
-      typeof data.listId === 'string' &&
+      typeof data.listId === "string" &&
       data.listId === listId
     );
   });
@@ -107,20 +109,22 @@ export async function scheduleLockscreenChecklist(params: {
 }): Promise<{ scheduled: boolean; id?: string; reason?: string }> {
   const { listId, listName, items, orderedItemIds } = params;
   const orderedItems = buildOrderedChecklistItems(items, orderedItemIds);
-  const pendingItems = orderedItems.filter(({ isChecked: itemChecked }) => !itemChecked);
+  const pendingItems = orderedItems.filter(
+    ({ isChecked: itemChecked }) => !itemChecked,
+  );
 
   if (pendingItems.length === 0) {
-    return { scheduled: false, reason: 'no-pending-items' };
+    return { scheduled: false, reason: "no-pending-items" };
   }
 
   const hasPermissions = await ensureNotificationPermissions();
   if (!hasPermissions) {
-    return { scheduled: false, reason: 'permission-denied' };
+    return { scheduled: false, reason: "permission-denied" };
   }
 
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('shopping-checklist', {
-      name: 'Checklist de compra',
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("shopping-checklist", {
+      name: "Checklist de compra",
       importance: Notifications.AndroidImportance.HIGH,
       lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
     });
@@ -157,32 +161,37 @@ export async function scheduleLockscreenChecklist(params: {
 }
 
 export function registerLockscreenChecklistActionHandler(): Notifications.EventSubscription {
-  return Notifications.addNotificationResponseReceivedListener(async (response) => {
-    const actionIdentifier = response.actionIdentifier;
-    if (!actionIdentifier.startsWith(ACTION_PREFIX)) {
-      return;
-    }
+  return Notifications.addNotificationResponseReceivedListener(
+    async (response) => {
+      const actionIdentifier = response.actionIdentifier;
+      if (!actionIdentifier.startsWith(ACTION_PREFIX)) {
+        return;
+      }
 
-    const data = response.notification.request.content.data as Record<string, unknown>;
-    const listId = typeof data?.listId === 'string' ? data.listId : null;
-    const orderedItemIds = parseOrderedItemIds(data?.orderedItemIds);
-    const itemId = actionIdentifier.slice(ACTION_PREFIX.length);
+      const data = response.notification.request.content.data as Record<
+        string,
+        unknown
+      >;
+      const listId = typeof data?.listId === "string" ? data.listId : null;
+      const orderedItemIds = parseOrderedItemIds(data?.orderedItemIds);
+      const itemId = actionIdentifier.slice(ACTION_PREFIX.length);
 
-    if (!listId || !itemId) {
-      return;
-    }
+      if (!listId || !itemId) {
+        return;
+      }
 
-    try {
-      await listService.updateItem(listId, itemId, { is_checked: true });
-      const freshList = await listService.getList(listId);
-      await scheduleLockscreenChecklist({
-        listId,
-        listName: freshList.name,
-        items: freshList.items,
-        orderedItemIds,
-      });
-    } catch {
-      // Silent fail: lockscreen action should never crash app startup.
-    }
-  });
+      try {
+        await listService.updateItem(listId, itemId, { is_checked: true });
+        const freshList = await listService.getList(listId);
+        await scheduleLockscreenChecklist({
+          listId,
+          listName: freshList.name,
+          items: freshList.items,
+          orderedItemIds,
+        });
+      } catch {
+        // Silent fail: lockscreen action should never crash app startup.
+      }
+    },
+  );
 }

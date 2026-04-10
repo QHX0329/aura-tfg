@@ -29,7 +29,11 @@ import Slider from "@react-native-community/slider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import type { RouteProp } from "@react-navigation/native";
 import * as Location from "expo-location";
 
@@ -105,7 +109,9 @@ function findMatchingQueryKey(
   }
 
   for (const key of itemKeys) {
-    const loose = routeKeys.find((routeKey) => routeKey.includes(key) || key.includes(routeKey));
+    const loose = routeKeys.find(
+      (routeKey) => routeKey.includes(key) || key.includes(routeKey),
+    );
     if (loose) {
       return loose;
     }
@@ -136,7 +142,6 @@ function buildOptimizedChecklist(
         queryOrder.set(key, nextOrder);
         nextOrder += 1;
       }
-
     }
   }
 
@@ -164,7 +169,9 @@ function buildOptimizedChecklist(
     });
   }
 
-  return checklist.sort((a, b) => a.order - b.order || a.itemId.localeCompare(b.itemId));
+  return checklist.sort(
+    (a, b) => a.order - b.order || a.itemId.localeCompare(b.itemId),
+  );
 }
 
 // ─── Weight Config Modal ───────────────────────────────────────────────────────
@@ -367,7 +374,10 @@ const RouteStopRow: React.FC<{
               >
                 <View style={stopRowStyles.productLine}>
                   <View style={stopRowStyles.productLineInfo}>
-                    <Text style={stopRowStyles.productLineName} numberOfLines={1}>
+                    <Text
+                      style={stopRowStyles.productLineName}
+                      numberOfLines={1}
+                    >
                       {product.matched_product_name}
                     </Text>
                     <Text style={stopRowStyles.productLineMeta}>
@@ -411,7 +421,10 @@ const RouteStopRow: React.FC<{
                               style={stopRowStyles.semanticOptionChip}
                               activeOpacity={0.75}
                               onPress={() =>
-                                onApplySemanticOption(product.query_text, option)
+                                onApplySemanticOption(
+                                  product.query_text,
+                                  option,
+                                )
                               }
                               disabled={interactionDisabled}
                               accessibilityRole="button"
@@ -432,7 +445,9 @@ const RouteStopRow: React.FC<{
                                 </Text>
                               ) : null}
                               <Text style={stopRowStyles.semanticOptionAction}>
-                                {interactionDisabled ? "Aplicando..." : "Usar y recalcular"}
+                                {interactionDisabled
+                                  ? "Aplicando..."
+                                  : "Usar y recalcular"}
                               </Text>
                             </TouchableOpacity>
                           );
@@ -481,7 +496,9 @@ export const RouteScreen: React.FC = () => {
   );
   const [weights, setWeights] = useState<WeightConfig>(initialPrefs.weights);
   const [maxStops, setMaxStops] = useState(initialPrefs.maxStops);
-  const [maxDistanceKm, setMaxDistanceKm] = useState(initialPrefs.maxDistanceKm);
+  const [maxDistanceKm, setMaxDistanceKm] = useState(
+    initialPrefs.maxDistanceKm,
+  );
   const [showWeightModal, setShowWeightModal] = useState(false);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [loadingSavedRoute, setLoadingSavedRoute] = useState(false);
@@ -784,7 +801,10 @@ export const RouteScreen: React.FC = () => {
 
       await Linking.openURL(mapUrl);
     } catch {
-      Alert.alert("No se pudo abrir el mapa", "Inténtalo de nuevo en unos segundos.");
+      Alert.alert(
+        "No se pudo abrir el mapa",
+        "Inténtalo de nuevo en unos segundos.",
+      );
     }
   };
 
@@ -996,7 +1016,8 @@ export const RouteScreen: React.FC = () => {
             <TouchableOpacity
               style={[
                 styles.lockscreenBtn,
-                (activatingChecklistNotification || isBusy) && styles.lockscreenBtnDisabled,
+                (activatingChecklistNotification || isBusy) &&
+                  styles.lockscreenBtnDisabled,
               ]}
               activeOpacity={0.8}
               onPress={() => {
@@ -1006,7 +1027,11 @@ export const RouteScreen: React.FC = () => {
               accessibilityRole="button"
               accessibilityLabel="Publicar checklist dinámico en notificaciones"
             >
-              <Ionicons name="notifications-outline" size={16} color={colors.primary} />
+              <Ionicons
+                name="notifications-outline"
+                size={16}
+                color={colors.primary}
+              />
               <Text style={styles.lockscreenBtnText}>
                 {activatingChecklistNotification
                   ? "Publicando checklist..."

@@ -70,11 +70,13 @@ jobs:
       - name: Build unsigned .xcarchive
         working-directory: frontend/ios
         run: |
+          set -o pipefail
           mkdir -p "$(dirname "$ARCHIVE_PATH")"
           WORKSPACE=$(ls *.xcworkspace | head -1)
           SCHEME=$(xcodebuild -list -workspace "$WORKSPACE" 2>/dev/null | \
             awk '/Schemes:/,0' | grep -v 'Schemes:' | grep -v '^$' | head -1 | xargs)
           echo "Building workspace: $WORKSPACE, scheme: $SCHEME"
+          echo "Expected archive path: $ARCHIVE_PATH"
           xcodebuild \
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME" \
@@ -101,8 +103,13 @@ jobs:
             ls -la "$ARCHIVE_PATH"
           else
             echo "ERROR: archive not found at $ARCHIVE_PATH"
+            echo "Workspace root: $GITHUB_WORKSPACE"
+            echo "Expected export path: $EXPORT_PATH"
             echo "Discovered .xcarchive files in workspace:"
-            find "$GITHUB_WORKSPACE" -maxdepth 6 -name "*.xcarchive" 2>/dev/null || true
+            find "$GITHUB_WORKSPACE" -maxdepth 8 -name "*.xcarchive" 2>/dev/null || true
+            XCODE_ARCHIVES_DIR="$HOME/Library/Developer/Xcode/Archives"
+            echo "Discovered .xcarchive files in default Xcode archive location: $XCODE_ARCHIVES_DIR"
+            find "$XCODE_ARCHIVES_DIR" -maxdepth 6 -name "*.xcarchive" 2>/dev/null || true
             exit 1
           fi
 
