@@ -73,13 +73,15 @@ services:
   - type: worker
     name: bargain-celery-worker
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile.worker
+    dockerContext: .
     plan: starter
     dockerCommand: "celery -A config worker -l info --concurrency 4"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings.prod
+      - key: SCRAPING_PROJECT_DIR
+        value: /scraping
       - key: SECRET_KEY
         sync: false
       - key: ALLOWED_HOSTS
@@ -100,13 +102,15 @@ services:
   - type: worker
     name: bargain-celery-beat
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile.worker
+    dockerContext: .
     plan: starter
     dockerCommand: sh /app/scripts/start_celery_beat.sh
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings.prod
+      - key: SCRAPING_PROJECT_DIR
+        value: /scraping
       - key: SECRET_KEY
         sync: false
       - key: ALLOWED_HOSTS
