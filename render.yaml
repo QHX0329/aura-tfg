@@ -82,6 +82,8 @@ services:
         value: config.settings.prod
       - key: SECRET_KEY
         sync: false
+      - key: ALLOWED_HOSTS
+        value: localhost,127.0.0.1
       - key: DATABASE_URL
         fromDatabase:
           name: bargain-postgres
@@ -109,6 +111,8 @@ services:
         value: config.settings.prod
       - key: SECRET_KEY
         sync: false
+      - key: ALLOWED_HOSTS
+        value: localhost,127.0.0.1
       - key: DATABASE_URL
         fromDatabase:
           name: bargain-postgres
