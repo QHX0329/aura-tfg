@@ -298,8 +298,8 @@ describe("ListDetailScreen", () => {
     });
   });
 
-  // Test 10: catalog FAB navigates to ProductsCatalog for current list
-  it("Test 10: pressing catalog FAB navigates to ProductsCatalog", async () => {
+  // Test 10: catalog FAB opens panel and catalog option navigates to ProductsCatalog
+  it("Test 10: pressing catalog option in add panel navigates to ProductsCatalog", async () => {
     const { getByTestId } = render(
       <ListDetailScreen route={mockRoute} navigation={mockNavigation as never} />,
     );
@@ -309,6 +309,9 @@ describe("ListDetailScreen", () => {
 
     const openCatalogFab = getByTestId("fab-open-product-catalog");
     fireEvent.press(openCatalogFab);
+
+    const openCatalogOption = await waitFor(() => getByTestId("add-panel-open-catalog"));
+    fireEvent.press(openCatalogOption);
 
     await waitFor(() => {
       expect(mockNavigation.navigate).toHaveBeenCalledWith("ProductsCatalog", {

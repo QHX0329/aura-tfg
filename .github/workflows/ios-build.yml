@@ -129,12 +129,26 @@ jobs:
       - name: Export unsigned .ipa
         run: |
           mkdir -p "$EXPORT_PATH"
-          xcodebuild \
-            -exportArchive \
-            -archivePath "$ARCHIVE_PATH" \
-            -exportPath "$EXPORT_PATH" \
-            -exportOptionsPlist frontend/ExportOptions.plist \
-            -allowProvisioningUpdates
+
+          APP_PATH=$(find "$ARCHIVE_PATH/Products/Applications" -maxdepth 1 -name "*.app" -print | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: No .app found inside archive at $ARCHIVE_PATH/Products/Applications"
+            exit 1
+          fi
+
+          APP_NAME=$(basename "$APP_PATH" .app)
+          PAYLOAD_DIR="$EXPORT_PATH/Payload"
+
+          rm -rf "$PAYLOAD_DIR"
+          mkdir -p "$PAYLOAD_DIR"
+          cp -R "$APP_PATH" "$PAYLOAD_DIR/"
+
+          (
+            cd "$EXPORT_PATH"
+            zip -qry "${APP_NAME}-unsigned.ipa" Payload
+          )
+
+          echo "Generated unsigned IPA: $EXPORT_PATH/${APP_NAME}-unsigned.ipa"
 
       - name: List build output
         run: |

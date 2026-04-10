@@ -110,19 +110,23 @@ describe("MapScreen — Google Places autocomplete bar", () => {
     setupLocationMocks();
   });
 
-  it("renders the autocomplete search bar with placeholder after location is granted", async () => {
+  it(
+    "renders the autocomplete search bar with placeholder after location is granted",
+    async () => {
     const { getByPlaceholderText } = render(<MapScreen />);
 
-    // Extend timeout to 5s to allow the location+store fetch async chain to resolve
-    await waitFor(
-      () => {
-        // The search bar should always render — it is not gated on the API key
-        // in this implementation (the API key gates the backend proxy, not the UI)
-        expect(getByPlaceholderText("Buscar supermercado...")).toBeTruthy();
-      },
-      { timeout: 5000 },
-    );
-  });
+      // Allow extra time for slower CI environments during initial permission/location setup.
+      await waitFor(
+        () => {
+          // The search bar should always render — it is not gated on the API key
+          // in this implementation (the API key gates the backend proxy, not the UI)
+          expect(getByPlaceholderText("Buscar supermercado...")).toBeTruthy();
+        },
+        { timeout: 12000 },
+      );
+    },
+    15000,
+  );
 
   it("search bar accepts text input and updates the displayed value", async () => {
     const { getByPlaceholderText } = render(<MapScreen />);

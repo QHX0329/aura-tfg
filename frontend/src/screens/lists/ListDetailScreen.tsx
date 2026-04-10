@@ -567,6 +567,7 @@ export const ListDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
             {/* Opción 2: buscar en catálogo */}
             <TouchableOpacity
+              testID="add-panel-open-catalog"
               style={styles.catalogOption}
               onPress={() => {
                 setAddPanelVisible(false);
