@@ -19,3 +19,11 @@ Resolved debug sessions. Used by `gsd-debugger` to surface known-pattern hypothe
 - **Fix:** Ran a targeted prettier write on the 8 reported files and rechecked with npm run lint and npm run format.
 - **Files changed:** frontend/src/api/client.ts, frontend/src/api/optimizerService.ts, frontend/src/api/storeService.ts, frontend/src/screens/home/ProductProposalScreen.tsx, frontend/src/screens/lists/RouteScreen.tsx, frontend/src/screens/map/StoreProfileScreen.tsx, frontend/src/services/lockscreenChecklistService.ts, frontend/src/utils/maps.ts
 ---
+
+## mobile-api-render-connectivity - Mobile app used localhost or LAN base URL instead of Render public API
+- **Date:** 2026-04-10
+- **Error patterns:** movil no conecta api render, mobile api connectivity, EXPO_PUBLIC_API_URL missing, localhost:8000 fallback, lan ip 172.20.10.2, health 200 but app network fails
+- **Root cause:** The mobile client resolved API_BASE_URL to a local/LAN address (frontend/.env.local) or localhost fallback when EXPO_PUBLIC_API_URL was not reliably set at runtime, so device requests never reached the Render backend.
+- **Fix:** Changed frontend API default base URL fallback to the Render public API, documented EXPO_PUBLIC_API_URL in frontend/.env.example, and aligned local runtime override in frontend/.env.local to the Render API for immediate mobile validation.
+- **Files changed:** frontend/src/api/client.ts, frontend/.env.example, frontend/.env.local
+---

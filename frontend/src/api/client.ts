@@ -24,9 +24,15 @@ import {
 
 import { useAuthStore } from "@/store/authStore";
 
-/** URL base de la API — en desarrollo apunta al backend local */
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+/**
+ * URL base de la API.
+ *
+ * Prioriza EXPO_PUBLIC_API_URL para entornos locales/staging.
+ * Si no existe, usa la API publica de Render para evitar que mobile caiga en
+ * localhost y falle fuera de la maquina de desarrollo.
+ */
+const DEFAULT_API_BASE_URL = "https://bargain-api-8yr0.onrender.com/api/v1";
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL?.trim() || DEFAULT_API_BASE_URL;
 
 function createBaseClient() {
   return axios.create({
