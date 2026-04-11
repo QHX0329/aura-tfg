@@ -28,6 +28,7 @@ jobs:
       RENDER_WORKER_SERVICE_ID: ${{ secrets.RENDER_WORKER_SERVICE_ID }}
       RENDER_BEAT_SERVICE_ID: ${{ secrets.RENDER_BEAT_SERVICE_ID }}
       RENDER_STAGING_HEALTHCHECK_URL: ${{ secrets.RENDER_STAGING_HEALTHCHECK_URL }}
+      RENDER_SYNC_CORS_ALLOWED_ORIGINS: https://qhx0329.github.io,http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:8081,exp://localhost:8081
 
     steps:
       - name: Validate required secrets
@@ -48,6 +49,33 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Sync critical web env vars
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          auth_header="Authorization: Bearer ${RENDER_API_KEY}"
+          cors_payload=$(python3 -c 'import json,os; print(json.dumps({"value": os.environ["RENDER_SYNC_CORS_ALLOWED_ORIGINS"]}))')
+
+          echo "Syncing CORS_ALLOWED_ORIGINS on Render web service ${RENDER_WEB_SERVICE_ID}"
+
+          response=$(curl --silent --show-error --fail \
+            --request PUT \
+            --url "${RENDER_API_URL}/services/${RENDER_WEB_SERVICE_ID}/env-vars/CORS_ALLOWED_ORIGINS" \
+            --header "${auth_header}" \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data "${cors_payload}")
+
+          synced_value=$(python3 -c $'import json,sys\npayload=sys.argv[1]\nexpected_key="CORS_ALLOWED_ORIGINS"\ntry:\n    data=json.loads(payload)\nexcept json.JSONDecodeError:\n    print("")\n    raise SystemExit(1)\nif not isinstance(data, dict):\n    print("")\n    raise SystemExit(1)\nif data.get("key") != expected_key:\n    print("")\n    raise SystemExit(1)\nvalue=data.get("value", "")\nprint(value if isinstance(value, str) else "")' "${response}")
+
+          if [ "${synced_value}" != "${RENDER_SYNC_CORS_ALLOWED_ORIGINS}" ]; then
+            echo "CORS_ALLOWED_ORIGINS sync mismatch. Response: ${response}"
+            exit 1
+          fi
+
+          echo "CORS_ALLOWED_ORIGINS synced successfully."
 
       - name: Trigger deploys and wait for live status
         shell: bash

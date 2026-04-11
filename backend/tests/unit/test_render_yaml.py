@@ -92,6 +92,28 @@ def test_render_yaml_health_check_path_matches_project_contract(render_config):
     assert web_service.get("healthCheckPath") == "/api/v1/health/"
 
 
+def test_render_yaml_web_cors_origins_include_github_pages(render_config):
+    """El servicio web declara origen GitHub Pages en CORS_ALLOWED_ORIGINS."""
+    services = render_config.get("services", [])
+    web_service = next((s for s in services if s.get("type") == "web"), None)
+
+    assert web_service is not None, "No se encontró servicio web en render.yaml"
+
+    env_vars = web_service.get("envVars", [])
+    assert isinstance(env_vars, list), "envVars del servicio web debe ser una lista"
+
+    cors_entry = next((entry for entry in env_vars if entry.get("key") == "CORS_ALLOWED_ORIGINS"), None)
+    assert cors_entry is not None, "No se encontró CORS_ALLOWED_ORIGINS en envVars del servicio web"
+
+    raw_value = cors_entry.get("value")
+    assert isinstance(raw_value, str) and raw_value.strip(), (
+        "CORS_ALLOWED_ORIGINS debe definir un valor no vacío"
+    )
+
+    origins = [origin.strip() for origin in raw_value.split(",") if origin.strip()]
+    assert "https://qhx0329.github.io" in origins
+
+
 def test_worker_services_do_not_use_free_plan(render_config):
     """Los workers de Render no deben declararse con plan free."""
     services = render_config.get("services", [])

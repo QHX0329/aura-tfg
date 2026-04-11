@@ -1,16 +1,16 @@
 ---
-status: awaiting_human_verify
+status: fixing
 trigger: "En la web desplegada en GitHub Pages, al registrarse falla con 404 + bloqueo CORS al endpoint https://bargain-api-8yr0.onrender.com/api/v1/auth/register/."
 created: 2026-04-11T11:27:18.8397326+02:00
-updated: 2026-04-11T11:31:55.0000000+02:00
+updated: 2026-04-11T13:02:00.0000000+02:00
 ---
 
 ## Current Focus
 
-hypothesis: Causa raíz confirmada: CORS_ALLOWED_ORIGINS en producción no incluye el origen GitHub Pages (https://qhx0329.github.io), por eso el preflight OPTIONS no devuelve Access-Control-Allow-Origin para ese origen.
-test: Validación local completada de integridad de configuración; pendiente validación end-to-end tras deploy Render.
-expecting: Tras desplegar backend, preflight OPTIONS desde https://qhx0329.github.io incluirá Access-Control-Allow-Origin y el registro dejará de fallar por CORS.
-next_action: checkpoint human-verify en entorno real GitHub Pages + Render
+hypothesis: Confirmada: la variable runtime CORS_ALLOWED_ORIGINS del servicio web en Render está desalineada (local-only, sin GitHub Pages) respecto a IaC, y el flujo CD actual solo redepliega servicios sin sincronizar env vars.
+test: Aplicar actualización directa de env var CORS_ALLOWED_ORIGINS en el servicio web activo y redeploy, luego validar preflight real desde origen GitHub Pages.
+expecting: Tras redeploy live, OPTIONS con Origin https://qhx0329.github.io devolverá access-control-allow-origin y el registro dejará de bloquearse por CORS.
+next_action: actualizar env var CORS_ALLOWED_ORIGINS en Render (servicio bargain-api-8yr0), forzar deploy web y verificar preflight end-to-end
 
 ## Symptoms
 
@@ -68,9 +68,39 @@ started: Aparece actualmente tras ajuste de VITE_API_URL para apuntar a Render.
 	found: render.yaml parsea correctamente y expone CORS_ALLOWED_ORIGINS incluyendo https://qhx0329.github.io; base.py incluye ese origen en defaults.
 	implication: El cambio está consistente en código e IaC; solo falta despliegue para validar efecto runtime.
 
+- timestamp: 2026-04-11T12:02:30.0000000+02:00
+	checked: checkpoint human-verify en navegador real GitHub Pages
+	found: El usuario confirma que el fallo persiste idéntico: preflight CORS sin Access-Control-Allow-Origin para https://qhx0329.github.io en POST /api/v1/auth/register/.
+	implication: El cambio en repo no está aplicado en configuración efectiva de producción; investigar despliegue Render y posibles overrides runtime.
+
+- timestamp: 2026-04-11T12:55:40.0000000+02:00
+	checked: curl preflight live a https://bargain-api-8yr0.onrender.com/api/v1/auth/register/ con Origin https://qhx0329.github.io
+	found: OPTIONS 200 con vary: origin pero sin header access-control-allow-origin.
+	implication: Producción sigue denegando explícitamente el origen GitHub Pages.
+
+- timestamp: 2026-04-11T12:55:50.0000000+02:00
+	checked: curl preflight live al mismo endpoint con Origin http://localhost:5173 y http://localhost:3000
+	found: OPTIONS 200 con access-control-allow-origin devolviendo ambos orígenes locales.
+	implication: La allowlist runtime está activa pero restringida a orígenes locales; no coincide con la configuración esperada tras cambios de repo.
+
+- timestamp: 2026-04-11T12:58:10.0000000+02:00
+	checked: Render API /v1/services (auth con RENDER_API_KEY en entorno local)
+	found: El servicio web activo es bargain-api (id srv-d7c0kcf7f7vs73c44bog, slug bargain-api-8yr0, url https://bargain-api-8yr0.onrender.com).
+	implication: Se identifica de forma inequívoca el servicio de producción a corregir.
+
+- timestamp: 2026-04-11T12:59:40.0000000+02:00
+	checked: Render API GET /v1/services/srv-d7c0kcf7f7vs73c44bog/env-vars/CORS_ALLOWED_ORIGINS
+	found: Valor runtime actual = http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:8081,exp://localhost:8081 (sin https://qhx0329.github.io).
+	implication: Causa raíz confirmada en configuración efectiva de producción.
+
+- timestamp: 2026-04-11T13:00:35.0000000+02:00
+	checked: render.yaml + workflow .github/workflows/cd-render-staging.yml
+	found: render.yaml declara CORS_ALLOWED_ORIGINS incluyendo GitHub Pages, pero el workflow CD dispara deploys por service ID y no sincroniza env vars desde IaC.
+	implication: Existe drift IaC-vs-runtime; editar repo/render.yaml no corrige por sí solo la variable efectiva en el servicio ya creado.
+
 ## Resolution
 
-root_cause: La allowlist CORS efectiva del backend en Render solo permitía orígenes locales (localhost/127/exp) y excluía https://qhx0329.github.io, provocando preflight sin Access-Control-Allow-Origin para registro web.
-fix: Añadido el origen https://qhx0329.github.io a la allowlist CORS por defecto del backend y explicitado CORS_ALLOWED_ORIGINS en render.yaml para despliegues Render.
-verification: Validación estática OK (render.yaml válido + origen presente en configuración). Validación funcional end-to-end pendiente de deploy y prueba manual desde GitHub Pages.
-files_changed: [backend/config/settings/base.py, render.yaml]
+root_cause: Drift de configuración en Render: la variable runtime CORS_ALLOWED_ORIGINS del servicio web activo (bargain-api-8yr0) quedó en una allowlist local-only sin https://qhx0329.github.io; además, el CD actual redepliega pero no sincroniza env vars desde render.yaml.
+fix: En curso: actualización directa de CORS_ALLOWED_ORIGINS en Render + redeploy del web service para aplicar la configuración efectiva correcta.
+verification: Pendiente de prueba preflight live tras deploy.
+files_changed: []
