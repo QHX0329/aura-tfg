@@ -1,8 +1,12 @@
 import axios from 'axios';
 
+const DEFAULT_API_BASE_URL = 'https://bargain-api-8yr0.onrender.com/api/v1';
+
 export const API_BASE_URL: string =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL as string | undefined) ||
-  'http://localhost:8000/api/v1';
+  ((typeof import.meta !== 'undefined'
+    ? (import.meta.env?.VITE_API_URL as string | undefined)
+    : undefined)
+    ?.trim()) || DEFAULT_API_BASE_URL;
 
 const LOGIN_URL =
   typeof import.meta !== 'undefined'
