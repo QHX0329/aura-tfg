@@ -12,7 +12,6 @@ import {
   Map,
   Route,
   ShieldCheck,
-  Sparkles,
 } from 'lucide-react';
 
 type OverviewCard = {
@@ -139,7 +138,6 @@ const DocsPage: React.FC = () => {
           </a>
           <nav className="hidden items-center gap-7 text-sm text-slate-300 lg:flex">
             <a href={withBase('')} className="transition hover:text-emerald-300">Inicio</a>
-            <a href={withBase('demo')} className="transition hover:text-emerald-300">Demo</a>
             <a href={withBase('onboarding')} className="transition hover:text-emerald-300">Onboarding</a>
             <a href={withBase('docs')} className="text-emerald-300">Docs</a>
             <a href={withBase('login')} className="transition hover:text-emerald-300">Login</a>
@@ -169,12 +167,6 @@ const DocsPage: React.FC = () => {
               className="inline-flex items-center gap-2 rounded-2xl bg-emerald-300 px-6 py-3 text-sm font-semibold text-emerald-950"
             >
               Abrir documentacion completa <ArrowRight className="h-4 w-4" />
-            </a>
-            <a
-              href={withBase('demo')}
-              className="inline-flex items-center gap-2 rounded-2xl bg-white/5 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/15"
-            >
-              Ver demo tecnica <Sparkles className="h-4 w-4" />
             </a>
           </div>
         </motion.section>
@@ -286,7 +278,7 @@ const DocsPage: React.FC = () => {
                 Quieres revisar implementacion o colaborar?
               </h3>
               <p className="mt-2 text-sm text-slate-200">
-                Podemos recorrer decisiones tecnicas, arquitectura y roadmap de producto sobre una demo guiada.
+                Podemos recorrer decisiones tecnicas, arquitectura y roadmap de producto directamente sobre el repositorio.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 md:justify-end">

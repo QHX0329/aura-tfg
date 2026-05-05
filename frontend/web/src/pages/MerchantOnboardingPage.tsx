@@ -103,9 +103,6 @@ const MerchantOnboardingPage: React.FC = () => {
               <a href={withBase('login')} className="rounded-2xl bg-emerald-300 px-6 py-3 text-sm font-semibold text-emerald-950">
                 Iniciar ahora
               </a>
-              <a href={withBase('demo')} className="rounded-2xl bg-white/5 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/15">
-                Ver demo
-              </a>
             </div>
           </div>
 

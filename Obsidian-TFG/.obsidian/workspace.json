@@ -4,17 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "9594f01df230e607",
+        "id": "04e49a3a60e710a3",
         "type": "tabs",
         "children": [
           {
-            "id": "50820633a08e6b88",
+            "id": "a8c73e6bc91c1abd",
             "type": "leaf",
             "state": {
-              "type": "graph",
+              "type": "empty",
               "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Vista gráfica"
+              "icon": "lucide-file",
+              "title": "Nueva pestaña"
             }
           }
         ]
@@ -176,7 +176,7 @@
       "bases:Crear nueva base": false
     }
   },
-  "active": "50820633a08e6b88",
+  "active": "a8c73e6bc91c1abd",
   "lastOpenFiles": [
     "04 Producto/Portal PYME.md",
     "Fases/F3 — Backend Core.md",

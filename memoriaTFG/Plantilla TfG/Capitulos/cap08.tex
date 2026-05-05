@@ -184,6 +184,28 @@ optimizaci\'on de forma trazable:
 \end{tabular}
 \end{table}
 
+\subsection{Modelo entidad-relaci\'on}\label{subsec:modelo-er}
+
+La Figura~\ref{fig:modelo-er} muestra el diagrama entidad-relaci\'on completo de la base de datos.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../../docs/diagramas/er/modelo-er.png}
+\caption{Diagrama entidad-relaci\'on de BargAIN}
+\label{fig:modelo-er}
+\end{figure}
+
+\subsection{Diagrama de clases}\label{subsec:modelo-clases}
+
+La Figura~\ref{fig:modelo-clases} detalla las clases principales del dominio y sus relaciones.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../../docs/diagramas/clases/modelo-clases.png}
+\caption{Diagrama de clases del dominio}
+\label{fig:modelo-clases}
+\end{figure}
+
 \section{Dise\~no de la API REST}\label{sec:api}
 
 \subsection{Estructura general}\label{subsec:api-estructura}
@@ -369,6 +391,18 @@ Authorization: {ORS_API_KEY}
     devoluci\'on de las top-3 asignaciones ordenadas por score descendente.
 \end{enumerate}
 
+\subsection{Diagrama de secuencia del optimizador}\label{subsec:secuencia-optimizador}
+
+La Figura~\ref{fig:secuencia-optimizacion} ilustra el flujo de mensajes entre componentes
+durante una petici\'on de optimizaci\'on.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{../../docs/diagramas/secuencia/secuencia-optimizacion.png}
+\caption{Diagrama de secuencia del proceso de optimizaci\'on de ruta}
+\label{fig:secuencia-optimizacion}
+\end{figure}
+
 \subsection{Integraci\'on con OR-Tools}\label{subsec:ortools}
 
 Para combinaciones complejas donde el problema de asignaci\'on supera la heur\'istica greedy, se
@@ -433,6 +467,18 @@ def extract_text_from_image(image_bytes: bytes) -> list[str]:
 
 Cada l\'inea extra\'ida se normaliza y se busca en el cat\'alogo mediante el servicio de matching
 fuzzy de \texttt{apps/products}. Se devuelve una lista de candidatos con nivel de confianza.
+
+\subsection{Diagrama de secuencia OCR}\label{subsec:secuencia-ocr}
+
+La Figura~\ref{fig:secuencia-ocr} muestra el flujo de procesamiento desde la captura de imagen
+hasta la inserci\'on de \'items en la lista.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{../../docs/diagramas/secuencia/secuencia-ocr.png}
+\caption{Diagrama de secuencia del flujo OCR}
+\label{fig:secuencia-ocr}
+\end{figure}
 
 \section{Integraci\'on del Asistente LLM}\label{sec:asistente}
 

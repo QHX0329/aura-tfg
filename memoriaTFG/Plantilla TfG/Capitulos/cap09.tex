@@ -38,6 +38,17 @@ El sistema usa JWT con refresco autom\'atico. Si el access token expira, la sesi
 sin intervenci\'on del usuario cuando el refresh token sigue siendo v\'alido (7 d\'ias desde el
 \'ultimo uso).
 
+\subsection{Pantallas de acceso}\label{subsec:manual-acceso-screens}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.32\textwidth]{../../docs/diagramas/ui-mockups/assets/01-login.png}
+\hfill
+\includegraphics[width=0.32\textwidth]{../../docs/diagramas/ui-mockups/assets/02-registro.png}
+\caption{Pantallas de inicio de sesi\'on y registro}
+\label{fig:ui-acceso}
+\end{figure}
+
 \section{Pantalla principal (Home)}\label{sec:manual-home}
 
 La pantalla de inicio centraliza la informaci\'on m\'as relevante del usuario:
@@ -48,6 +59,13 @@ La pantalla de inicio centraliza la informaci\'on m\'as relevante del usuario:
   \item Buscador global para navegar r\'apidamente a catálogo o funciones de compra.
   \item Acceso directo al asistente y a las alertas de precio activas.
 \end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.40\textwidth]{../../docs/diagramas/ui-mockups/assets/03-dashboard.png}
+\caption{Pantalla principal --- Dashboard}
+\label{fig:ui-dashboard}
+\end{figure}
 
 \section{Gesti\'on de listas de compra}\label{sec:manual-listas}
 
@@ -62,6 +80,13 @@ La pantalla de inicio centraliza la informaci\'on m\'as relevante del usuario:
   \item Compartir lista con colaboradores (hasta 10 usuarios por lista).
   \item Abrir ``Ruta optimizada'' para calcular, guardar y reutilizar la \'ultima ruta por lista.
 \end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.40\textwidth]{../../docs/diagramas/ui-mockups/assets/04-mi-lista.png}
+\caption{Pantalla de gesti\'on de lista de compra}
+\label{fig:ui-lista}
+\end{figure}
 
 \section{Cat\'alogo y detalle de producto}\label{sec:manual-catalogo}
 
@@ -124,6 +149,13 @@ Flujo recomendado:
 Comportamiento persistente: la app no pierde la ruta al salir de la pantalla. Al volver, recupera
 la \'ultima optimizaci\'on guardada de esa lista.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.40\textwidth]{../../docs/diagramas/ui-mockups/assets/06-optimizador.png}
+\caption{Pantalla del optimizador con comparativa de rutas}
+\label{fig:ui-optimizador}
+\end{figure}
+
 \section{M\'odulo OCR: captura de ticket}\label{sec:manual-ocr}
 
 El flujo de captura de lista por c\'amara sigue un wizard de tres pasos:
@@ -138,6 +170,15 @@ El flujo de captura de lista por c\'amara sigue un wizard de tres pasos:
     para a\~nadir todos los \'items reconocidos.
 \end{enumerate}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.32\textwidth]{../../docs/diagramas/ui-mockups/assets/08-ocr-captura.png}
+\hfill
+\includegraphics[width=0.32\textwidth]{../../docs/diagramas/ui-mockups/assets/09-ocr-revision.png}
+\caption{Flujo OCR: captura de ticket (izquierda) y revisi\'on de \'items (derecha)}
+\label{fig:ui-ocr}
+\end{figure}
+
 \section{Asistente LLM}\label{sec:manual-asistente}
 
 La pantalla del asistente sigue el patr\'on de chat est\'andar:
@@ -150,6 +191,13 @@ La pantalla del asistente sigue el patr\'on de chat est\'andar:
   \item El asistente s\'olo responde preguntas relacionadas con la compra dom\'estica. Si se hace
     una pregunta fuera de ese \'ambito, responde educadamente indicando su alcance.
 \end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.40\textwidth]{../../docs/diagramas/ui-mockups/assets/10-asistente.png}
+\caption{Pantalla del asistente conversacional LLM}
+\label{fig:ui-asistente}
+\end{figure}
 
 \section{Checklist en bloqueo de iPhone}\label{sec:manual-lockscreen}
 

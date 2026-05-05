@@ -15,7 +15,6 @@ import BusinessProfilePage from './pages/BusinessProfilePage';
 import AdminApprovalPage from './pages/AdminApprovalPage';
 import LandingPage from './pages/LandingPage';
 import MerchantOnboardingPage from './pages/MerchantOnboardingPage';
-import DemoPage from './pages/DemoPage';
 import DocsPage from './pages/DocsPage';
 
 /** Auth guard: redirect to /login if no token in localStorage */
@@ -99,7 +98,6 @@ const App: React.FC = () => {
           {/* Rutas públicas */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/onboarding" element={<MerchantOnboardingPage />} />
-          <Route path="/demo" element={<DemoPage />} />
           <Route path="/docs" element={<DocsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
